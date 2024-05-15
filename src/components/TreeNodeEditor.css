@@ -1,0 +1,29 @@
+.tree__node_editor__container.ui.segments {
+  margin: 0;
+
+  .tree__node_editor__rich_text_editor__container.ui.segment {
+    padding: 10px 0 10px 0;
+    overflow: auto;
+    min-height: 200px;
+    max-height: 400px;
+  }
+
+  .tree__node_editor__top {
+    display: flex;
+
+    >* {
+      margin-right: 10px;
+    }
+    >*:last-child {
+      margin-right: 0;
+    }
+
+    .tree__node_editor__title {
+      flex-grow: 1;
+    }
+    
+    .tree__node_editor__subtitle {
+      flex-grow: 2;
+    }
+  }
+}

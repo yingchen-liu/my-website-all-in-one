@@ -1,0 +1,13 @@
+.ui.inverted.segment {
+  border-radius: 0;
+}
+
+.container--full-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  .body--full-screen {
+    flex-grow: 1;
+  }
+}
