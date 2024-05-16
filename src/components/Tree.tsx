@@ -51,6 +51,7 @@ function TreeLeaf(props: {
   onClick: (node: TreeItem, parent: TreeItem) => void;
   onAddChildClick: (node: TreeItem) => void;
   onAddSiblingClick: (parent: TreeItem) => void;
+  onLoadMoreClick: (node: TreeItem) => void;
 }) {
   return (
     <>
@@ -66,18 +67,28 @@ function TreeLeaf(props: {
           <CardHeader>{props.data.name}</CardHeader>
           {props.data.subtitle && <CardMeta>{props.data.subtitle}</CardMeta>}
           <Button
-            className="tree__item__bottom_button"
+            className="tree__item__bottom_button--show_if_selected"
             onClick={() => props.onAddSiblingClick(props.parent)}
           >
             +
           </Button>
         </CardContent>
-        <Button
-          className="tree__item__right_button"
-          onClick={() => props.onAddChildClick(props.data)}
-        >
-          +
-        </Button>
+        {(props.data.isCollapsed && props.data.children.length === 0) && (
+          <Button
+            className="tree__item__right_button"
+            onClick={() => props.onLoadMoreClick(props.data)}
+          >
+            &gt;
+          </Button>
+        )}
+        {(!props.data.isCollapsed || props.data.children.length !== 0) && (
+          <Button
+            className="tree__item__right_button--show_if_selected"
+            onClick={() => props.onAddChildClick(props.data)}
+          >
+            +
+          </Button>
+        )}
       </Card>
     </>
   );

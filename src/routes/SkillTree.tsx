@@ -7,6 +7,7 @@ import {
   UseMutationResult,
   useMutation,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { createContext, useReducer } from "react";
@@ -20,6 +21,7 @@ export type TreeItem = {
   content?: string;
   children: TreeItem[];
   isDeleted: boolean;
+  isCollapsed: boolean;
 };
 
 type State = {
@@ -47,11 +49,13 @@ type SkillTreeContext = {
       | UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
       | undefined;
   };
+  handleLoadMore: (node: TreeItem) => void
 };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "node/select":
+      console.log('Node selected', action.node)
       return {
         ...state,
         selectedNodeParent: action.parent,
@@ -88,10 +92,12 @@ export const SkillTreeContext = createContext<SkillTreeContext>({
     updateNodeMutation: undefined,
     deleteNodeMutation: undefined,
   },
+  handleLoadMore: () => undefined
 });
 
 export default function SkillTree() {
   const [state, dispatch] = useReducer(reducer, initialState, undefined);
+  const queryClient = useQueryClient()
 
   const { isPending, isSuccess, data, refetch } = useQuery({
     queryKey: ["skill-tree"],
@@ -117,6 +123,39 @@ export default function SkillTree() {
     },
   });
 
+  const findNodeById = (node: TreeItem, uuid: string): TreeItem | null => {
+    if (node.uuid === uuid) {
+      return node;
+    }
+  
+    for (const child of node.children) {
+      const foundNode = findNodeById(child, uuid);
+      if (foundNode) {
+        return foundNode;
+      }
+    }
+  
+    return null;
+  };
+
+  const updateNodeChildrenById = (node: TreeItem, uuid: string, newChildren: TreeItem[]): TreeItem => {
+    console.log(node, uuid, newChildren)
+    return {
+      ...node,
+      children: [...(uuid !== node.uuid ? node.children.map((child: TreeItem) => {
+        return updateNodeChildrenById(child, uuid, newChildren)
+      }) : []), ...(uuid === node.uuid ? newChildren : [])]
+    }
+  };
+
+  async function handleLoadMore(node: TreeItem) {
+    const result = (await axios.get(`http://localhost:8080/nodes/${node.uuid}`)).data;
+
+    queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+      return updateNodeChildrenById(existingData, node.uuid, result.children)
+    });
+  }
+
   return (
     <>
       <div className="container--full-screen">
@@ -133,6 +172,7 @@ export default function SkillTree() {
               updateNodeMutation,
               deleteNodeMutation,
             },
+            handleLoadMore
           }}
         >
           <TreeView />

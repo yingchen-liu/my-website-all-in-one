@@ -11,7 +11,8 @@ function populateChildren(
   activeItem: TreeItem | null,
   onClick: (node: TreeItem, parent: TreeItem) => void,
   onAddChildClick: (node: TreeItem) => void,
-  onAddSiblingClick: (node: TreeItem) => void
+  onAddSiblingClick: (node: TreeItem) => void,
+  onLoadMoreClick: (node: TreeItem) => void,
 ) {
   return children.map((child) => {
     return (
@@ -23,6 +24,7 @@ function populateChildren(
           onClick={onClick}
           onAddChildClick={onAddChildClick}
           onAddSiblingClick={onAddSiblingClick}
+          onLoadMoreClick={onLoadMoreClick}
         />
 
         {child.children && (
@@ -33,7 +35,8 @@ function populateChildren(
               activeItem,
               onClick,
               onAddChildClick,
-              onAddSiblingClick
+              onAddSiblingClick,
+              onLoadMoreClick
             )}
           </TreeChildren>
         )}
@@ -43,7 +46,7 @@ function populateChildren(
 }
 
 export default function TreeView() {
-  const { treeData, state, dispatch } = useContext(SkillTreeContext);
+  const { treeData, state, dispatch, handleLoadMore } = useContext(SkillTreeContext);
   const { data, isPending, isSuccess } = treeData;
 
   function handleClick(node: TreeItem, parent: TreeItem) {
@@ -51,7 +54,7 @@ export default function TreeView() {
   }
 
   function createNewNode() {
-    return { uuid: uuidv4(), name: "New Node", children: [], isDeleted: false }
+    return { uuid: uuidv4(), name: "New Node", children: [], isDeleted: false, isCollapsed: false }
   }
 
   function handleAddChild(node: TreeItem) {
@@ -59,7 +62,7 @@ export default function TreeView() {
     const parent = {
       ...node,
       children: [
-        ...(node.children !== undefined ? node.children : []),
+        ...node.children,
         newNode,
       ],
     }
@@ -81,7 +84,8 @@ export default function TreeView() {
               state.selectedNode,
               handleClick,
               handleAddChild,
-              handleAddChild
+              handleAddChild,
+              handleLoadMore
             )}
           </TreeChildren>
         </Tree>
