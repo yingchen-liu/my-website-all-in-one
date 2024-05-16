@@ -3,22 +3,23 @@ import { Tree, TreeChildren, TreeHierarchy, TreeLeaf, TreeRoot } from "./Tree";
 import HorizontalScroll from "./HorizontalScroll";
 import { SkillTreeContext, TreeItem } from "../routes/SkillTree";
 import { useContext } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 function populateChildren(
-  parent: Partial<TreeItem>,
-  children: Partial<TreeItem>[],
-  activeItem: Partial<TreeItem> | null,
-  onClick: (node: Partial<TreeItem>, parent: Partial<TreeItem>) => void,
-  onAddChildClick: (node: Partial<TreeItem>) => void,
-  onAddSiblingClick: (node: Partial<TreeItem>) => void
+  parent: TreeItem,
+  children: TreeItem[],
+  activeItem: TreeItem | null,
+  onClick: (node: TreeItem, parent: TreeItem) => void,
+  onAddChildClick: (node: TreeItem) => void,
+  onAddSiblingClick: (node: TreeItem) => void
 ) {
   return children.map((child) => {
     return (
-      <TreeHierarchy key={`skill-tree__hierarchy__${child.id}`}>
+      <TreeHierarchy key={`skill-tree__hierarchy__${child.uuid}`}>
         <TreeLeaf
           parent={parent}
           data={child}
-          isActive={activeItem !== null && child.id === activeItem.id}
+          isActive={activeItem !== null && child.uuid === activeItem.uuid}
           onClick={onClick}
           onAddChildClick={onAddChildClick}
           onAddSiblingClick={onAddSiblingClick}
@@ -45,24 +46,26 @@ export default function TreeView() {
   const { treeData, state, dispatch } = useContext(SkillTreeContext);
   const { data, isPending, isSuccess } = treeData;
 
-  function handleClick(node: Partial<TreeItem>, parent: Partial<TreeItem>) {
+  function handleClick(node: TreeItem, parent: TreeItem) {
     dispatch({ type: "node/select", node: node, parent: parent });
   }
 
-  function handleAddChild(node: Partial<TreeItem>) {
-    const newNode = {
-      ...node,
-      children: [...(node.children !== undefined ? node.children : []), { name: "New Node" }],
-    };
-    treeData.updateNodeMutation?.mutateAsync(newNode);
+  function createNewNode() {
+    return { uuid: uuidv4(), name: "New Node", children: [], isDeleted: false }
   }
 
-  function handleAddSibling(node: Partial<TreeItem>) {
-    const newNode = {
+  function handleAddChild(node: TreeItem) {
+    const newNode = createNewNode()
+    const parent = {
       ...node,
-      children: [...(node.children !== undefined ? node.children : []), { name: "New Node" }],
-    };
-    treeData.updateNodeMutation?.mutateAsync(newNode);
+      children: [
+        ...(node.children !== undefined ? node.children : []),
+        newNode,
+      ],
+    }
+    treeData.updateNodeMutation?.mutateAsync(parent).then(() => {
+      handleClick(newNode, node)
+    });
   }
 
   return (
@@ -78,7 +81,7 @@ export default function TreeView() {
               state.selectedNode,
               handleClick,
               handleAddChild,
-              handleAddSibling
+              handleAddChild
             )}
           </TreeChildren>
         </Tree>

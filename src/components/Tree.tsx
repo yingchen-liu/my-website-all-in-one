@@ -45,12 +45,12 @@ function TreeRoot() {
 }
 
 function TreeLeaf(props: {
-  parent: Partial<TreeItem>;
-  data: Partial<TreeItem>;
+  parent: TreeItem;
+  data: TreeItem;
   isActive: boolean;
-  onClick: (node: Partial<TreeItem>, parent: Partial<TreeItem>) => void;
-  onAddChildClick: (node: Partial<TreeItem>) => void;
-  onAddSiblingClick: (parent: Partial<TreeItem>) => void;
+  onClick: (node: TreeItem, parent: TreeItem) => void;
+  onAddChildClick: (node: TreeItem) => void;
+  onAddSiblingClick: (parent: TreeItem) => void;
 }) {
   return (
     <>
@@ -65,9 +65,19 @@ function TreeLeaf(props: {
         <CardContent>
           <CardHeader>{props.data.name}</CardHeader>
           {props.data.subtitle && <CardMeta>{props.data.subtitle}</CardMeta>}
-          <Button className="tree__item__bottom_button" onClick={() => props.onAddSiblingClick(props.parent)}>+</Button>
+          <Button
+            className="tree__item__bottom_button"
+            onClick={() => props.onAddSiblingClick(props.parent)}
+          >
+            +
+          </Button>
         </CardContent>
-        <Button className="tree__item__right_button" onClick={() => props.onAddChildClick(props.data)}>+</Button>
+        <Button
+          className="tree__item__right_button"
+          onClick={() => props.onAddChildClick(props.data)}
+        >
+          +
+        </Button>
       </Card>
     </>
   );

@@ -6,6 +6,10 @@
     overflow: auto;
     min-height: 200px;
     max-height: 400px;
+
+    .cm-editor {
+      height: auto;
+    }
   }
 
   .tree__node_editor__top {

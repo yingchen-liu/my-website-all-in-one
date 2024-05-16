@@ -13,50 +13,75 @@ import { useContext, useMemo, useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 import { BlockNoteView } from "@blocknote/mantine";
-import { BlockNoteEditor } from "@blocknote/core";
+import {
+  BlockNoteEditor,
+  BlockNoteSchema,
+  defaultBlockSpecs,
+  filterSuggestionItems,
+} from "@blocknote/core";
+import {
+  SuggestionMenuController,
+  getDefaultReactSlashMenuItems,
+} from "@blocknote/react";
+import { CodeBlock, insertCode } from "@defensestation/blocknote-code";
 
 const debouncedUpdate = debounce((newNode, updateNodeMutation) => {
   updateNodeMutation?.mutateAsync(newNode);
 }, 3000);
 
 export default function TreeNodeEditor() {
-  const [isDeleteConfirmButtonsVisible, toggleDeleteConfirmButtonsVisibility] = useState(false)
+  const [isDeleteConfirmButtonsVisible, toggleDeleteConfirmButtonsVisibility] =
+    useState(false);
   const { treeData, dispatch, state } = useContext(SkillTreeContext);
 
-  const editor = useMemo(
-    () =>
-      BlockNoteEditor.create({
-        initialContent:
-          state.selectedNode?.content !== undefined
-            ? JSON.parse(state.selectedNode?.content)
-            : [],
-      }),
-    [state.selectedNodeId]
-  );
+  if (state.selectedNode === null) {
+    throw new Error("Error rendering editor: No node is selected");
+  }
+  const node = state.selectedNode;
+
+  const editor = useMemo(() => {
+    const schema = BlockNoteSchema.create({
+      blockSpecs: {
+        ...defaultBlockSpecs,
+        procode: CodeBlock,
+      },
+    });
+
+    let content = null
+    if (node.content !== undefined) {
+      content = JSON.parse(node.content)
+      // Blocknote doesn't like empty array
+      content = Array.isArray(content) && content.length === 0 ? null : content
+    }
+
+    return BlockNoteEditor.create({
+      schema,
+      initialContent: content,
+    });
+  }, [state.selectedNodeId]);
 
   function handleDeleteClick() {
-    toggleDeleteConfirmButtonsVisibility(!isDeleteConfirmButtonsVisible)
+    toggleDeleteConfirmButtonsVisibility(!isDeleteConfirmButtonsVisible);
   }
 
   function handleDeleteConfirmed() {
-    dispatch({type:'node/deselect'})
-    const newNode = {
-      ...state.selectedNodeParent,
-      children: state.selectedNodeParent?.children?.filter(child => child.id !== state.selectedNode?.id)
+    if (state.selectedNodeParent === null) {
+      throw new Error("Error deleting tree node: Parent not found");
     }
-    treeData.updateNodeMutation?.mutateAsync(newNode)
+    dispatch({ type: "node/deselect" });
+    treeData.deleteNodeMutation?.mutateAsync(node.uuid);
   }
 
   return (
     <SegmentGroup className="tree__node_editor__container">
       <Segment className="tree__node_editor__top">
         <Input
-        className="tree__node_editor__title"
+          className="tree__node_editor__title"
           placeholder="Title"
-          value={state.selectedNode?.name}
+          value={node.name}
           onChange={(event) => {
             const newNode = {
-              ...state.selectedNode,
+              ...node,
               name: event.target.value,
             };
             dispatch({ type: "node/update", node: newNode });
@@ -64,40 +89,60 @@ export default function TreeNodeEditor() {
           }}
         />
         <Input
-        className="tree__node_editor__subtitle"
+          className="tree__node_editor__subtitle"
           placeholder="Subtitle"
-          value={state.selectedNode?.subtitle ? state.selectedNode.subtitle : ""}
+          value={node.subtitle ? node.subtitle : ""}
           onChange={(event) => {
             const newNode = {
-              ...state.selectedNode,
+              ...node,
               subtitle: event.target.value,
             };
             dispatch({ type: "node/update", node: newNode });
             debouncedUpdate(newNode, treeData.updateNodeMutation);
           }}
         />
-        {!state.selectedNode?.children?.length && <ButtonGroup
-        className="tree__node_editor__delete">
-          {isDeleteConfirmButtonsVisible && <Button onClick={handleDeleteConfirmed}>Delete</Button>}
-          {isDeleteConfirmButtonsVisible && <ButtonOr />}
-          {isDeleteConfirmButtonsVisible && <Button onClick={handleDeleteClick}>Cancel</Button>}
-          <Button color="red" icon="trash alternate" onClick={handleDeleteClick} />
-        </ButtonGroup>}
+        {node.children.length === 0 && (
+          <ButtonGroup className="tree__node_editor__delete">
+            {isDeleteConfirmButtonsVisible && (
+              <Button onClick={handleDeleteConfirmed}>Delete</Button>
+            )}
+            {isDeleteConfirmButtonsVisible && <ButtonOr />}
+            {isDeleteConfirmButtonsVisible && (
+              <Button onClick={handleDeleteClick}>Cancel</Button>
+            )}
+            <Button
+              color="red"
+              icon="trash alternate"
+              onClick={handleDeleteClick}
+            />
+          </ButtonGroup>
+        )}
       </Segment>
 
       <Segment className="tree__node_editor__rich_text_editor__container">
         <BlockNoteView
           editor={editor}
+          slashMenu={false}
           theme="light"
           onChange={() => {
             const newNode = {
-              ...state.selectedNode,
+              ...node,
               content: JSON.stringify(editor.document),
             };
             dispatch({ type: "node/update", node: newNode });
             debouncedUpdate(newNode, treeData.updateNodeMutation);
           }}
-        />
+        >
+          <SuggestionMenuController
+            triggerCharacter={"/"}
+            getItems={async (query) =>
+              filterSuggestionItems(
+                [...getDefaultReactSlashMenuItems(editor), insertCode()],
+                query
+              )
+            }
+          />
+        </BlockNoteView>
       </Segment>
     </SegmentGroup>
   );

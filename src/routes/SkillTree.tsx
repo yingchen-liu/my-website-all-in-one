@@ -14,38 +14,37 @@ import TreeView from "../components/TreeView";
 import TreeNodeEditor from "../components/TreeNodeEditor";
 
 export type TreeItem = {
-  id: number;
+  uuid: string;
   name: string;
   subtitle?: string;
   content?: string;
-  children: Partial<TreeItem>[];
+  children: TreeItem[];
+  isDeleted: boolean;
 };
 
 type State = {
-  selectedNodeId: null | number;
-  selectedNode: null | Partial<TreeItem>;
-  selectedNodeParent: null | Partial<TreeItem>;
+  selectedNodeId: null | string;
+  selectedNode: null | TreeItem;
+  selectedNodeParent: null | TreeItem;
 };
 
 type Action =
-  | { type: "node/select"; node: Partial<TreeItem>, parent: Partial<TreeItem> }
-  | { type: "node/update"; node: Partial<TreeItem> }
+  | { type: "node/select"; node: TreeItem; parent: TreeItem }
+  | { type: "node/update"; node: TreeItem }
   | { type: "node/deselect" };
 
 type SkillTreeContext = {
   state: State;
   dispatch: React.Dispatch<Action>;
   treeData: {
-    data: Partial<TreeItem> | undefined;
+    data: TreeItem | undefined;
     isPending: boolean;
     isSuccess: boolean;
     updateNodeMutation:
-      | UseMutationResult<
-          AxiosResponse<any, any>,
-          Error,
-          Partial<TreeItem>,
-          unknown
-        >
+      | UseMutationResult<AxiosResponse<any, any>, Error, TreeItem, unknown>
+      | undefined;
+    deleteNodeMutation:
+      | UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
       | undefined;
   };
 };
@@ -53,25 +52,31 @@ type SkillTreeContext = {
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "node/select":
-      if (action.node.id === undefined) {
-        throw new Error('Error selecting node: Node does not have an id')
-      }
       return {
         ...state,
         selectedNodeParent: action.parent,
-        selectedNodeId: action.node.id,
+        selectedNodeId: action.node.uuid,
         selectedNode: action.node,
       };
     case "node/update":
       return { ...state, selectedNode: action.node };
     case "node/deselect":
-      return { ...state, selectedNodeId: null, selectedNode: null, selectedNodeParent: null };
+      return {
+        ...state,
+        selectedNodeId: null,
+        selectedNode: null,
+        selectedNodeParent: null,
+      };
     default:
       return state;
   }
 }
 
-const initialState: State = { selectedNodeId: null, selectedNode: null, selectedNodeParent: null };
+const initialState: State = {
+  selectedNodeId: null,
+  selectedNode: null,
+  selectedNodeParent: null,
+};
 
 export const SkillTreeContext = createContext<SkillTreeContext>({
   state: initialState,
@@ -81,6 +86,7 @@ export const SkillTreeContext = createContext<SkillTreeContext>({
     isPending: true,
     isSuccess: false,
     updateNodeMutation: undefined,
+    deleteNodeMutation: undefined,
   },
 });
 
@@ -96,8 +102,16 @@ export default function SkillTree() {
   });
 
   const updateNodeMutation = useMutation({
-    mutationFn: (node: Partial<TreeItem>) =>
-      axios.put(`http://localhost:8080/nodes/${node.id}`, node),
+    mutationFn: (node: TreeItem) =>
+      axios.put(`http://localhost:8080/nodes/${node.uuid}`, node),
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const deleteNodeMutation = useMutation({
+    mutationFn: (uuid: string) =>
+      axios.delete(`http://localhost:8080/nodes/${uuid}`),
     onSuccess: () => {
       refetch();
     },
@@ -112,12 +126,18 @@ export default function SkillTree() {
           value={{
             state,
             dispatch,
-            treeData: { data, isPending, isSuccess, updateNodeMutation },
+            treeData: {
+              data,
+              isPending,
+              isSuccess,
+              updateNodeMutation,
+              deleteNodeMutation,
+            },
           }}
         >
           <TreeView />
 
-          {state.selectedNode && <TreeNodeEditor/>}
+          {state.selectedNode && <TreeNodeEditor />}
         </SkillTreeContext.Provider>
       </div>
     </>
