@@ -4,7 +4,7 @@ import HorizontalScroll from "./HorizontalScroll";
 import { SkillTreeContext, TreeItem } from "../routes/SkillTree";
 import { useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { uniqueNamesGenerator, Config, adjectives, colors, animals } from 'unique-names-generator';
+import { uniqueNamesGenerator, colors, animals } from 'unique-names-generator';
 
 function populateChildren(
   parent: TreeItem,
@@ -71,11 +71,7 @@ export default function TreeView() {
 
   function handleAddChild(node: TreeItem) {
     const newNode = createNewNode();
-    const parent = {
-      ...node,
-      children: [...node.children, newNode],
-    };
-    treeData.updateNodeMutation?.mutateAsync(parent).then(() => {
+    treeData.createNodeMutation?.mutateAsync({node: newNode, parentUuid: node.uuid}).then(() => {
       handleClick(newNode, node);
     });
   }

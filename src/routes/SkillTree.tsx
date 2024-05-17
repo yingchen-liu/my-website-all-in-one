@@ -42,6 +42,9 @@ type SkillTreeContext = {
     data: TreeItem | undefined;
     isPending: boolean;
     isSuccess: boolean;
+    createNodeMutation:
+      | UseMutationResult<AxiosResponse<any, any>, Error, { node: TreeItem; parentUuid: string }, unknown>
+      | undefined;
     updateNodeMutation:
       | UseMutationResult<AxiosResponse<any, any>, Error, TreeItem, unknown>
       | undefined;
@@ -89,6 +92,7 @@ export const SkillTreeContext = createContext<SkillTreeContext>({
     data: undefined,
     isPending: true,
     isSuccess: false,
+    createNodeMutation: undefined,
     updateNodeMutation: undefined,
     deleteNodeMutation: undefined,
   },
@@ -107,9 +111,45 @@ export default function SkillTree() {
         .then((res) => res.data as TreeItem),
   });
 
+  // const createNodeMutation = useMutation({
+  //   mutationFn: (node: TreeItem) =>
+  //     axios.put(`http://localhost:8080/nodes/${node.uuid}`, node),
+  //   onSuccess: (data, node) => {
+  //     queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+  //       return updateNodeById(existingData, node.uuid, data.data);
+  //     });
+  //   },
+  // });
+
+  function removeFields<T extends Record<string, any>, K extends keyof T>(
+    originalObject: T,
+    fieldsToRemove: K[]
+  ): Omit<T, K> {
+    const modifiedObject = { ...originalObject };
+
+    fieldsToRemove.forEach((field) => {
+      delete modifiedObject[field];
+    });
+
+    return modifiedObject;
+  }
+
+  const createNodeMutation = useMutation({
+    mutationFn: (data: { node: TreeItem; parentUuid: string }) =>
+      axios.post(`http://localhost:8080/nodes/${data.parentUuid}`, data.node),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+        return addNode(existingData, variables.parentUuid, data.data);
+      });
+    },
+  });
+
   const updateNodeMutation = useMutation({
     mutationFn: (node: TreeItem) =>
-      axios.put(`http://localhost:8080/nodes/${node.uuid}`, node),
+      axios.put(
+        `http://localhost:8080/nodes/${node.uuid}`,
+        removeFields(node, ["children"])
+      ),
     onSuccess: (data, node) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
         return updateNodeById(existingData, node.uuid, data.data);
@@ -126,6 +166,22 @@ export default function SkillTree() {
       });
     },
   });
+
+  const addNode = (
+    node: TreeItem,
+    parentUuid: string,
+    newNode: TreeItem
+  ): TreeItem => {
+    return {
+      ...node,
+      children: [
+        ...node.children.map((child: TreeItem) => {
+          return addNode(child, parentUuid, newNode);
+        }),
+        ...(parentUuid === node.uuid ? [newNode] : []),
+      ],
+    };
+  };
 
   const updateNodeChildrenById = (
     node: TreeItem,
@@ -196,6 +252,7 @@ export default function SkillTree() {
               data,
               isPending,
               isSuccess,
+              createNodeMutation,
               updateNodeMutation,
               deleteNodeMutation,
             },
