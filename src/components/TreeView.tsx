@@ -4,6 +4,7 @@ import HorizontalScroll from "./HorizontalScroll";
 import { SkillTreeContext, TreeItem } from "../routes/SkillTree";
 import { useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { uniqueNamesGenerator, Config, adjectives, colors, animals } from 'unique-names-generator';
 
 function populateChildren(
   parent: TreeItem,
@@ -12,7 +13,7 @@ function populateChildren(
   onClick: (node: TreeItem, parent: TreeItem) => void,
   onAddChildClick: (node: TreeItem) => void,
   onAddSiblingClick: (node: TreeItem) => void,
-  onLoadMoreClick: (node: TreeItem) => void,
+  onLoadMoreClick: (node: TreeItem) => void
 ) {
   return children.map((child) => {
     return (
@@ -46,7 +47,8 @@ function populateChildren(
 }
 
 export default function TreeView() {
-  const { treeData, state, dispatch, handleLoadMore } = useContext(SkillTreeContext);
+  const { treeData, state, dispatch, handleLoadMore } =
+    useContext(SkillTreeContext);
   const { data, isPending, isSuccess } = treeData;
 
   function handleClick(node: TreeItem, parent: TreeItem) {
@@ -54,20 +56,27 @@ export default function TreeView() {
   }
 
   function createNewNode() {
-    return { uuid: uuidv4(), name: "New Node", children: [], isDeleted: false, isCollapsed: false }
+    return {
+      uuid: uuidv4(),
+      name: uniqueNamesGenerator({
+        dictionaries: [colors, animals],
+        style: 'capital',
+        separator: ' '
+      }),
+      children: [],
+      isDeleted: false,
+      isCollapsed: false,
+    };
   }
 
   function handleAddChild(node: TreeItem) {
-    const newNode = createNewNode()
+    const newNode = createNewNode();
     const parent = {
       ...node,
-      children: [
-        ...node.children,
-        newNode,
-      ],
-    }
+      children: [...node.children, newNode],
+    };
     treeData.updateNodeMutation?.mutateAsync(parent).then(() => {
-      handleClick(newNode, node)
+      handleClick(newNode, node);
     });
   }
 

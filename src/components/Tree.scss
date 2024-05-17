@@ -99,14 +99,16 @@ $tree-branch-color: #d4d4d5;
   }
 
   &__item {
-    .ui.button.tree__item__bottom_button, &--active.ui.card .tree__item__bottom_button--show_if_selected {
+    .ui.button.tree__item__bottom_button,
+    &--active.ui.card .tree__item__bottom_button--show_if_selected {
       display: block;
       padding: 0;
       margin: 0 -12px -14px -14px;
       border-radius: 0 0 0 0.28571429rem !important;
     }
 
-    .ui.button.tree__item__right_button, &--active.ui.card .tree__item__right_button--show_if_selected {
+    .ui.button.tree__item__right_button,
+    &--active.ui.card .tree__item__right_button--show_if_selected {
       display: block;
       padding: 0;
       border-radius: 0 0.28571429rem 0.28571429rem 0 !important;

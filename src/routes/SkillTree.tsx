@@ -49,13 +49,13 @@ type SkillTreeContext = {
       | UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
       | undefined;
   };
-  handleLoadMore: (node: TreeItem) => void
+  handleLoadMore: (node: TreeItem) => void;
 };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "node/select":
-      console.log('Node selected', action.node)
+      console.log("Node selected", action.node);
       return {
         ...state,
         selectedNodeParent: action.parent,
@@ -92,14 +92,14 @@ export const SkillTreeContext = createContext<SkillTreeContext>({
     updateNodeMutation: undefined,
     deleteNodeMutation: undefined,
   },
-  handleLoadMore: () => undefined
+  handleLoadMore: () => undefined,
 });
 
 export default function SkillTree() {
   const [state, dispatch] = useReducer(reducer, initialState, undefined);
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const { isPending, isSuccess, data, refetch } = useQuery({
+  const { isPending, isSuccess, data } = useQuery({
     queryKey: ["skill-tree"],
     queryFn: () =>
       axios
@@ -112,7 +112,7 @@ export default function SkillTree() {
       axios.put(`http://localhost:8080/nodes/${node.uuid}`, node),
     onSuccess: (data, node) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return updateNodeById(existingData, node.uuid, data.data)
+        return updateNodeById(existingData, node.uuid, data.data);
       });
     },
   });
@@ -122,41 +122,64 @@ export default function SkillTree() {
       axios.delete(`http://localhost:8080/nodes/${uuid}`),
     onSuccess: (_, uuid) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return deleteNodeById(existingData, uuid)
+        return deleteNodeById(existingData, uuid);
       });
     },
   });
 
-  const updateNodeChildrenById = (node: TreeItem, uuid: string, newChildren: TreeItem[]): TreeItem => {
+  const updateNodeChildrenById = (
+    node: TreeItem,
+    uuid: string,
+    newChildren: TreeItem[]
+  ): TreeItem => {
     return {
       ...node,
-      children: [...(uuid !== node.uuid ? node.children.map((child: TreeItem) => {
-        return updateNodeChildrenById(child, uuid, newChildren)
-      }) : []), ...(uuid === node.uuid ? newChildren : [])]
-    }
+      children: [
+        ...(uuid !== node.uuid
+          ? node.children.map((child: TreeItem) => {
+              return updateNodeChildrenById(child, uuid, newChildren);
+            })
+          : []),
+        ...(uuid === node.uuid ? newChildren : []),
+      ],
+    };
   };
 
-  const updateNodeById = (node: TreeItem, uuid: string, newNode: TreeItem): TreeItem => {
+  const updateNodeById = (
+    node: TreeItem,
+    uuid: string,
+    newNode: TreeItem
+  ): TreeItem => {
     return {
       ...(uuid === node.uuid ? newNode : node),
-      children: [...(uuid !== node.uuid ? node.children.map((child: TreeItem) => {
-        return updateNodeById(child, uuid, newNode)
-      }) : []), ...(uuid === node.uuid ? newNode.children : [])],
-    }
+      children: [
+        ...(uuid !== node.uuid
+          ? node.children.map((child: TreeItem) => {
+              return updateNodeById(child, uuid, newNode);
+            })
+          : []),
+        ...(uuid === node.uuid ? newNode.children : []),
+      ],
+    };
   };
 
   const deleteNodeById = (node: TreeItem, uuid: string): TreeItem => {
     return {
       ...node,
-      children: [...(node.children.filter(child => child.uuid !== uuid).map(child => deleteNodeById(child, uuid)))]
-    }
+      children: [
+        ...node.children
+          .filter((child) => child.uuid !== uuid)
+          .map((child) => deleteNodeById(child, uuid)),
+      ],
+    };
   };
 
   async function handleLoadMore(node: TreeItem) {
-    const result = (await axios.get(`http://localhost:8080/nodes/${node.uuid}`)).data;
+    const result = (await axios.get(`http://localhost:8080/nodes/${node.uuid}`))
+      .data;
 
     queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-      return updateNodeChildrenById(existingData, node.uuid, result.children)
+      return updateNodeChildrenById(existingData, node.uuid, result.children);
     });
   }
 
@@ -176,7 +199,7 @@ export default function SkillTree() {
               updateNodeMutation,
               deleteNodeMutation,
             },
-            handleLoadMore
+            handleLoadMore,
           }}
         >
           <TreeView />

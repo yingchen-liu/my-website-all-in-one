@@ -73,7 +73,7 @@ function TreeLeaf(props: {
             +
           </Button>
         </CardContent>
-        {(props.data.isCollapsed && props.data.children.length === 0) && (
+        {props.data.isCollapsed && props.data.children.length === 0 && (
           <Button
             className="tree__item__right_button"
             onClick={() => props.onLoadMoreClick(props.data)}
