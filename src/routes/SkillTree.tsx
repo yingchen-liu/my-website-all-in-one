@@ -110,41 +110,45 @@ export default function SkillTree() {
   const updateNodeMutation = useMutation({
     mutationFn: (node: TreeItem) =>
       axios.put(`http://localhost:8080/nodes/${node.uuid}`, node),
-    onSuccess: () => {
-      refetch();
+    onSuccess: (data, node) => {
+      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+        return updateNodeById(existingData, node.uuid, data.data)
+      });
     },
   });
 
   const deleteNodeMutation = useMutation({
     mutationFn: (uuid: string) =>
       axios.delete(`http://localhost:8080/nodes/${uuid}`),
-    onSuccess: () => {
-      refetch();
+    onSuccess: (_, uuid) => {
+      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+        return deleteNodeById(existingData, uuid)
+      });
     },
   });
 
-  const findNodeById = (node: TreeItem, uuid: string): TreeItem | null => {
-    if (node.uuid === uuid) {
-      return node;
-    }
-  
-    for (const child of node.children) {
-      const foundNode = findNodeById(child, uuid);
-      if (foundNode) {
-        return foundNode;
-      }
-    }
-  
-    return null;
-  };
-
   const updateNodeChildrenById = (node: TreeItem, uuid: string, newChildren: TreeItem[]): TreeItem => {
-    console.log(node, uuid, newChildren)
     return {
       ...node,
       children: [...(uuid !== node.uuid ? node.children.map((child: TreeItem) => {
         return updateNodeChildrenById(child, uuid, newChildren)
       }) : []), ...(uuid === node.uuid ? newChildren : [])]
+    }
+  };
+
+  const updateNodeById = (node: TreeItem, uuid: string, newNode: TreeItem): TreeItem => {
+    return {
+      ...(uuid === node.uuid ? newNode : node),
+      children: [...(uuid !== node.uuid ? node.children.map((child: TreeItem) => {
+        return updateNodeById(child, uuid, newNode)
+      }) : []), ...(uuid === node.uuid ? newNode.children : [])],
+    }
+  };
+
+  const deleteNodeById = (node: TreeItem, uuid: string): TreeItem => {
+    return {
+      ...node,
+      children: [...(node.children.filter(child => child.uuid !== uuid).map(child => deleteNodeById(child, uuid)))]
     }
   };
 
