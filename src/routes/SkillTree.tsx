@@ -111,16 +111,6 @@ export default function SkillTree() {
         .then((res) => res.data as TreeItem),
   });
 
-  // const createNodeMutation = useMutation({
-  //   mutationFn: (node: TreeItem) =>
-  //     axios.put(`http://localhost:8080/nodes/${node.uuid}`, node),
-  //   onSuccess: (data, node) => {
-  //     queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-  //       return updateNodeById(existingData, node.uuid, data.data);
-  //     });
-  //   },
-  // });
-
   function removeFields<T extends Record<string, any>, K extends keyof T>(
     originalObject: T,
     fieldsToRemove: K[]

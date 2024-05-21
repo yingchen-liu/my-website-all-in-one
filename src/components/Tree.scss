@@ -52,9 +52,9 @@ $tree-branch-color: #d4d4d5;
       flex-direction: column;
     }
   }
-  &__leaf.ui.card::before,
-  &__leaf.tree__leaf--has-children.ui.card::after,
-  &__root.ui.card::after {
+  &__leaf::before,
+  &__leaf.tree__leaf--has-children::after,
+  &__root::after {
     content: "";
     position: absolute;
     top: 50%;
@@ -64,25 +64,25 @@ $tree-branch-color: #d4d4d5;
     border-bottom: 1px solid $tree-branch-color;
     visibility: visible;
   }
-  &__leaf.ui.card::before {
+  &__leaf::before {
     top: calc(50% + 0.5px);
     left: -$tree-branch-size;
   }
-  &__leaf.tree__leaf--has-children.ui.card::after,
-  &__root.ui.card::after {
+  &__leaf.tree__leaf--has-children::after,
+  &__root::after {
     right: -$tree-branch-size;
   }
-  &__leaf.ui.card:first-child::before {
+  &__leaf:first-child::before {
     height: 50%;
     transform: translateY(-100%);
   }
-  &__leaf.ui.card:last-child::before {
+  &__leaf:last-child::before {
     height: 50%;
     transform: translateY(0);
     border-top: 1px solid $tree-branch-color;
     border-bottom: none;
   }
-  &__leaf.ui.card:first-child:last-child::before {
+  &__leaf:first-child:last-child::before {
     height: 0;
     transform: translateY(-50%);
     border-top: none;
@@ -96,9 +96,7 @@ $tree-branch-color: #d4d4d5;
     .tree__item__right_button--show_if_selected {
       display: none;
     }
-  }
 
-  &__item {
     .ui.button.tree__item__bottom_button,
     &--active.ui.card .tree__item__bottom_button--show_if_selected {
       display: block;
@@ -115,5 +113,16 @@ $tree-branch-color: #d4d4d5;
       width: 14px;
       margin-right: 0;
     }
+  }
+
+  &__hierarchy--dragging {
+    opacity: 0.5;
+  }
+  &__hierarchy--dragging::before {
+    opacity: 1;
+  }
+
+  .tree__leaf__drag_container > div > .tree__hierarchy::before {
+    display: none;
   }
 }
