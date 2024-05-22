@@ -1,6 +1,7 @@
 $tree-branch-size: 15px;
 $tree-leaf-spacing: 20px;
 $tree-branch-color: #d4d4d5;
+$tree-dnd-placeholder-width: 4px;
 
 .tree {
   display: flex;
@@ -34,7 +35,7 @@ $tree-branch-color: #d4d4d5;
   &__item.ui.card {
     width: auto;
     position: relative;
-    margin: calc($tree-leaf-spacing / 2) 0 calc($tree-leaf-spacing / 2)
+    margin: 0 0 0
       $tree-branch-size * 2;
   }
   a.tree__item.ui.card:hover,
@@ -122,7 +123,39 @@ $tree-branch-color: #d4d4d5;
     opacity: 1;
   }
 
-  .tree__leaf__drag_container > div > .tree__hierarchy::before {
+  &__leaf__drag_container > div > .tree__hierarchy::before {
     display: none;
+  }
+  &__leaf__drag_container {
+    opacity: 0.7;
+  }
+
+  &__leaf__drop_area__top.tree__leaf__drop_area, &__leaf__drop_area__bottom.tree__leaf__drop_area {
+    margin-left: calc($tree-branch-size * 2);
+    height: calc($tree-leaf-spacing / 2);
+  }
+  &__leaf__drop_area__top.tree__leaf__drop_area {
+    &--is_over {
+      border-top: $tree-dnd-placeholder-width solid #db2828;
+    }
+  }
+  &__leaf__drop_area__bottom.tree__leaf__drop_area {
+    &--is_over {
+      border-bottom: $tree-dnd-placeholder-width solid #db2828;
+    }
+  }
+  &__leaf__drop_area__child.tree__leaf__drop_area {
+    &--is_over {
+      .tree__leaf {
+        border-right: $tree-dnd-placeholder-width solid #db2828;
+      }
+      .ui.button.tree__item__right_button {
+        border-radius: 0 !important;
+      }
+      .tree__leaf.tree__leaf--has-children::after {
+        width: calc($tree-branch-size + $tree-dnd-placeholder-width);
+        right: calc(($tree-branch-size + $tree-dnd-placeholder-width) * -1);
+      }
+    }
   }
 }

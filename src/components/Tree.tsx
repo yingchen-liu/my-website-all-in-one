@@ -26,8 +26,6 @@ function TreeHierarchy({
   itemProps: TreeLeafDragProps;
   children: any;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: "LEAF",
     item: itemProps,
@@ -40,30 +38,13 @@ function TreeHierarchy({
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
 
-  const [{ isOver, canDrop }, drop] = useDrop(
-    () => ({
-      accept: "LEAF",
-      drop: (item) => {
-        console.log("drop", item.data.name, itemProps.data.name);
-      },
-      collect: (monitor) => ({
-        isOver: !!monitor.isOver(),
-        canDrop: !!monitor.canDrop(),
-      }),
-      canDrop: (item: TreeLeafProps) => itemProps.data.uuid !== item.data.uuid,
-    }),
-    [itemProps]
-  );
-
-  drag(drop(ref));
-
   return (
     <>
       <div
-        ref={ref}
+        ref={drag}
         className={`tree__hierarchy${
           isDragging ? " tree__hierarchy--dragging" : ""
-        }${isOver && canDrop ? " tree__hierarchy--drop" : ""}`}
+        }`}
       >
         {children}
       </div>
@@ -96,6 +77,10 @@ type TreeLeafDragProps = {
   data: TreeItem;
 };
 
+type TreeLeafDropProps = TreeLeafDragProps & {
+  position: "top" | "bottom" | "child";
+};
+
 type TreeLeafProps = TreeLeafDragProps & {
   isActive: boolean;
   onClick: (node: TreeItem, parent: TreeItem) => void;
@@ -104,50 +89,99 @@ type TreeLeafProps = TreeLeafDragProps & {
   onLoadMoreClick: (node: TreeItem) => void;
 };
 
-function TreeLeaf(props: TreeLeafProps) {
+function isDescendant(a: TreeItem, b: TreeItem): boolean {
+  return b.children.filter(child => child.uuid === a.uuid).length > 0 || b.children.filter(child => isDescendant(a, child)).length > 0
+}
+
+function TreeLeafDropArea({
+  props,
+  children,
+}: {
+  props: TreeLeafDropProps;
+  children?: any;
+}) {
+  const [{ isOver, canDrop }, drop] = useDrop(
+    () => ({
+      accept: "LEAF",
+      drop: (item) => {
+        console.log("drop", item.data.name, props.data.name);
+      },
+      collect: (monitor) => ({
+        isOver: !!monitor.isOver(),
+        canDrop: !!monitor.canDrop(),
+      }),
+      canDrop: (item: TreeLeafProps) => {
+        if (props.data.uuid === item.data.uuid) return false;
+        if (props.position === "child" && item.parent.uuid === props.data.uuid) return false;
+        if (isDescendant(props.data, item.data)) return false;
+        return true;
+      },
+    }),
+    [props]
+  );
+
   return (
-    <Card
-      className={`tree__item tree__leaf${
-        props.data.children?.length ? " tree__leaf--has-children" : ""
-      }${props.isActive ? " tree__item--active" : ""}`}
-      onClick={() => {
-        props.onClick(props.data, props.parent);
-      }}
+    <div
+      className={`tree__leaf__drop_area tree__leaf__drop_area__${
+        props.position
+      }${isOver && canDrop ? " tree__leaf__drop_area--is_over" : ""}`}
+      ref={drop}
     >
-      <CardContent>
-        <CardHeader>{props.data.name}</CardHeader>
-        {props.data.subtitle && <CardMeta>{props.data.subtitle}</CardMeta>}
-        <Button
-          className="tree__item__bottom_button--show_if_selected"
-          onClick={() => props.onAddSiblingClick(props.parent)}
-        >
-          +
-        </Button>
-      </CardContent>
-      {props.data.isCollapsed && props.data.children.length === 0 && (
-        <Button
-          className="tree__item__right_button"
-          onClick={() => props.onLoadMoreClick(props.data)}
-        >
-          &gt;
-        </Button>
-      )}
-      {(!props.data.isCollapsed || props.data.children.length !== 0) && (
-        <Button
-          className="tree__item__right_button--show_if_selected"
-          onClick={() => props.onAddChildClick(props.data)}
-        >
-          +
-        </Button>
-      )}
-    </Card>
+      {children && children}
+    </div>
   );
 }
 
-export {
-  Tree,
-  TreeHierarchy,
-  TreeChildren,
-  TreeRoot,
-  TreeLeaf,
-};
+function TreeLeaf(props: TreeLeafProps) {
+  return (
+    <div>
+      <TreeLeafDropArea
+        props={{ parent: props.parent, data: props.data, position: "top" }}
+      />
+      <TreeLeafDropArea
+        props={{ parent: props.parent, data: props.data, position: "child" }}
+      >
+        <Card
+          className={`tree__item tree__leaf${
+            props.data.children?.length ? " tree__leaf--has-children" : ""
+          }${props.isActive ? " tree__item--active" : ""}`}
+          onClick={() => {
+            props.onClick(props.data, props.parent);
+          }}
+        >
+          <CardContent>
+            <CardHeader>{props.data.name}</CardHeader>
+            {props.data.subtitle && <CardMeta>{props.data.subtitle}</CardMeta>}
+            <Button
+              className="tree__item__bottom_button--show_if_selected"
+              onClick={() => props.onAddSiblingClick(props.parent)}
+            >
+              +
+            </Button>
+          </CardContent>
+          {props.data.isCollapsed && props.data.children.length === 0 && (
+            <Button
+              className="tree__item__right_button"
+              onClick={() => props.onLoadMoreClick(props.data)}
+            >
+              &gt;
+            </Button>
+          )}
+          {(!props.data.isCollapsed || props.data.children.length !== 0) && (
+            <Button
+              className="tree__item__right_button--show_if_selected"
+              onClick={() => props.onAddChildClick(props.data)}
+            >
+              +
+            </Button>
+          )}
+        </Card>
+      </TreeLeafDropArea>
+      <TreeLeafDropArea
+        props={{ parent: props.parent, data: props.data, position: "bottom" }}
+      />
+    </div>
+  );
+}
+
+export { Tree, TreeHierarchy, TreeChildren, TreeRoot, TreeLeaf };
