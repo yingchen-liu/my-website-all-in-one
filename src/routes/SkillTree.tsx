@@ -35,6 +35,8 @@ type Action =
   | { type: "node/update"; node: TreeItem }
   | { type: "node/deselect" };
 
+type MoveNodeDTO = { uuid: string; parentUUID: string; order?: { position: "BEFORE" | "AFTER"; relatedToUUID: string; }}
+
 type SkillTreeContext = {
   state: State;
   dispatch: React.Dispatch<Action>;
@@ -47,6 +49,9 @@ type SkillTreeContext = {
       | undefined;
     updateNodeMutation:
       | UseMutationResult<AxiosResponse<any, any>, Error, TreeItem, unknown>
+      | undefined;
+    moveNodeMutation:
+      | UseMutationResult<AxiosResponse<any, any>, Error, MoveNodeDTO, unknown>
       | undefined;
     deleteNodeMutation:
       | UseMutationResult<AxiosResponse<any, any>, Error, string, unknown>
@@ -94,6 +99,7 @@ export const SkillTreeContext = createContext<SkillTreeContext>({
     isSuccess: false,
     createNodeMutation: undefined,
     updateNodeMutation: undefined,
+    moveNodeMutation: undefined,
     deleteNodeMutation: undefined,
   },
   handleLoadMore: () => undefined,
@@ -143,6 +149,19 @@ export default function SkillTree() {
     onSuccess: (data, node) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
         return updateNodeById(existingData, node.uuid, data.data);
+      });
+    },
+  });
+
+  const moveNodeMutation = useMutation({
+    mutationFn: (moveNodeDTO: MoveNodeDTO) =>
+      axios.put(
+        `http://localhost:8080/nodes/${moveNodeDTO.uuid}/position`,
+        moveNodeDTO
+      ),
+    onSuccess: (data, moveNodeDTO) => {
+      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+        return updateNodeById(deleteNodeById(existingData, moveNodeDTO.uuid), moveNodeDTO.parentUUID, data.data)
       });
     },
   });
@@ -244,6 +263,7 @@ export default function SkillTree() {
               isSuccess,
               createNodeMutation,
               updateNodeMutation,
+              moveNodeMutation,
               deleteNodeMutation,
             },
             handleLoadMore,

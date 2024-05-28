@@ -130,16 +130,16 @@ $tree-dnd-placeholder-width: 4px;
     opacity: 0.7;
   }
 
-  &__leaf__drop_area__top.tree__leaf__drop_area, &__leaf__drop_area__bottom.tree__leaf__drop_area {
+  &__leaf__drop_area__before.tree__leaf__drop_area, &__leaf__drop_area__after.tree__leaf__drop_area {
     margin-left: calc($tree-branch-size * 2);
     height: calc($tree-leaf-spacing / 2);
   }
-  &__leaf__drop_area__top.tree__leaf__drop_area {
+  &__leaf__drop_area__before.tree__leaf__drop_area {
     &--is_over {
       border-top: $tree-dnd-placeholder-width solid #db2828;
     }
   }
-  &__leaf__drop_area__bottom.tree__leaf__drop_area {
+  &__leaf__drop_area__after.tree__leaf__drop_area {
     &--is_over {
       border-bottom: $tree-dnd-placeholder-width solid #db2828;
     }

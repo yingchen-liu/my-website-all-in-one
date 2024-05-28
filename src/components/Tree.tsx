@@ -6,9 +6,9 @@ import {
   CardMeta,
 } from "semantic-ui-react";
 import "./Tree.scss";
-import { TreeItem } from "../routes/SkillTree";
+import { SkillTreeContext, TreeItem } from "../routes/SkillTree";
 import { useDrag, useDrop } from "react-dnd";
-import { FC, memo, useEffect, useRef } from "react";
+import { useContext, useEffect } from "react";
 import { getEmptyImage } from "react-dnd-html5-backend";
 
 function Tree({ children }: { children: any }) {
@@ -78,7 +78,7 @@ type TreeLeafDragProps = {
 };
 
 type TreeLeafDropProps = TreeLeafDragProps & {
-  position: "top" | "bottom" | "child";
+  position: "BEFORE" | "AFTER" | "CHILD";
 };
 
 type TreeLeafProps = TreeLeafDragProps & {
@@ -100,11 +100,33 @@ function TreeLeafDropArea({
   props: TreeLeafDropProps;
   children?: any;
 }) {
+  const { treeData } = useContext(SkillTreeContext)
+
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: "LEAF",
       drop: (item) => {
-        console.log("drop", item.data.name, props.data.name);
+        switch (props.position) {
+          case 'CHILD':
+            treeData.moveNodeMutation?.mutateAsync({
+              parentUUID: props.data.uuid,
+              uuid: item.data.uuid
+            })
+            break;
+          case 'BEFORE':
+          case 'AFTER':
+            treeData.moveNodeMutation?.mutateAsync({
+              parentUUID: props.parent.uuid,
+              uuid: item.data.uuid,
+              order: {
+                position: props.position,
+                relatedToUUID: props.data.uuid
+              }
+            })
+            break;
+          default:
+            throw new Error(`Error dropping node: position "${props.position}" not supported`)
+        }
       },
       collect: (monitor) => ({
         isOver: !!monitor.isOver(),
@@ -112,7 +134,7 @@ function TreeLeafDropArea({
       }),
       canDrop: (item: TreeLeafProps) => {
         if (props.data.uuid === item.data.uuid) return false;
-        if (props.position === "child" && item.parent.uuid === props.data.uuid) return false;
+        if (props.position === "CHILD" && item.parent.uuid === props.data.uuid) return false;
         if (isDescendant(props.data, item.data)) return false;
         return true;
       },
@@ -123,7 +145,7 @@ function TreeLeafDropArea({
   return (
     <div
       className={`tree__leaf__drop_area tree__leaf__drop_area__${
-        props.position
+        props.position.toLowerCase()
       }${isOver && canDrop ? " tree__leaf__drop_area--is_over" : ""}`}
       ref={drop}
     >
@@ -136,10 +158,10 @@ function TreeLeaf(props: TreeLeafProps) {
   return (
     <div>
       <TreeLeafDropArea
-        props={{ parent: props.parent, data: props.data, position: "top" }}
+        props={{ parent: props.parent, data: props.data, position: "BEFORE" }}
       />
       <TreeLeafDropArea
-        props={{ parent: props.parent, data: props.data, position: "child" }}
+        props={{ parent: props.parent, data: props.data, position: "CHILD" }}
       >
         <Card
           className={`tree__item tree__leaf${
@@ -178,7 +200,7 @@ function TreeLeaf(props: TreeLeafProps) {
         </Card>
       </TreeLeafDropArea>
       <TreeLeafDropArea
-        props={{ parent: props.parent, data: props.data, position: "bottom" }}
+        props={{ parent: props.parent, data: props.data, position: "AFTER" }}
       />
     </div>
   );
