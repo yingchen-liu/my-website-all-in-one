@@ -166,7 +166,7 @@ export default function SkillTree() {
       ),
     onSuccess: (data, moveNodeDTO) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return updateNodeById(deleteNodeById(existingData, moveNodeDTO.uuid), moveNodeDTO.parentUUID, data.data)
+        return updateNodeChildrenById(deleteNodeById(existingData, moveNodeDTO.uuid), moveNodeDTO.parentUUID, data.data.children)
       });
     },
   });
