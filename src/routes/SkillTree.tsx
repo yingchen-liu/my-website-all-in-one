@@ -48,7 +48,7 @@ type SkillTreeContext = {
       | UseMutationResult<AxiosResponse<any, any>, Error, { node: TreeItem; parentUuid: string }, unknown>
       | undefined;
     updateNodeMutation:
-      | UseMutationResult<AxiosResponse<any, any>, Error, TreeItem, unknown>
+      | UseMutationResult<AxiosResponse<any, any>, Error, { node: TreeItem; isCollpasedChangedToFalse: boolean }, unknown>
       | undefined;
     moveNodeMutation:
       | UseMutationResult<AxiosResponse<any, any>, Error, MoveNodeDTO, unknown>
@@ -143,13 +143,16 @@ export default function SkillTree() {
   });
 
   const updateNodeMutation = useMutation({
-    mutationFn: (node: TreeItem) =>
+    mutationFn: (data: { node: TreeItem; isCollpasedChangedToFalse: boolean }) =>
       axios.put(
-        `http://localhost:8080/nodes/${node.uuid}`,
-        removeFields(node, ["children"])
+        `http://localhost:8080/nodes/${data.node.uuid}`,
+        removeFields(data.node, ["children"])
       ),
-    onSuccess: (data, node) => {
+    onSuccess: (data, {node, isCollpasedChangedToFalse}) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+        if (isCollpasedChangedToFalse) {
+          handleLoadMore(node)
+        }
         return updateNodeById(existingData, node.uuid, data.data);
       });
     },
@@ -217,17 +220,17 @@ export default function SkillTree() {
     uuid: string,
     newNode: TreeItem
   ): TreeItem => {
-    return {
-      ...(uuid === node.uuid ? newNode : node),
-      children: [
-        ...(uuid !== node.uuid
-          ? node.children.map((child: TreeItem) => {
-              return updateNodeById(child, uuid, newNode);
-            })
-          : []),
-        ...(uuid === node.uuid && Array.isArray(newNode.children) ? newNode.children : []),
-      ],
-    };
+    if (uuid === node.uuid) {
+      // Update the node's properties but keep the existing children
+      return { ...newNode, children: node.children };
+    } else if (node.children) {
+      // Recursively check and update children nodes
+      return {
+        ...node,
+        children: node.children.map((child: TreeItem) => updateNodeById(child, uuid, newNode)),
+      };
+    }
+    return node; // Return the node as is if no match and no children
   };
 
   const deleteNodeById = (node: TreeItem, uuid: string): TreeItem => {

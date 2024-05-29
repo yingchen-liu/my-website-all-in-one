@@ -27,8 +27,8 @@ import {
 } from "@blocknote/react";
 import { CodeBlock, insertCode } from "@defensestation/blocknote-code";
 
-const debouncedUpdate = debounce((newNode, updateNodeMutation) => {
-  updateNodeMutation?.mutateAsync(newNode);
+const debouncedUpdate = debounce((newNode, updateNodeMutation, isCollpasedChangedToFalse = false) => {
+  updateNodeMutation?.mutateAsync({node: newNode, isCollpasedChangedToFalse: isCollpasedChangedToFalse});
 }, 3000);
 
 export default function TreeNodeEditor() {
@@ -109,7 +109,7 @@ export default function TreeNodeEditor() {
               isCollapsed: !!data.checked,
             };
             dispatch({ type: "node/update", node: newNode });
-            debouncedUpdate(newNode, treeData.updateNodeMutation);
+            debouncedUpdate(newNode, treeData.updateNodeMutation, !!!data.checked);
           }} />
         {node.children.length === 0 && (
           <ButtonGroup className="tree__node_editor__delete">
