@@ -10,6 +10,12 @@
     .cm-editor {
       height: auto;
     }
+
+    code {
+      background: #e0e1e2;
+      border-radius: 5px;
+      padding: 0 3px 0 3px;
+    }
   }
 
   .tree__node_editor__top {
