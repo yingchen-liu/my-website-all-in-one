@@ -21,17 +21,17 @@
   .tree__node_editor__top {
     display: flex;
 
-    >* {
+    > * {
       margin-right: 10px;
     }
-    >*:last-child {
+    > *:last-child {
       margin-right: 0;
     }
 
     .tree__node_editor__title {
       flex-grow: 1;
     }
-    
+
     .tree__node_editor__subtitle {
       flex-grow: 2;
     }

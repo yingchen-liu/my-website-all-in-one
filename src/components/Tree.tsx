@@ -91,7 +91,10 @@ type TreeLeafProps = TreeLeafDragProps & {
 };
 
 function isDescendant(a: TreeItem, b: TreeItem): boolean {
-  return b.children.filter(child => child.uuid === a.uuid).length > 0 || b.children.filter(child => isDescendant(a, child)).length > 0
+  return (
+    b.children.filter((child) => child.uuid === a.uuid).length > 0 ||
+    b.children.filter((child) => isDescendant(a, child)).length > 0
+  );
 }
 
 function TreeLeafDropArea({
@@ -101,32 +104,34 @@ function TreeLeafDropArea({
   props: TreeLeafDropProps;
   children?: any;
 }) {
-  const { treeData } = useContext(SkillTreeContext)
+  const { treeData } = useContext(SkillTreeContext);
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: "LEAF",
       drop: (item) => {
         switch (props.position) {
-          case 'CHILD':
+          case "CHILD":
             treeData.moveNodeMutation?.mutateAsync({
               parentUUID: props.data.uuid,
-              uuid: item.data.uuid
-            })
+              uuid: item.data.uuid,
+            });
             break;
-          case 'BEFORE':
-          case 'AFTER':
+          case "BEFORE":
+          case "AFTER":
             treeData.moveNodeMutation?.mutateAsync({
               parentUUID: props.parent.uuid,
               uuid: item.data.uuid,
               order: {
                 position: props.position,
-                relatedToUUID: props.data.uuid
-              }
-            })
+                relatedToUUID: props.data.uuid,
+              },
+            });
             break;
           default:
-            throw new Error(`Error dropping node: position "${props.position}" not supported`)
+            throw new Error(
+              `Error dropping node: position "${props.position}" not supported`
+            );
         }
       },
       collect: (monitor) => ({
@@ -135,7 +140,8 @@ function TreeLeafDropArea({
       }),
       canDrop: (item: TreeLeafProps) => {
         if (props.data.uuid === item.data.uuid) return false;
-        if (props.position === "CHILD" && item.parent.uuid === props.data.uuid) return false;
+        if (props.position === "CHILD" && item.parent.uuid === props.data.uuid)
+          return false;
         if (isDescendant(props.data, item.data)) return false;
         return true;
       },
@@ -145,9 +151,9 @@ function TreeLeafDropArea({
 
   return (
     <div
-      className={`tree__leaf__drop_area tree__leaf__drop_area__${
-        props.position.toLowerCase()
-      }${isOver && canDrop ? " tree__leaf__drop_area--is_over" : ""}`}
+      className={`tree__leaf__drop_area tree__leaf__drop_area__${props.position.toLowerCase()}${
+        isOver && canDrop ? " tree__leaf__drop_area--is_over" : ""
+      }`}
       ref={drop}
     >
       {children && children}
@@ -156,7 +162,7 @@ function TreeLeafDropArea({
 }
 
 function TreeLeaf(props: TreeLeafProps) {
-  const {state} = useContext(SkillTreeContext)
+  const { state } = useContext(SkillTreeContext);
 
   return (
     <div>
@@ -177,12 +183,14 @@ function TreeLeaf(props: TreeLeafProps) {
           <CardContent>
             <CardHeader>{props.data.name}</CardHeader>
             {props.data.subtitle && <CardMeta>{props.data.subtitle}</CardMeta>}
-            {state.selectedNodeId === props.data.uuid && <Button
-              className="tree__item__bottom_button"
-              onClick={() => props.onAddSiblingClick(props.parent)}
-            >
-              +
-            </Button>}
+            {state.selectedNodeId === props.data.uuid && (
+              <Button
+                className="tree__item__bottom_button"
+                onClick={() => props.onAddSiblingClick(props.parent)}
+              >
+                +
+              </Button>
+            )}
           </CardContent>
           {props.data.isCollapsed && props.data.children.length === 0 && (
             <Button
@@ -200,14 +208,15 @@ function TreeLeaf(props: TreeLeafProps) {
               &lt;
             </Button>
           )}
-          {state.selectedNodeId === props.data.uuid && (!props.data.isCollapsed || props.data.children.length !== 0) && (
-            <Button
-              className="tree__item__right_button"
-              onClick={() => props.onAddChildClick(props.data)}
-            >
-              +
-            </Button>
-          )}
+          {state.selectedNodeId === props.data.uuid &&
+            (!props.data.isCollapsed || props.data.children.length !== 0) && (
+              <Button
+                className="tree__item__right_button"
+                onClick={() => props.onAddChildClick(props.data)}
+              >
+                +
+              </Button>
+            )}
         </Card>
       </TreeLeafDropArea>
       <TreeLeafDropArea

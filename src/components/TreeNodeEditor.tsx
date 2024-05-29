@@ -26,9 +26,15 @@ import {
 } from "@blocknote/react";
 import { CodeBlock, insertCode } from "@defensestation/blocknote-code";
 
-const debouncedUpdate = debounce((newNode, updateNodeMutation, isCollpasedChangedToFalse = false) => {
-  updateNodeMutation?.mutateAsync({node: newNode, isCollpasedChangedToFalse: isCollpasedChangedToFalse});
-}, 3000);
+const debouncedUpdate = debounce(
+  (newNode, updateNodeMutation, isCollpasedChangedToFalse = false) => {
+    updateNodeMutation?.mutateAsync({
+      node: newNode,
+      isCollpasedChangedToFalse: isCollpasedChangedToFalse,
+    });
+  },
+  3000
+);
 
 export default function TreeNodeEditor() {
   const [isDeleteConfirmButtonsVisible, toggleDeleteConfirmButtonsVisibility] =
@@ -48,11 +54,11 @@ export default function TreeNodeEditor() {
       },
     });
 
-    let content = null
+    let content = null;
     if (node.content !== undefined) {
-      content = JSON.parse(node.content)
+      content = JSON.parse(node.content);
       // Blocknote doesn't like empty array
-      content = Array.isArray(content) && content.length === 0 ? null : content
+      content = Array.isArray(content) && content.length === 0 ? null : content;
     }
 
     return BlockNoteEditor.create({
@@ -102,14 +108,22 @@ export default function TreeNodeEditor() {
             debouncedUpdate(newNode, treeData.updateNodeMutation);
           }}
         />
-        <Checkbox label='Collapse' checked={node.isCollapsed} onChange={(_, data) => {
+        <Checkbox
+          label="Collapse"
+          checked={node.isCollapsed}
+          onChange={(_, data) => {
             const newNode = {
               ...node,
               isCollapsed: !!data.checked,
             };
             dispatch({ type: "node/update", node: newNode });
-            debouncedUpdate(newNode, treeData.updateNodeMutation, !!!data.checked);
-          }} />
+            debouncedUpdate(
+              newNode,
+              treeData.updateNodeMutation,
+              !!!data.checked
+            );
+          }}
+        />
         {node.children.length === 0 && (
           <ButtonGroup className="tree__node_editor__delete">
             {isDeleteConfirmButtonsVisible && (

@@ -35,7 +35,11 @@ type Action =
   | { type: "node/update"; node: TreeItem }
   | { type: "node/deselect" };
 
-type MoveNodeDTO = { uuid: string; parentUUID: string; order?: { position: "BEFORE" | "AFTER"; relatedToUUID: string; }}
+type MoveNodeDTO = {
+  uuid: string;
+  parentUUID: string;
+  order?: { position: "BEFORE" | "AFTER"; relatedToUUID: string };
+};
 
 type SkillTreeContext = {
   state: State;
@@ -45,10 +49,20 @@ type SkillTreeContext = {
     isPending: boolean;
     isSuccess: boolean;
     createNodeMutation:
-      | UseMutationResult<AxiosResponse<any, any>, Error, { node: TreeItem; parentUuid: string }, unknown>
+      | UseMutationResult<
+          AxiosResponse<any, any>,
+          Error,
+          { node: TreeItem; parentUuid: string },
+          unknown
+        >
       | undefined;
     updateNodeMutation:
-      | UseMutationResult<AxiosResponse<any, any>, Error, { node: TreeItem; isCollpasedChangedToFalse: boolean }, unknown>
+      | UseMutationResult<
+          AxiosResponse<any, any>,
+          Error,
+          { node: TreeItem; isCollpasedChangedToFalse: boolean },
+          unknown
+        >
       | undefined;
     moveNodeMutation:
       | UseMutationResult<AxiosResponse<any, any>, Error, MoveNodeDTO, unknown>
@@ -104,7 +118,7 @@ export const SkillTreeContext = createContext<SkillTreeContext>({
     deleteNodeMutation: undefined,
   },
   handleLoadMore: () => undefined,
-  handleCollapse: () => undefined
+  handleCollapse: () => undefined,
 });
 
 export default function SkillTree() {
@@ -143,15 +157,18 @@ export default function SkillTree() {
   });
 
   const updateNodeMutation = useMutation({
-    mutationFn: (data: { node: TreeItem; isCollpasedChangedToFalse: boolean }) =>
+    mutationFn: (data: {
+      node: TreeItem;
+      isCollpasedChangedToFalse: boolean;
+    }) =>
       axios.put(
         `http://localhost:8080/nodes/${data.node.uuid}`,
         removeFields(data.node, ["children"])
       ),
-    onSuccess: (data, {node, isCollpasedChangedToFalse}) => {
+    onSuccess: (data, { node, isCollpasedChangedToFalse }) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
         if (isCollpasedChangedToFalse) {
-          handleLoadMore(node)
+          handleLoadMore(node);
         }
         return updateNodeById(existingData, node.uuid, data.data);
       });
@@ -166,7 +183,11 @@ export default function SkillTree() {
       ),
     onSuccess: (data, moveNodeDTO) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return updateNodeChildrenById(deleteNodeById(existingData, moveNodeDTO.uuid), moveNodeDTO.parentUUID, data.data.children)
+        return updateNodeChildrenById(
+          deleteNodeById(existingData, moveNodeDTO.uuid),
+          moveNodeDTO.parentUUID,
+          data.data.children
+        );
       });
     },
   });
@@ -227,7 +248,9 @@ export default function SkillTree() {
       // Recursively check and update children nodes
       return {
         ...node,
-        children: node.children.map((child: TreeItem) => updateNodeById(child, uuid, newNode)),
+        children: node.children.map((child: TreeItem) =>
+          updateNodeById(child, uuid, newNode)
+        ),
       };
     }
     return node; // Return the node as is if no match and no children

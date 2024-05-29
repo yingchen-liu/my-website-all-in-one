@@ -6,7 +6,7 @@ import {
   MenuItemProps,
   Segment,
 } from "semantic-ui-react";
-import './HeaderMenu.css'
+import "./HeaderMenu.css";
 
 function HeaderMenu({ activeItem }: { activeItem: string }) {
   const navigate = useNavigate();

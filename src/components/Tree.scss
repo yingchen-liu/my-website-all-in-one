@@ -35,8 +35,7 @@ $tree-dnd-placeholder-width: 4px;
   &__item.ui.card {
     width: auto;
     position: relative;
-    margin: 0 0 0
-      $tree-branch-size * 2;
+    margin: 0 0 0 $tree-branch-size * 2;
   }
   a.tree__item.ui.card:hover,
   a.tree__item.tree__item--active.ui.card {
@@ -124,7 +123,8 @@ $tree-dnd-placeholder-width: 4px;
     opacity: 0.7;
   }
 
-  &__leaf__drop_area__before.tree__leaf__drop_area, &__leaf__drop_area__after.tree__leaf__drop_area {
+  &__leaf__drop_area__before.tree__leaf__drop_area,
+  &__leaf__drop_area__after.tree__leaf__drop_area {
     margin-left: calc($tree-branch-size * 2);
     height: calc($tree-leaf-spacing / 2);
   }
