@@ -156,6 +156,8 @@ function TreeLeafDropArea({
 }
 
 function TreeLeaf(props: TreeLeafProps) {
+  const {state} = useContext(SkillTreeContext)
+
   return (
     <div>
       <TreeLeafDropArea
@@ -175,12 +177,12 @@ function TreeLeaf(props: TreeLeafProps) {
           <CardContent>
             <CardHeader>{props.data.name}</CardHeader>
             {props.data.subtitle && <CardMeta>{props.data.subtitle}</CardMeta>}
-            <Button
-              className="tree__item__bottom_button--show_if_selected"
+            {state.selectedNodeId === props.data.uuid && <Button
+              className="tree__item__bottom_button"
               onClick={() => props.onAddSiblingClick(props.parent)}
             >
               +
-            </Button>
+            </Button>}
           </CardContent>
           {props.data.isCollapsed && props.data.children.length === 0 && (
             <Button
@@ -198,9 +200,9 @@ function TreeLeaf(props: TreeLeafProps) {
               &lt;
             </Button>
           )}
-          {(!props.data.isCollapsed || props.data.children.length !== 0) && (
+          {state.selectedNodeId === props.data.uuid && (!props.data.isCollapsed || props.data.children.length !== 0) && (
             <Button
-              className="tree__item__right_button--show_if_selected"
+              className="tree__item__right_button"
               onClick={() => props.onAddChildClick(props.data)}
             >
               +

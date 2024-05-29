@@ -91,32 +91,20 @@ $tree-dnd-placeholder-width: 4px;
   }
 
   &__item {
-    .tree__item__bottom_button--show_if_selected {
-      display: none;
-    }
-    .tree__item__right_button--show_if_selected {
-      display: none;
-    }
-
-    .ui.button.tree__item__bottom_button,
-    &--active.ui.card .tree__item__bottom_button--show_if_selected {
-      display: block;
+    .ui.button.tree__item__bottom_button {
       padding: 0;
       margin: 0 -12px -14px -14px;
       border-radius: 0 0 0 0.28571429rem !important;
     }
 
-    .ui.button.tree__item__right_button,
-    &--active.ui.card .tree__item__right_button--show_if_selected {
-      display: block;
+    .ui.button.tree__item__right_button {
       padding: 0;
       border-radius: 0 !important;
       width: 14px;
       margin-right: 2px;
     }
 
-    .ui.button.tree__item__right_button:last-child,
-    &--active.ui.card .tree__item__right_button--show_if_selected:last-child {
+    .ui.button.tree__item__right_button:last-child {
       border-radius: 0 0.28571429rem 0.28571429rem 0 !important;
       margin-right: 0;
     }

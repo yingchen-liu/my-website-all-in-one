@@ -5,7 +5,6 @@ import {
   Button,
   ButtonOr,
   ButtonGroup,
-  FormCheckbox,
   Checkbox,
 } from "semantic-ui-react";
 import { SkillTreeContext } from "../routes/SkillTree";
