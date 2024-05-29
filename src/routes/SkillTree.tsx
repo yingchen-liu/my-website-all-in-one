@@ -223,7 +223,7 @@ export default function SkillTree() {
               return updateNodeById(child, uuid, newNode);
             })
           : []),
-        ...(uuid === node.uuid ? newNode.children : []),
+        ...(uuid === node.uuid && Array.isArray(newNode.children) ? newNode.children : []),
       ],
     };
   };
