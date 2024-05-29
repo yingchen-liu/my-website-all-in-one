@@ -87,6 +87,7 @@ type TreeLeafProps = TreeLeafDragProps & {
   onAddChildClick: (node: TreeItem) => void;
   onAddSiblingClick: (parent: TreeItem) => void;
   onLoadMoreClick: (node: TreeItem) => void;
+  onCollapseClick: (node: TreeItem) => void;
 };
 
 function isDescendant(a: TreeItem, b: TreeItem): boolean {
@@ -187,6 +188,14 @@ function TreeLeaf(props: TreeLeafProps) {
               onClick={() => props.onLoadMoreClick(props.data)}
             >
               &gt;
+            </Button>
+          )}
+          {props.data.isCollapsed && props.data.children.length > 0 && (
+            <Button
+              className="tree__item__right_button"
+              onClick={() => props.onCollapseClick(props.data)}
+            >
+              &lt;
             </Button>
           )}
           {(!props.data.isCollapsed || props.data.children.length !== 0) && (

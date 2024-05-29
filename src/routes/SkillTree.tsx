@@ -58,6 +58,7 @@ type SkillTreeContext = {
       | undefined;
   };
   handleLoadMore: (node: TreeItem) => void;
+  handleCollapse: (node: TreeItem) => void;
 };
 
 function reducer(state: State, action: Action): State {
@@ -103,6 +104,7 @@ export const SkillTreeContext = createContext<SkillTreeContext>({
     deleteNodeMutation: undefined,
   },
   handleLoadMore: () => undefined,
+  handleCollapse: () => undefined
 });
 
 export default function SkillTree() {
@@ -248,6 +250,12 @@ export default function SkillTree() {
     });
   }
 
+  function handleCollapse(node: TreeItem) {
+    queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+      return updateNodeChildrenById(existingData, node.uuid, []);
+    });
+  }
+
   return (
     <>
       <div className="container--full-screen">
@@ -267,6 +275,7 @@ export default function SkillTree() {
               deleteNodeMutation,
             },
             handleLoadMore,
+            handleCollapse,
           }}
         >
           <TreeView />

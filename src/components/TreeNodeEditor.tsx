@@ -5,6 +5,8 @@ import {
   Button,
   ButtonOr,
   ButtonGroup,
+  FormCheckbox,
+  Checkbox,
 } from "semantic-ui-react";
 import { SkillTreeContext } from "../routes/SkillTree";
 import debounce from "lodash/debounce";
@@ -101,6 +103,14 @@ export default function TreeNodeEditor() {
             debouncedUpdate(newNode, treeData.updateNodeMutation);
           }}
         />
+        <Checkbox label='Collapse' checked={node.isCollapsed} onChange={(_, data) => {
+            const newNode = {
+              ...node,
+              isCollapsed: !!data.checked,
+            };
+            dispatch({ type: "node/update", node: newNode });
+            debouncedUpdate(newNode, treeData.updateNodeMutation);
+          }} />
         {node.children.length === 0 && (
           <ButtonGroup className="tree__node_editor__delete">
             {isDeleteConfirmButtonsVisible && (

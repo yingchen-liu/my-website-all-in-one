@@ -23,7 +23,8 @@ function populateChildren(
   onClick: (node: TreeItem, parent: TreeItem) => void,
   onAddChildClick: (node: TreeItem) => void,
   onAddSiblingClick: (node: TreeItem) => void,
-  onLoadMoreClick: (node: TreeItem) => void
+  onLoadMoreClick: (node: TreeItem) => void,
+  onCollapseClick: (node: TreeItem) => void
 ) {
   return children.map((child) => {
     return populateChild(
@@ -33,7 +34,8 @@ function populateChildren(
       onClick,
       onAddChildClick,
       onAddSiblingClick,
-      onLoadMoreClick
+      onLoadMoreClick,
+      onCollapseClick
     );
   });
 }
@@ -75,6 +77,7 @@ const TreeLeafDragLayer: FC = () => {
             () => {},
             () => {},
             () => {},
+            () => {},
             () => {}
           )}
         </div>
@@ -90,7 +93,8 @@ function populateChild(
   onClick: (node: TreeItem, parent: TreeItem) => void,
   onAddChildClick: (node: TreeItem) => void,
   onAddSiblingClick: (node: TreeItem) => void,
-  onLoadMoreClick: (node: TreeItem) => void
+  onLoadMoreClick: (node: TreeItem) => void,
+  onCollapseClick: (node: TreeItem) => void
 ) {
   return (
     <TreeHierarchy
@@ -108,6 +112,7 @@ function populateChild(
         onAddChildClick={onAddChildClick}
         onAddSiblingClick={onAddSiblingClick}
         onLoadMoreClick={onLoadMoreClick}
+        onCollapseClick={onCollapseClick}
       />
 
       {child.children && (
@@ -119,7 +124,8 @@ function populateChild(
             onClick,
             onAddChildClick,
             onAddSiblingClick,
-            onLoadMoreClick
+            onLoadMoreClick,
+            onCollapseClick
           )}
         </TreeChildren>
       )}
@@ -128,7 +134,7 @@ function populateChild(
 }
 
 export default function TreeView() {
-  const { treeData, state, dispatch, handleLoadMore } =
+  const { treeData, state, dispatch, handleLoadMore, handleCollapse } =
     useContext(SkillTreeContext);
   const { data, isPending, isSuccess } = treeData;
 
@@ -176,7 +182,8 @@ export default function TreeView() {
                 handleClick,
                 handleAddChild,
                 handleAddChild,
-                handleLoadMore
+                handleLoadMore,
+                handleCollapse
               )}
             </TreeChildren>
           </Tree>
