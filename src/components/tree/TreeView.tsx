@@ -1,20 +1,15 @@
 import { Loader } from "semantic-ui-react";
-import { Tree, TreeChildren, TreeHierarchy, TreeLeaf, TreeRoot } from "./Tree";
-import HorizontalScroll from "./HorizontalScroll";
-import { SkillTreeContext, TreeItem } from "../routes/SkillTree";
-import { CSSProperties, FC, useContext, useEffect } from "react";
+import { Tree, TreeLeaf, TreeRoot } from "./Tree";
+import HorizontalScroll from "../HorizontalScroll";
+import { useContext, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { uniqueNamesGenerator, colors, animals } from "unique-names-generator";
-import { DndProvider, XYCoord, useDragLayer } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-
-const layerStyles: CSSProperties = {
-  position: "fixed",
-  pointerEvents: "none",
-  zIndex: 100,
-  left: 0,
-  top: 0,
-};
+import TreeLeafDragLayer from "./dnd/TreeLeafDragLayer";
+import { TreeItem } from "../../types/skillTree";
+import { SkillTreeContext } from "../../routes/SkillTreeContext";
+import { TreeChildren, TreeHierarchy } from "./TreeHierarchy";
 
 function populateChildren(
   parent: TreeItem,
@@ -40,53 +35,7 @@ function populateChildren(
   });
 }
 
-const TreeLeafDragLayer: FC = () => {
-  const { item, initialOffset, currentOffset } = useDragLayer((monitor) => ({
-    item: monitor.getItem(),
-    initialOffset: monitor.getInitialSourceClientOffset(),
-    currentOffset: monitor.getSourceClientOffset(),
-  }));
-
-  function getItemStyles(
-    initialOffset: XYCoord | null,
-    currentOffset: XYCoord | null
-  ) {
-    if (!initialOffset || !currentOffset) {
-      return {
-        display: "none",
-      };
-    }
-
-    let { x, y } = currentOffset;
-
-    const transform = `translate(${x}px, ${y}px)`;
-    return {
-      transform,
-      WebkitTransform: transform,
-    };
-  }
-
-  if (item !== null) {
-    return (
-      <div className="tree__leaf__drag_container" style={layerStyles}>
-        <div style={getItemStyles(initialOffset, currentOffset)}>
-          {populateChild(
-            item.parent,
-            item.data,
-            null,
-            () => {},
-            () => {},
-            () => {},
-            () => {},
-            () => {}
-          )}
-        </div>
-      </div>
-    );
-  }
-};
-
-function populateChild(
+export function populateChild(
   parent: TreeItem,
   child: TreeItem,
   activeItem: TreeItem | null,

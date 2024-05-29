@@ -7,7 +7,6 @@ import {
   ButtonGroup,
   Checkbox,
 } from "semantic-ui-react";
-import { SkillTreeContext } from "../routes/SkillTree";
 import debounce from "lodash/debounce";
 import "./TreeNodeEditor.css";
 import { useContext, useMemo, useState } from "react";
@@ -25,6 +24,7 @@ import {
   getDefaultReactSlashMenuItems,
 } from "@blocknote/react";
 import { CodeBlock, insertCode } from "@defensestation/blocknote-code";
+import { SkillTreeContext } from "../../routes/SkillTreeContext";
 
 const debouncedUpdate = debounce(
   (newNode, updateNodeMutation, isCollpasedChangedToFalse = false) => {
