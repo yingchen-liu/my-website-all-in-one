@@ -37,9 +37,16 @@ const debouncedUpdate = debounce(
 );
 
 export default function TreeNodeEditor() {
+  const context = useContext(SkillTreeContext);
+
+  if (!context) {
+    throw new Error('TreeNodeEditor must be used within a SkillTreeContext');
+  }
+
+  const { treeData, dispatch, state } = context
+
   const [isDeleteConfirmButtonsVisible, toggleDeleteConfirmButtonsVisibility] =
     useState(false);
-  const { treeData, dispatch, state } = useContext(SkillTreeContext);
 
   if (state.selectedNode === null) {
     throw new Error("Error rendering editor: No node is selected");

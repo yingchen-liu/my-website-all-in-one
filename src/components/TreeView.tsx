@@ -2,7 +2,7 @@ import { Loader } from "semantic-ui-react";
 import { Tree, TreeChildren, TreeHierarchy, TreeLeaf, TreeRoot } from "./Tree";
 import HorizontalScroll from "./HorizontalScroll";
 import { SkillTreeContext, TreeItem } from "../routes/SkillTree";
-import { CSSProperties, FC, useContext } from "react";
+import { CSSProperties, FC, useContext, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { uniqueNamesGenerator, colors, animals } from "unique-names-generator";
 import { DndProvider, XYCoord, useDragLayer } from "react-dnd";
@@ -134,9 +134,22 @@ function populateChild(
 }
 
 export default function TreeView() {
-  const { treeData, state, dispatch, handleLoadMore, handleCollapse } =
-    useContext(SkillTreeContext);
+  const context = useContext(SkillTreeContext);
+
+  if (!context) {
+    throw new Error('TreeView must be used within a SkillTreeContext');
+  }
+
+  const { treeData, state, dispatch, handleLoadMore, handleCollapse, selectedLeafRef } = context
   const { data, isPending, isSuccess } = treeData;
+
+  useEffect(() => {
+    if (state.selectedNodeId && selectedLeafRef.current) {
+      setTimeout(() => {
+        selectedLeafRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 500)
+    }
+  }, [state.selectedNodeId]);
 
   function handleClick(node: TreeItem, parent: TreeItem) {
     console.log(JSON.stringify({ node, parent }));

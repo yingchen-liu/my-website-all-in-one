@@ -104,7 +104,13 @@ function TreeLeafDropArea({
   props: TreeLeafDropProps;
   children?: any;
 }) {
-  const { treeData } = useContext(SkillTreeContext);
+  const context = useContext(SkillTreeContext);
+
+  if (!context) {
+    throw new Error("TreeLeafDropArea must be used within a SkillTreeContext");
+  }
+
+  const { treeData } = context;
 
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
@@ -162,10 +168,21 @@ function TreeLeafDropArea({
 }
 
 function TreeLeaf(props: TreeLeafProps) {
-  const { state } = useContext(SkillTreeContext);
+  const context = useContext(SkillTreeContext);
+
+  if (!context) {
+    throw new Error("TreeLeaf must be used within a SkillTreeContext");
+  }
+
+  const { state, selectedLeafRef } = context;
 
   return (
-    <div>
+    <div
+      ref={(ref) => {
+        if (state.selectedNodeId === props.data.uuid)
+          selectedLeafRef.current = ref;
+      }}
+    >
       <TreeLeafDropArea
         props={{ parent: props.parent, data: props.data, position: "BEFORE" }}
       />

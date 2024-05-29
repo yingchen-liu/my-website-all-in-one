@@ -10,7 +10,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
-import { createContext, useReducer } from "react";
+import { createContext, useEffect, useReducer, useRef } from "react";
 import TreeView from "../components/TreeView";
 import TreeNodeEditor from "../components/TreeNodeEditor";
 
@@ -43,6 +43,7 @@ type MoveNodeDTO = {
 
 type SkillTreeContext = {
   state: State;
+  selectedLeafRef: React.MutableRefObject<any>;
   dispatch: React.Dispatch<Action>;
   treeData: {
     data: TreeItem | undefined;
@@ -105,21 +106,7 @@ const initialState: State = {
   selectedNodeParent: null,
 };
 
-export const SkillTreeContext = createContext<SkillTreeContext>({
-  state: initialState,
-  dispatch: () => undefined,
-  treeData: {
-    data: undefined,
-    isPending: true,
-    isSuccess: false,
-    createNodeMutation: undefined,
-    updateNodeMutation: undefined,
-    moveNodeMutation: undefined,
-    deleteNodeMutation: undefined,
-  },
-  handleLoadMore: () => undefined,
-  handleCollapse: () => undefined,
-});
+export const SkillTreeContext = createContext<SkillTreeContext | undefined>(undefined);
 
 export default function SkillTree() {
   const [state, dispatch] = useReducer(reducer, initialState, undefined);
@@ -290,6 +277,7 @@ export default function SkillTree() {
         <SkillTreeContext.Provider
           value={{
             state,
+            selectedLeafRef: useRef(null),
             dispatch,
             treeData: {
               data,
