@@ -6,7 +6,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import TreeView from "../components/tree/TreeView";
 import TreeNodeEditor from "../components/tree/TreeNodeEditor";
 import {
-  createNode,
+  createChildNode,
+  createNodeAfter,
   deleteNode,
   fetchNodeChildren,
   fetchRootNode,
@@ -14,7 +15,8 @@ import {
   updateNode,
 } from "../services/skillTreeService";
 import {
-  addNode,
+  addChildNode,
+  addNodeAfter,
   deleteNodeById,
   updateNodeById,
   updateNodeChildrenById,
@@ -31,17 +33,33 @@ export default function SkillTree() {
     queryFn: fetchRootNode,
   });
 
-  const createNodeMutation = useMutation({
+  const createChildNodeMutation = useMutation({
     mutationFn: ({
       node,
-      parentUuid,
+      parentUUID,
     }: {
       node: TreeItem;
-      parentUuid: string;
-    }) => createNode(node, parentUuid),
+      parentUUID: string;
+    }) => createChildNode(node, parentUUID),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return addNode(existingData, variables.parentUuid, data.data);
+        return addChildNode(existingData, variables.parentUUID, data.data);
+      });
+    },
+  });
+
+  const createNodeAfterMutation = useMutation({
+    mutationFn: ({
+      node,
+      previousNodeUUID,
+    }: {
+      node: TreeItem;
+      previousNodeUUID: string;
+      parentUUID: string;
+    }) => createNodeAfter(node, previousNodeUUID),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+        return addNodeAfter(existingData, variables.previousNodeUUID, data.data);
       });
     },
   });
@@ -112,7 +130,8 @@ export default function SkillTree() {
               data,
               isPending,
               isSuccess,
-              createNodeMutation,
+              createChildNodeMutation,
+              createNodeAfterMutation,
               updateNodeMutation,
               moveNodeMutation,
               deleteNodeMutation,

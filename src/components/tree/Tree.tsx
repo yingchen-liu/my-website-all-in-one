@@ -15,8 +15,8 @@ import { TreeLeafDropArea } from "./dnd/TreeLeafDropArea";
 export type TreeLeafProps = TreeLeafDragProps & {
   isActive: boolean;
   onClick: (node: TreeItem, parent: TreeItem) => void;
-  onAddChildClick: (node: TreeItem) => void;
-  onAddSiblingClick: (parent: TreeItem) => void;
+  onAddChildClick: (parentNode: TreeItem) => void;
+  onAddAfterClick: (previousNode: TreeItem, parentNode: TreeItem) => void;
   onLoadMoreClick: (node: TreeItem) => void;
   onCollapseClick: (node: TreeItem) => void;
 };
@@ -77,7 +77,7 @@ function TreeLeaf(props: TreeLeafProps) {
             {state.selectedNodeId === props.data.uuid && (
               <Button
                 className="tree__item__bottom_button"
-                onClick={() => props.onAddSiblingClick(props.parent)}
+                onClick={() => props.onAddAfterClick(props.data, props.parent)}
               >
                 +
               </Button>

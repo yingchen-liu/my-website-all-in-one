@@ -16,8 +16,8 @@ function populateChildren(
   children: TreeItem[],
   activeItem: TreeItem | null,
   onClick: (node: TreeItem, parent: TreeItem) => void,
-  onAddChildClick: (node: TreeItem) => void,
-  onAddSiblingClick: (node: TreeItem) => void,
+  onAddChildClick: (parentNode: TreeItem) => void,
+  onAddAfterClick: (previousNode: TreeItem, parentNode: TreeItem) => void,
   onLoadMoreClick: (node: TreeItem) => void,
   onCollapseClick: (node: TreeItem) => void
 ) {
@@ -28,7 +28,7 @@ function populateChildren(
       activeItem,
       onClick,
       onAddChildClick,
-      onAddSiblingClick,
+      onAddAfterClick,
       onLoadMoreClick,
       onCollapseClick
     );
@@ -40,8 +40,8 @@ export function populateChild(
   child: TreeItem,
   activeItem: TreeItem | null,
   onClick: (node: TreeItem, parent: TreeItem) => void,
-  onAddChildClick: (node: TreeItem) => void,
-  onAddSiblingClick: (node: TreeItem) => void,
+  onAddChildClick: (parentNode: TreeItem) => void,
+  onAddAfterClick: (previousNode: TreeItem, parentNode: TreeItem) => void,
   onLoadMoreClick: (node: TreeItem) => void,
   onCollapseClick: (node: TreeItem) => void
 ) {
@@ -59,7 +59,7 @@ export function populateChild(
         isActive={activeItem !== null && child.uuid === activeItem.uuid}
         onClick={onClick}
         onAddChildClick={onAddChildClick}
-        onAddSiblingClick={onAddSiblingClick}
+        onAddAfterClick={onAddAfterClick}
         onLoadMoreClick={onLoadMoreClick}
         onCollapseClick={onCollapseClick}
       />
@@ -72,7 +72,7 @@ export function populateChild(
             activeItem,
             onClick,
             onAddChildClick,
-            onAddSiblingClick,
+            onAddAfterClick,
             onLoadMoreClick,
             onCollapseClick
           )}
@@ -119,12 +119,21 @@ export default function TreeView() {
     };
   }
 
-  function handleAddChild(node: TreeItem) {
+  function handleAddChild(parentNode: TreeItem) {
     const newNode = createNewNode();
-    treeData.createNodeMutation
-      ?.mutateAsync({ node: newNode, parentUuid: node.uuid })
+    treeData.createChildNodeMutation
+      ?.mutateAsync({ node: newNode, parentUUID: parentNode.uuid })
       .then(() => {
-        handleClick(newNode, node);
+        handleClick(newNode, parentNode);
+      });
+  }
+
+  function handleAddAfter(previousNode: TreeItem, parentNode: TreeItem) {
+    const newNode = createNewNode();
+    treeData.createNodeAfterMutation
+      ?.mutateAsync({ node: newNode, previousNodeUUID: previousNode.uuid, parentUUID: parentNode.uuid })
+      .then(() => {
+        handleClick(newNode, parentNode);
       });
   }
 
@@ -143,7 +152,7 @@ export default function TreeView() {
                 state.selectedNode,
                 handleClick,
                 handleAddChild,
-                handleAddChild,
+                handleAddAfter,
                 handleLoadMore,
                 handleCollapse
               )}

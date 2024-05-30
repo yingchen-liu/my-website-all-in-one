@@ -1,17 +1,37 @@
 import { TreeItem } from "../../types/skillTree";
 
-export const addNode = (
+export const addChildNode = (
   node: TreeItem,
-  parentUuid: string,
+  parentUUID: string,
   newNode: TreeItem
 ): TreeItem => {
   return {
     ...node,
     children: [
       ...node.children.map((child: TreeItem) => {
-        return addNode(child, parentUuid, newNode);
+        return addChildNode(child, parentUUID, newNode);
       }),
-      ...(parentUuid === node.uuid ? [newNode] : []),
+      ...(parentUUID === node.uuid ? [newNode] : []),
+    ],
+  };
+};
+
+export const addNodeAfter = (
+  node: TreeItem,
+  previousNodeUUID: string,
+  newNode: TreeItem
+): TreeItem => {
+  const previousNodeIndex = node.children.findIndex(child => child.uuid === previousNodeUUID)
+  let children = node.children
+  if (previousNodeIndex >= 0) {
+    children.splice(previousNodeIndex + 1, 0, newNode)
+  }
+  return {
+    ...node,
+    children: [
+      ...children.map((child: TreeItem) => {
+        return addNodeAfter(child, previousNodeUUID, newNode);
+      }),
     ],
   };
 };

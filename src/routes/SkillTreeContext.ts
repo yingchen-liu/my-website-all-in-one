@@ -1,10 +1,55 @@
 import { createContext, useReducer, useRef } from "react";
-import { State, Action, SkillTreeContextType } from "../types/skillTree";
+import { State, Action, TreeItem, MoveNodeDTO } from "../types/skillTree";
+import { AxiosResponse } from "axios";
+import { UseMutationResult } from "@tanstack/react-query";
 
 const initialState: State = {
   selectedNodeId: null,
   selectedNode: null,
   selectedNodeParent: null,
+};
+
+export type SkillTreeContextType = {
+  state: State;
+  selectedLeafRef: React.MutableRefObject<any>;
+  dispatch: React.Dispatch<Action>;
+  treeData: {
+    data: TreeItem | undefined;
+    isPending: boolean;
+    isSuccess: boolean;
+    createChildNodeMutation: UseMutationResult<
+      AxiosResponse<any, any>,
+      Error,
+      { node: TreeItem; parentUUID: string },
+      unknown
+    >;
+    createNodeAfterMutation: UseMutationResult<
+      AxiosResponse<any, any>,
+      Error,
+      { node: TreeItem; previousNodeUUID: string; parentUUID: string },
+      unknown
+    >;
+    updateNodeMutation: UseMutationResult<
+      AxiosResponse<any, any>,
+      Error,
+      { node: TreeItem; isCollpasedChangedToFalse: boolean },
+      unknown
+    >;
+    moveNodeMutation: UseMutationResult<
+      AxiosResponse<any, any>,
+      Error,
+      MoveNodeDTO,
+      unknown
+    >;
+    deleteNodeMutation: UseMutationResult<
+      AxiosResponse<any, any>,
+      Error,
+      string,
+      unknown
+    >;
+  };
+  handleLoadMore: (node: TreeItem) => void;
+  handleCollapse: (node: TreeItem) => void;
 };
 
 function reducer(state: State, action: Action): State {

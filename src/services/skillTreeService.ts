@@ -8,11 +8,18 @@ export const fetchRootNode = async (): Promise<TreeItem> => {
   return response.data;
 };
 
-export const createNode = async (
+export const createChildNode = async (
   node: TreeItem,
-  parentUuid: string
+  parentUUID: string
 ): Promise<AxiosResponse<any>> => {
-  return axios.post(`${API_BASE_URL}/${parentUuid}`, node);
+  return axios.post(`${API_BASE_URL}/${parentUUID}`, node);
+};
+
+export const createNodeAfter = async (
+  node: TreeItem,
+  previousNodeUUID: string
+): Promise<AxiosResponse<any>> => {
+  return axios.post(`${API_BASE_URL}/${previousNodeUUID}/after`, node);
 };
 
 export const updateNode = async (
