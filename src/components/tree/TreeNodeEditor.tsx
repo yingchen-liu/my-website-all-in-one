@@ -22,6 +22,15 @@ import {
 import {
   SuggestionMenuController,
   getDefaultReactSlashMenuItems,
+  BasicTextStyleButton,
+  BlockTypeSelect,
+  ColorStyleButton,
+  CreateLinkButton,
+  FormattingToolbar,
+  FormattingToolbarController,
+  NestBlockButton,
+  TextAlignButton,
+  UnnestBlockButton,
 } from "@blocknote/react";
 import { CodeBlock, insertCode } from "@defensestation/blocknote-code";
 import { SkillTreeContext } from "../../routes/SkillTreeContext";
@@ -40,10 +49,10 @@ export default function TreeNodeEditor() {
   const context = useContext(SkillTreeContext);
 
   if (!context) {
-    throw new Error('TreeNodeEditor must be used within a SkillTreeContext');
+    throw new Error("TreeNodeEditor must be used within a SkillTreeContext");
   }
 
-  const { treeData, dispatch, state } = context
+  const { treeData, dispatch, state } = context;
 
   const [isDeleteConfirmButtonsVisible, toggleDeleteConfirmButtonsVisibility] =
     useState(false);
@@ -152,6 +161,7 @@ export default function TreeNodeEditor() {
       <Segment className="tree__node_editor__rich_text_editor__container">
         <BlockNoteView
           editor={editor}
+          formattingToolbar={false}
           slashMenu={false}
           theme="light"
           onChange={() => {
@@ -163,6 +173,55 @@ export default function TreeNodeEditor() {
             debouncedUpdate(newNode, treeData.updateNodeMutation);
           }}
         >
+          <FormattingToolbarController
+            formattingToolbar={() => (
+              <FormattingToolbar>
+                <BlockTypeSelect key={"blockTypeSelect"} />
+
+                <BasicTextStyleButton
+                  basicTextStyle={"bold"}
+                  key={"boldStyleButton"}
+                />
+                <BasicTextStyleButton
+                  basicTextStyle={"italic"}
+                  key={"italicStyleButton"}
+                />
+                <BasicTextStyleButton
+                  basicTextStyle={"underline"}
+                  key={"underlineStyleButton"}
+                />
+                <BasicTextStyleButton
+                  basicTextStyle={"strike"}
+                  key={"strikeStyleButton"}
+                />
+                {/* Extra button to toggle code styles */}
+                <BasicTextStyleButton
+                  key={"codeStyleButton"}
+                  basicTextStyle={"code"}
+                />
+
+                <TextAlignButton
+                  textAlignment={"left"}
+                  key={"textAlignLeftButton"}
+                />
+                <TextAlignButton
+                  textAlignment={"center"}
+                  key={"textAlignCenterButton"}
+                />
+                <TextAlignButton
+                  textAlignment={"right"}
+                  key={"textAlignRightButton"}
+                />
+
+                <ColorStyleButton key={"colorStyleButton"} />
+
+                <NestBlockButton key={"nestBlockButton"} />
+                <UnnestBlockButton key={"unnestBlockButton"} />
+
+                <CreateLinkButton key={"createLinkButton"} />
+              </FormattingToolbar>
+            )}
+          />
           <SuggestionMenuController
             triggerCharacter={"/"}
             getItems={async (query) =>
