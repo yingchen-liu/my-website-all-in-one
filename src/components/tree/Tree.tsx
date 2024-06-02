@@ -4,6 +4,7 @@ import {
   CardContent,
   CardHeader,
   CardMeta,
+  Progress,
 } from "semantic-ui-react";
 import "./Tree.scss";
 import { useContext } from "react";
@@ -108,6 +109,9 @@ function TreeLeaf(props: TreeLeafProps) {
                 +
               </Button>
             )}
+          {props.data.isLoading && (
+            <Progress percent={100} indicating attached="bottom" />
+          )}
         </Card>
       </TreeLeafDropArea>
       <TreeLeafDropArea

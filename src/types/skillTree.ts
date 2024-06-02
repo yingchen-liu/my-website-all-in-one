@@ -1,4 +1,5 @@
 export type TreeItem = {
+  isLoading: boolean;
   uuid: string;
   name: string;
   subtitle?: string;

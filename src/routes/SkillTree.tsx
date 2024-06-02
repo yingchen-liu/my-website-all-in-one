@@ -71,6 +71,11 @@ export default function SkillTree() {
       node: TreeItem;
       isCollpasedChangedToFalse: boolean;
     }) => updateNode(node, ["children"]),
+    onMutate: ({node}) => {
+      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+        return updateNodeById(existingData, node.uuid, {...node, isLoading: true});
+      });
+    },
     onSuccess: (data, { node, isCollpasedChangedToFalse }) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
         if (isCollpasedChangedToFalse) {

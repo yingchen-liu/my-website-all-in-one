@@ -2,6 +2,7 @@ $tree-branch-size: 15px;
 $tree-leaf-spacing: 20px;
 $tree-branch-color: #d4d4d5;
 $tree-dnd-placeholder-width: 4px;
+$tree-item-border-radius: 0.28571429rem;
 
 .tree {
   display: flex;
@@ -34,7 +35,6 @@ $tree-dnd-placeholder-width: 4px;
 
   &__item.ui.card {
     width: auto;
-    position: relative;
     margin: 0 0 0 $tree-branch-size * 2;
   }
   a.tree__item.ui.card:hover,
@@ -93,7 +93,7 @@ $tree-dnd-placeholder-width: 4px;
     .ui.button.tree__item__bottom_button {
       padding: 0;
       margin: 0 -12px -14px -14px;
-      border-radius: 0 0 0 0.28571429rem !important;
+      border-radius: 0 0 0 $tree-item-border-radius !important;
     }
 
     .ui.button.tree__item__right_button {
@@ -104,7 +104,7 @@ $tree-dnd-placeholder-width: 4px;
     }
 
     .ui.button.tree__item__right_button:last-child {
-      border-radius: 0 0.28571429rem 0.28571429rem 0 !important;
+      border-radius: 0 $tree-item-border-radius $tree-item-border-radius 0 !important;
       margin-right: 0;
     }
   }
