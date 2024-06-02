@@ -6,6 +6,7 @@ import {
   ButtonOr,
   ButtonGroup,
   Checkbox,
+  Icon,
 } from "semantic-ui-react";
 import debounce from "lodash/debounce";
 import "./TreeNodeEditor.css";
@@ -53,6 +54,7 @@ export default function TreeNodeEditor() {
   }
 
   const { treeData, dispatch, state } = context;
+  const [isFullscreen, setFullscreen] = useState(false);
 
   const [isDeleteConfirmButtonsVisible, toggleDeleteConfirmButtonsVisibility] =
     useState(false);
@@ -96,7 +98,7 @@ export default function TreeNodeEditor() {
   }
 
   return (
-    <SegmentGroup className="tree__node_editor__container">
+    <SegmentGroup className={`tree__node_editor__container${isFullscreen ? ' tree__node_editor__container--fullscreen' : ''}`}>
       <Segment className="tree__node_editor__top">
         <Input
           className="tree__node_editor__title"
@@ -143,7 +145,9 @@ export default function TreeNodeEditor() {
         {node.children.length === 0 && (
           <ButtonGroup className="tree__node_editor__delete">
             {isDeleteConfirmButtonsVisible && (
-              <Button onClick={handleDeleteConfirmed}>Delete</Button>
+              <Button color="red" onClick={handleDeleteConfirmed}>
+                Delete
+              </Button>
             )}
             {isDeleteConfirmButtonsVisible && <ButtonOr />}
             {isDeleteConfirmButtonsVisible && (
@@ -156,6 +160,13 @@ export default function TreeNodeEditor() {
             />
           </ButtonGroup>
         )}
+
+        <Button
+          icon={`angle double ${isFullscreen ? "down" : "up"}`}
+          onClick={() => {
+            setFullscreen(!isFullscreen);
+          }}
+        ></Button>
       </Segment>
 
       <Segment className="tree__node_editor__rich_text_editor__container">
