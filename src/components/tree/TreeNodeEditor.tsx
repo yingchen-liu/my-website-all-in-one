@@ -6,13 +6,13 @@ import {
   ButtonOr,
   ButtonGroup,
   Checkbox,
-  Icon,
 } from "semantic-ui-react";
 import debounce from "lodash/debounce";
 import "./TreeNodeEditor.css";
 import { useContext, useMemo, useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
+import { RiAlertFill } from "react-icons/ri";
 import { BlockNoteView } from "@blocknote/mantine";
 import {
   BlockNoteEditor,
@@ -32,9 +32,12 @@ import {
   NestBlockButton,
   TextAlignButton,
   UnnestBlockButton,
+  blockTypeSelectItems,
+  BlockTypeSelectItem,
 } from "@blocknote/react";
 import { CodeBlock, insertCode } from "@defensestation/blocknote-code";
 import { SkillTreeContext } from "../../routes/SkillTreeContext";
+import { NodeEditorAlert } from "./NodeEditorAlert";
 
 const debouncedUpdate = debounce(
   (newNode, updateNodeMutation, isCollpasedChangedToFalse = false) => {
@@ -69,6 +72,7 @@ export default function TreeNodeEditor() {
       blockSpecs: {
         ...defaultBlockSpecs,
         procode: CodeBlock,
+        alert: NodeEditorAlert,
       },
     });
 
@@ -98,7 +102,11 @@ export default function TreeNodeEditor() {
   }
 
   return (
-    <SegmentGroup className={`tree__node_editor__container${isFullscreen ? ' tree__node_editor__container--fullscreen' : ''}`}>
+    <SegmentGroup
+      className={`tree__node_editor__container${
+        isFullscreen ? " tree__node_editor__container--fullscreen" : ""
+      }`}
+    >
       <Segment className="tree__node_editor__top">
         <Input
           className="tree__node_editor__title"
@@ -187,7 +195,18 @@ export default function TreeNodeEditor() {
           <FormattingToolbarController
             formattingToolbar={() => (
               <FormattingToolbar>
-                <BlockTypeSelect key={"blockTypeSelect"} />
+                <BlockTypeSelect
+                  items={[
+                    ...blockTypeSelectItems(editor.dictionary),
+                    {
+                      name: "Alert",
+                      type: "alert",
+                      icon: RiAlertFill,
+                      isSelected: (block) => block.type === "alert",
+                    } satisfies BlockTypeSelectItem,
+                  ]}
+                  key={"blockTypeSelect"}
+                />
 
                 <BasicTextStyleButton
                   basicTextStyle={"bold"}
