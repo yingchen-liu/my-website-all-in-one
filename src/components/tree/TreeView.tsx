@@ -86,22 +86,32 @@ export default function TreeView() {
   const context = useContext(SkillTreeContext);
 
   if (!context) {
-    throw new Error('TreeView must be used within a SkillTreeContext');
+    throw new Error("TreeView must be used within a SkillTreeContext");
   }
 
-  const { treeData, state, dispatch, handleLoadMore, handleCollapse, selectedLeafRef } = context
+  const {
+    treeData,
+    state,
+    dispatch,
+    handleLoadMore,
+    handleCollapse,
+    selectedLeafRef,
+  } = context;
   const { data, isPending, isSuccess } = treeData;
 
   useEffect(() => {
     if (state.selectedNodeId && selectedLeafRef.current) {
       setTimeout(() => {
-        selectedLeafRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 500)
+        selectedLeafRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      }, 500);
     }
   }, [state.selectedNodeId]);
 
   function handleClick(node: TreeItem, parent: TreeItem) {
-    console.log(JSON.stringify({ node, parent }));
+    console.log("Node seleted", node);
     dispatch({ type: "node/select", node: node, parent: parent });
   }
 
@@ -116,7 +126,8 @@ export default function TreeView() {
       children: [],
       isDeleted: false,
       isCollapsed: false,
-    };
+      isLoading: true,
+    } satisfies TreeItem;
   }
 
   function handleAddChild(parentNode: TreeItem) {
@@ -131,7 +142,11 @@ export default function TreeView() {
   function handleAddAfter(previousNode: TreeItem, parentNode: TreeItem) {
     const newNode = createNewNode();
     treeData.createNodeAfterMutation
-      ?.mutateAsync({ node: newNode, previousNodeUUID: previousNode.uuid, parentUUID: parentNode.uuid })
+      ?.mutateAsync({
+        node: newNode,
+        previousNodeUUID: previousNode.uuid,
+        parentUUID: parentNode.uuid,
+      })
       .then(() => {
         handleClick(newNode, parentNode);
       });
@@ -141,8 +156,8 @@ export default function TreeView() {
     <HorizontalScroll className="body--full-screen">
       {isPending && <Loader active content="Loading..." />}
       {isSuccess && data?.children && (
-        <DndProvider backend={HTML5Backend}>
-          <Tree>
+        <Tree>
+          <DndProvider backend={HTML5Backend}>
             <TreeLeafDragLayer />
             <TreeRoot />
             <TreeChildren>
@@ -157,8 +172,8 @@ export default function TreeView() {
                 handleCollapse
               )}
             </TreeChildren>
-          </Tree>
-        </DndProvider>
+          </DndProvider>
+        </Tree>
       )}
     </HorizontalScroll>
   );

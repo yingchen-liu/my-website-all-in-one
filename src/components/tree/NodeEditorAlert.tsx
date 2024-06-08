@@ -2,9 +2,9 @@ import { defaultProps } from "@blocknote/core";
 import { createReactBlockSpec } from "@blocknote/react";
 import { Menu } from "@mantine/core";
 import { MdCancel, MdCheckCircle, MdError, MdInfo } from "react-icons/md";
- 
+
 import "./NodeEditorAlert.css";
- 
+
 // The types of alerts that users can choose from.
 export const alertTypes = [
   {
@@ -48,7 +48,7 @@ export const alertTypes = [
     },
   },
 ] as const;
- 
+
 // The Alert block.
 export const NodeEditorAlert = createReactBlockSpec(
   {
@@ -69,7 +69,7 @@ export const NodeEditorAlert = createReactBlockSpec(
         (a) => a.value === props.block.props.type
       )!;
       const Icon = alertType.icon;
- 
+
       return (
         <div className={"alert"} data-alert-type={props.block.props.type}>
           {/*Icon which opens a menu to choose the Alert type*/}
@@ -89,7 +89,7 @@ export const NodeEditorAlert = createReactBlockSpec(
               <Menu.Divider />
               {alertTypes.map((type) => {
                 const ItemIcon = type.icon;
- 
+
                 return (
                   <Menu.Item
                     key={type.value}
@@ -104,7 +104,8 @@ export const NodeEditorAlert = createReactBlockSpec(
                         type: "alert",
                         props: { type: type.value },
                       })
-                    }>
+                    }
+                  >
                     {type.title}
                   </Menu.Item>
                 );
@@ -118,4 +119,3 @@ export const NodeEditorAlert = createReactBlockSpec(
     },
   }
 );
- 

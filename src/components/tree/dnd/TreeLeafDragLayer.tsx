@@ -36,7 +36,7 @@ const TreeLeafDragLayer: FC = () => {
     };
   }
 
-  if (item !== null) {
+  if (item && item.data) {
     return (
       <div className="tree__leaf__drag_container" style={layerStyles}>
         <div style={getItemStyles(initialOffset, currentOffset)}>
