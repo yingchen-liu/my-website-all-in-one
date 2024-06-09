@@ -24,9 +24,9 @@ export type TreeLeafProps = TreeLeafDragProps & {
 
 function Tree({ children }: { children: any }) {
   return (
-    <>
+    <div className="tree-container">
       <div className="tree">{children}</div>
-    </>
+    </div>
   );
 }
 

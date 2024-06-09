@@ -4,151 +4,158 @@ $tree-branch-color: #d4d4d5;
 $tree-dnd-placeholder-width: 4px;
 $tree-item-border-radius: 0.28571429rem;
 
-.tree {
-  display: flex;
-  align-items: center;
-
-  &__hierarchy {
+.tree-container {
+  margin-right: 20px;
+  display: inline-block;
+  
+  .tree {
     display: flex;
     align-items: center;
-    position: relative;
-  }
-  &__hierarchy::before {
-    content: "";
-    position: absolute;
-    left: $tree-branch-size;
-    top: 0;
-    width: 1px;
-    height: 100%;
-    background-color: $tree-branch-color;
-  }
-  &__hierarchy:first-child::before {
-    transform: translateY(100%);
-    height: calc(50%);
-  }
-  &__hierarchy:last-child::before {
-    height: 50%;
-  }
-  &__hierarchy:first-child:last-child::before {
-    height: 0;
-  }
+    padding-right: 20px;
 
-  &__item.ui.card {
-    width: auto;
-    margin: 0 0 0 $tree-branch-size * 2;
-  }
-  a.tree__item.ui.card:hover,
-  a.tree__item.tree__item--active.ui.card {
-    transform: none;
-    box-shadow: 0 1px 7px 0 #bcbdbd, 0 0 0 1px #d4d4d5;
-  }
-
-  &__leaf.ui.card {
-    display: flex;
-    flex-direction: row;
-
-    .content {
+    &__hierarchy {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      position: relative;
     }
-  }
-  &__leaf::before,
-  &__leaf.tree__leaf--has-children::after,
-  &__root::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: $tree-branch-size;
-    height: 0;
-    border-bottom: 1px solid $tree-branch-color;
-    visibility: visible;
-  }
-  &__leaf::before {
-    top: calc(50% + 0.5px);
-    left: -$tree-branch-size;
-  }
-  &__leaf.tree__leaf--has-children::after,
-  &__root::after {
-    right: -$tree-branch-size;
-  }
-  &__leaf:first-child::before {
-    height: 50%;
-    transform: translateY(-100%);
-  }
-  &__leaf:last-child::before {
-    height: 50%;
-    transform: translateY(0);
-    border-top: 1px solid $tree-branch-color;
-    border-bottom: none;
-  }
-  &__leaf:first-child:last-child::before {
-    height: 0;
-    transform: translateY(-50%);
-    border-top: none;
-    border-bottom: 1px solid $tree-branch-color;
-  }
-
-  &__item {
-    .ui.button.tree__item__bottom_button {
-      padding: 0;
-      margin: 0 -12px -14px -14px;
-      border-radius: 0 0 0 $tree-item-border-radius !important;
+    &__hierarchy::before {
+      content: "";
+      position: absolute;
+      left: $tree-branch-size;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      background-color: $tree-branch-color;
+    }
+    &__hierarchy:first-child::before {
+      transform: translateY(100%);
+      height: calc(50%);
+    }
+    &__hierarchy:last-child::before {
+      height: 50%;
+    }
+    &__hierarchy:first-child:last-child::before {
+      height: 0;
     }
 
-    .ui.button.tree__item__right_button {
-      padding: 0;
-      border-radius: 0 !important;
-      width: 14px;
-      margin-right: 2px;
+    &__item.ui.card {
+      width: auto;
+      margin: 0 0 0 $tree-branch-size * 2;
+    }
+    a.tree__item.ui.card:hover,
+    a.tree__item.tree__item--active.ui.card {
+      transform: none;
+      box-shadow: 0 1px 7px 0 #bcbdbd, 0 0 0 1px #d4d4d5;
     }
 
-    .ui.button.tree__item__right_button:last-child {
-      border-radius: 0 $tree-item-border-radius $tree-item-border-radius 0 !important;
-      margin-right: 0;
-    }
-  }
+    &__leaf.ui.card {
+      display: flex;
+      flex-direction: row;
+      width: max-content;
 
-  &__hierarchy--dragging {
-    opacity: 0.5;
-  }
-  &__hierarchy--dragging::before {
-    opacity: 1;
-  }
-
-  &__leaf__drag_container > div > .tree__hierarchy::before {
-    display: none;
-  }
-  &__leaf__drag_container {
-    opacity: 0.7;
-  }
-
-  &__leaf__drop_area__before.tree__leaf__drop_area,
-  &__leaf__drop_area__after.tree__leaf__drop_area {
-    margin-left: calc($tree-branch-size * 2);
-    height: calc($tree-leaf-spacing / 2);
-  }
-  &__leaf__drop_area__before.tree__leaf__drop_area {
-    &--is_over {
-      border-top: $tree-dnd-placeholder-width solid #db2828;
-    }
-  }
-  &__leaf__drop_area__after.tree__leaf__drop_area {
-    &--is_over {
-      border-bottom: $tree-dnd-placeholder-width solid #db2828;
-    }
-  }
-  &__leaf__drop_area__child.tree__leaf__drop_area {
-    &--is_over {
-      .tree__leaf {
-        border-right: $tree-dnd-placeholder-width solid #db2828;
+      .content {
+        display: flex;
+        flex-direction: column;
       }
+    }
+    &__leaf::before,
+    &__leaf.tree__leaf--has-children::after,
+    &__root::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: $tree-branch-size;
+      height: 0;
+      border-bottom: 1px solid $tree-branch-color;
+      visibility: visible;
+    }
+    &__leaf::before {
+      top: calc(50% + 0.5px);
+      left: -$tree-branch-size;
+    }
+    &__leaf.tree__leaf--has-children::after,
+    &__root::after {
+      right: -$tree-branch-size;
+    }
+    &__leaf:first-child::before {
+      height: 50%;
+      transform: translateY(-100%);
+    }
+    &__leaf:last-child::before {
+      height: 50%;
+      transform: translateY(0);
+      border-top: 1px solid $tree-branch-color;
+      border-bottom: none;
+    }
+    &__leaf:first-child:last-child::before {
+      height: 0;
+      transform: translateY(-50%);
+      border-top: none;
+      border-bottom: 1px solid $tree-branch-color;
+    }
+
+    &__item {
+      .ui.button.tree__item__bottom_button {
+        padding: 0;
+        margin: 0 -12px -14px -14px;
+        border-radius: 0 0 0 $tree-item-border-radius !important;
+      }
+
       .ui.button.tree__item__right_button {
+        padding: 0;
         border-radius: 0 !important;
+        width: 14px;
+        margin-right: 2px;
       }
-      .tree__leaf.tree__leaf--has-children::after {
-        width: calc($tree-branch-size + $tree-dnd-placeholder-width);
-        right: calc(($tree-branch-size + $tree-dnd-placeholder-width) * -1);
+
+      .ui.button.tree__item__right_button:last-child {
+        border-radius: 0 $tree-item-border-radius $tree-item-border-radius 0 !important;
+        margin-right: 0;
+      }
+    }
+
+    &__hierarchy--dragging {
+      opacity: 0.5;
+    }
+    &__hierarchy--dragging::before {
+      opacity: 1;
+    }
+
+    &__leaf__drag_container > div > .tree__hierarchy::before {
+      display: none;
+    }
+    &__leaf__drag_container {
+      opacity: 0.7;
+    }
+
+    &__leaf__drop_area__before.tree__leaf__drop_area,
+    &__leaf__drop_area__after.tree__leaf__drop_area {
+      margin-left: calc($tree-branch-size * 2);
+      height: calc($tree-leaf-spacing / 2);
+    }
+    &__leaf__drop_area__before.tree__leaf__drop_area {
+      &--is_over {
+        border-top: $tree-dnd-placeholder-width solid #db2828;
+      }
+    }
+    &__leaf__drop_area__after.tree__leaf__drop_area {
+      &--is_over {
+        border-bottom: $tree-dnd-placeholder-width solid #db2828;
+      }
+    }
+    &__leaf__drop_area__child.tree__leaf__drop_area {
+      &--is_over {
+        .tree__leaf {
+          border-right: $tree-dnd-placeholder-width solid #db2828;
+        }
+        .ui.button.tree__item__right_button {
+          border-radius: 0 !important;
+        }
+        .tree__leaf.tree__leaf--has-children::after {
+          width: calc($tree-branch-size + $tree-dnd-placeholder-width);
+          right: calc(($tree-branch-size + $tree-dnd-placeholder-width) * -1);
+        }
       }
     }
   }
