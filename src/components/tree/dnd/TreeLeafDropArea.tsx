@@ -1,14 +1,22 @@
 import { useContext } from "react";
-import { TreeItem } from "../../../types/skillTree";
+import { TreeItem, TreeItemPlaceholder } from "../../../types/skillTree";
 import { TreeLeafDropProps } from "./types";
 import { SkillTreeContext } from "../../../routes/SkillTreeContext";
 import { useDrop } from "react-dnd";
 import { TreeLeafProps } from "../Tree";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  addChildNode,
+  addNodeAfter,
+  addNodeBefore,
+  deleteNodeById,
+} from "../../../reducers/skillTree/util";
+import { v4 as uuidv4 } from "uuid";
 
-function isDescendant(a: TreeItem, b: TreeItem): boolean {
+function isDescendant(a: TreeItem | TreeItemPlaceholder, b: TreeItem): boolean {
   return (
     b.children.filter((child) => child.uuid === a.uuid).length > 0 ||
-    b.children.filter((child) => isDescendant(a, child)).length > 0
+    b.children.filter((child) => isDescendant(a, child as TreeItem)).length > 0
   );
 }
 
@@ -19,6 +27,7 @@ export function TreeLeafDropArea({
   props: TreeLeafDropProps;
   children?: any;
 }) {
+  const queryClient = useQueryClient();
   const context = useContext(SkillTreeContext);
 
   if (!context) {
@@ -31,15 +40,56 @@ export function TreeLeafDropArea({
     () => ({
       accept: "LEAF",
       drop: (item) => {
+        queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+          return deleteNodeById(existingData, item.data.uuid);
+        });
         switch (props.position) {
           case "CHILD":
+            queryClient.setQueryData(
+              ["skill-tree"],
+              (existingData: TreeItem) => {
+                return addChildNode(existingData, props.data.uuid, {
+                  uuid: uuidv4(),
+                });
+              }
+            );
+
             treeData.moveNodeMutation?.mutateAsync({
               parentUUID: props.data.uuid,
               uuid: item.data.uuid,
             });
             break;
           case "BEFORE":
+            console.log('add before ', props.data.uuid)
+            queryClient.setQueryData(
+              ["skill-tree"],
+              (existingData: TreeItem) => {
+                return addNodeBefore(existingData, props.data.uuid, {
+                  uuid: uuidv4(),
+                });
+              }
+            );
+
+            treeData.moveNodeMutation?.mutateAsync({
+              parentUUID: props.parent.uuid,
+              uuid: item.data.uuid,
+              order: {
+                position: props.position,
+                relatedToUUID: props.data.uuid,
+              },
+            });
+            break;
           case "AFTER":
+            console.log('add after ', props.data.uuid)
+            queryClient.setQueryData(
+              ["skill-tree"],
+              (existingData: TreeItem) => {
+                return addNodeAfter(existingData, props.data.uuid, {
+                  uuid: uuidv4(),
+                });
+              }
+            );
+
             treeData.moveNodeMutation?.mutateAsync({
               parentUUID: props.parent.uuid,
               uuid: item.data.uuid,
@@ -63,7 +113,7 @@ export function TreeLeafDropArea({
         if (props.data.uuid === item.data.uuid) return false;
         if (props.position === "CHILD" && item.parent.uuid === props.data.uuid)
           return false;
-        if (isDescendant(props.data, item.data)) return false;
+        if (isDescendant(props.data, item.data as TreeItem)) return false;
         return true;
       },
     }),

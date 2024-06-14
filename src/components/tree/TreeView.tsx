@@ -7,13 +7,13 @@ import { uniqueNamesGenerator, colors, animals } from "unique-names-generator";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import TreeLeafDragLayer from "./dnd/TreeLeafDragLayer";
-import { TreeItem } from "../../types/skillTree";
+import { TreeItem, TreeItemPlaceholder } from "../../types/skillTree";
 import { SkillTreeContext } from "../../routes/SkillTreeContext";
 import { TreeChildren, TreeHierarchy } from "./TreeHierarchy";
 
 function populateChildren(
   parent: TreeItem,
-  children: TreeItem[],
+  children: (TreeItem | TreeItemPlaceholder)[],
   activeItem: TreeItem | null,
   onClick: (node: TreeItem, parent: TreeItem) => void,
   onAddChildClick: (parentNode: TreeItem) => void,
@@ -37,7 +37,7 @@ function populateChildren(
 
 export function populateChild(
   parent: TreeItem,
-  child: TreeItem,
+  child: TreeItem | TreeItemPlaceholder,
   activeItem: TreeItem | null,
   onClick: (node: TreeItem, parent: TreeItem) => void,
   onAddChildClick: (parentNode: TreeItem) => void,
@@ -64,11 +64,11 @@ export function populateChild(
         onCollapseClick={onCollapseClick}
       />
 
-      {child.children && (
+      {'children' in child && child.children && (
         <TreeChildren>
           {populateChildren(
             child,
-            child.children as TreeItem[],
+            child.children,
             activeItem,
             onClick,
             onAddChildClick,
@@ -124,9 +124,9 @@ export default function TreeView() {
         separator: " ",
       }),
       children: [],
-      isDeleted: false,
       isCollapsed: false,
       isLoading: true,
+      isDeleting: false
     } satisfies TreeItem;
   }
 

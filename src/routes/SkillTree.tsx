@@ -1,4 +1,5 @@
 import HeaderMenu from "../components/HeaderMenu";
+import { v4 as uuidv4 } from "uuid";
 
 import "semantic-ui-css/semantic.min.css";
 import "../main.css";
@@ -22,7 +23,7 @@ import {
   updateNodeChildrenById,
 } from "../reducers/skillTree/util";
 import { SkillTreeContext, useSkillTreeContext } from "./SkillTreeContext";
-import { TreeItem } from "../types/skillTree";
+import { TreeItem, TreeItemPlaceholder } from "../types/skillTree";
 
 export default function SkillTree() {
   const { state, dispatch, selectedLeafRef } = useSkillTreeContext();
@@ -59,7 +60,11 @@ export default function SkillTree() {
     }) => createNodeAfter(node, previousNodeUUID),
     onSuccess: (data, variables) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return addNodeAfter(existingData, variables.previousNodeUUID, data.data);
+        return addNodeAfter(
+          existingData,
+          variables.previousNodeUUID,
+          data.data
+        );
       });
     },
   });
@@ -71,9 +76,12 @@ export default function SkillTree() {
       node: TreeItem;
       isCollpasedChangedToFalse: boolean;
     }) => updateNode(node, ["children"]),
-    onMutate: ({node}) => {
+    onMutate: ({ node }) => {
       queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return updateNodeById(existingData, node.uuid, {...node, isLoading: true});
+        return updateNodeById(existingData, node.uuid, {
+          ...node,
+          isLoading: true,
+        });
       });
     },
     onSuccess: (data, { node, isCollpasedChangedToFalse }) => {
@@ -109,6 +117,11 @@ export default function SkillTree() {
   });
 
   async function handleLoadMore(node: TreeItem) {
+    queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+      return updateNodeChildrenById(existingData, node.uuid, [
+        { uuid: uuidv4() } as TreeItemPlaceholder,
+      ]);
+    });
     const result = await fetchNodeChildren(node.uuid);
     queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
       return updateNodeChildrenById(existingData, node.uuid, result.children);

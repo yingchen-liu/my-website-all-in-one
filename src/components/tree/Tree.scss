@@ -7,7 +7,7 @@ $tree-item-border-radius: 0.28571429rem;
 .tree-container {
   margin-right: 20px;
   display: inline-block;
-  
+
   .tree {
     display: flex;
     align-items: center;
@@ -58,6 +58,12 @@ $tree-item-border-radius: 0.28571429rem;
         flex-direction: column;
       }
     }
+    &__leaf--loading {
+      padding: 10px 30px;
+    }
+    &__leaf--deleting {
+      opacity: 0.2;
+    }
     &__leaf::before,
     &__leaf.tree__leaf--has-children::after,
     &__root::after {
@@ -95,7 +101,7 @@ $tree-item-border-radius: 0.28571429rem;
       border-bottom: 1px solid $tree-branch-color;
     }
 
-    &__item {
+    .tree__item {
       .ui.button.tree__item__bottom_button {
         padding: 0;
         margin: 0 -12px -14px -14px;

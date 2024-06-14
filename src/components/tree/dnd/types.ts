@@ -1,8 +1,8 @@
-import { TreeItem } from "../../../types/skillTree";
+import { TreeItem, TreeItemPlaceholder } from "../../../types/skillTree";
 
 export type TreeLeafDragProps = {
   parent: TreeItem;
-  data: TreeItem;
+  data: TreeItem | TreeItemPlaceholder;
 };
 
 export type TreeLeafDropProps = TreeLeafDragProps & {

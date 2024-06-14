@@ -1,16 +1,18 @@
-import { TreeItem } from "../../types/skillTree";
+import { TreeItem, TreeItemPlaceholder } from "../../types/skillTree";
 
 export const addChildNode = (
   node: TreeItem,
   parentUUID: string,
-  newNode: TreeItem
-): TreeItem => {
+  newNode: TreeItem | TreeItemPlaceholder
+): TreeItem | TreeItemPlaceholder => {
   return {
     ...node,
     children: [
-      ...node.children.map((child: TreeItem) => {
-        return addChildNode(child, parentUUID, newNode);
-      }),
+      ...node.children
+        .filter((child) => Object.prototype.hasOwnProperty.call(child, "name"))
+        .map((child) => {
+          return addChildNode(child as TreeItem, parentUUID, newNode);
+        }),
       ...(parentUUID === node.uuid ? [newNode] : []),
     ],
   };
@@ -19,18 +21,50 @@ export const addChildNode = (
 export const addNodeAfter = (
   node: TreeItem,
   previousNodeUUID: string,
-  newNode: TreeItem
+  newNode: TreeItem | TreeItemPlaceholder
 ): TreeItem => {
-  const previousNodeIndex = node.children.findIndex(child => child.uuid === previousNodeUUID)
-  let children = node.children
+  const previousNodeIndex = node.children.findIndex(
+    (child) => child.uuid === previousNodeUUID
+  );
+  let children = node.children;
   if (previousNodeIndex >= 0) {
-    children.splice(previousNodeIndex + 1, 0, newNode)
+    children.splice(previousNodeIndex + 1, 0, newNode);
+  }
+  return {
+    ...node,
+    children: [
+      ...children.map((child) => {
+        if (Object.prototype.hasOwnProperty.call(child, "name")) {
+          return addNodeAfter(child as TreeItem, previousNodeUUID, newNode);
+        } else {
+          return child;
+        }
+      }),
+    ],
+  };
+};
+
+export const addNodeBefore = (
+  node: TreeItem,
+  nextNodeUUID: string,
+  newNode: TreeItem | TreeItemPlaceholder
+): TreeItem => {
+  const previousNodeIndex = node.children.findIndex(
+    (child) => child.uuid === nextNodeUUID
+  );
+  let children = JSON.parse(JSON.stringify(node.children));
+  if (previousNodeIndex >= 0) {
+    children.splice(previousNodeIndex, 0, newNode);
   }
   return {
     ...node,
     children: [
       ...children.map((child: TreeItem) => {
-        return addNodeAfter(child, previousNodeUUID, newNode);
+        if (Object.prototype.hasOwnProperty.call(child, "name")) {
+          return addNodeBefore(child as TreeItem, nextNodeUUID, newNode);
+        } else {
+          return child;
+        }
       }),
     ],
   };
@@ -39,15 +73,23 @@ export const addNodeAfter = (
 export const updateNodeChildrenById = (
   node: TreeItem,
   uuid: string,
-  newChildren: TreeItem[]
+  newChildren: (TreeItem | TreeItemPlaceholder)[]
 ): TreeItem => {
   return {
     ...node,
     children: [
       ...(uuid !== node.uuid
-        ? node.children.map((child: TreeItem) => {
-            return updateNodeChildrenById(child, uuid, newChildren);
-          })
+        ? node.children
+            .filter((child) =>
+              Object.prototype.hasOwnProperty.call(child, "name")
+            )
+            .map((child) => {
+              return updateNodeChildrenById(
+                child as TreeItem,
+                uuid,
+                newChildren
+              );
+            })
         : []),
       ...(uuid === node.uuid ? newChildren : []),
     ],
@@ -55,18 +97,21 @@ export const updateNodeChildrenById = (
 };
 
 export const updateNodeById = (
-  node: TreeItem,
+  node: TreeItem | TreeItemPlaceholder,
   uuid: string,
-  newNode: TreeItem
-): TreeItem => {
+  newNode: TreeItem | TreeItemPlaceholder
+): TreeItem | TreeItemPlaceholder => {
   if (uuid === node.uuid) {
     // Update the node's properties but keep the existing children
-    return { ...newNode, children: node.children };
-  } else if (node.children) {
+    return {
+      ...newNode,
+      ...("children" in node && { children: node.children }),
+    };
+  } else if ("children" in node && node.children) {
     // Recursively check and update children nodes
     return {
       ...node,
-      children: node.children.map((child: TreeItem) =>
+      children: node.children.map((child: TreeItem | TreeItemPlaceholder) =>
         updateNodeById(child, uuid, newNode)
       ),
     };
@@ -74,13 +119,18 @@ export const updateNodeById = (
   return node; // Return the node as is if no match and no children
 };
 
-export const deleteNodeById = (node: TreeItem, uuid: string): TreeItem => {
+export const deleteNodeById = (
+  node: TreeItem | TreeItemPlaceholder,
+  uuid: string
+): TreeItem | TreeItemPlaceholder => {
   return {
     ...node,
     children: [
-      ...node.children
-        .filter((child) => child.uuid !== uuid)
-        .map((child) => deleteNodeById(child, uuid)),
+      ...("children" in node
+        ? node.children
+            .filter((child) => child.uuid !== uuid)
+            .map((child) => deleteNodeById(child, uuid))
+        : []),
     ],
   };
 };

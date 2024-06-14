@@ -38,29 +38,40 @@ import {
 import { CodeBlock, insertCode } from "@defensestation/blocknote-code";
 import { SkillTreeContext } from "../../routes/SkillTreeContext";
 import { NodeEditorAlert } from "./NodeEditorAlert";
+import { TreeItem } from "../../types/skillTree";
+import { UseMutationResult, useQueryClient } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
+import { updateNodeById } from "../../reducers/skillTree/util";
 
-const debouncedUpdate = debounce(
-  (newNode, updateNodeMutation, isCollpasedChangedToFalse = false) => {
-    updateNodeMutation?.mutateAsync({
-      node: newNode,
-      isCollpasedChangedToFalse: isCollpasedChangedToFalse,
-    });
-  },
-  3000
-);
+const updateNode = (
+  newNode: TreeItem,
+  updateNodeMutation: UseMutationResult<
+    AxiosResponse<any, any>,
+    Error,
+    { node: TreeItem; isCollpasedChangedToFalse: boolean },
+    unknown
+  >,
+  isCollpasedChangedToFalse = false
+) => {
+  updateNodeMutation?.mutateAsync({
+    node: newNode,
+    isCollpasedChangedToFalse: isCollpasedChangedToFalse,
+  });
+};
+
+const debouncedUpdate = debounce(updateNode, 2000);
 
 export default function TreeNodeEditor() {
   const context = useContext(SkillTreeContext);
+  const queryClient = useQueryClient();
+  const [isFullscreen, setFullscreen] = useState(false);
+  const [isDeleteConfirmButtonsVisible, toggleDeleteConfirmButtonsVisibility] =
+    useState(false);
 
   if (!context) {
     throw new Error("TreeNodeEditor must be used within a SkillTreeContext");
   }
-
   const { treeData, dispatch, state } = context;
-  const [isFullscreen, setFullscreen] = useState(false);
-
-  const [isDeleteConfirmButtonsVisible, toggleDeleteConfirmButtonsVisibility] =
-    useState(false);
 
   if (state.selectedNode === null) {
     throw new Error("Error rendering editor: No node is selected");
@@ -86,6 +97,19 @@ export default function TreeNodeEditor() {
     return BlockNoteEditor.create({
       schema,
       initialContent: content,
+      // uploadFile: async (file: File) => {
+      //   const body = new FormData();
+      //   body.append("file", file);
+
+      //   const ret = await fetch("https://tmpfiles.org/api/v1/upload", {
+      //     method: "POST",
+      //     body: body,
+      //   });
+      //   return (await ret.json()).data.url.replace(
+      //     "tmpfiles.org/",
+      //     "tmpfiles.org/dl/"
+      //   );
+      // },
     });
   }, [state.selectedNodeId]);
 
@@ -98,6 +122,12 @@ export default function TreeNodeEditor() {
       throw new Error("Error deleting tree node: Parent not found");
     }
     dispatch({ type: "node/deselect" });
+    queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+      return updateNodeById(existingData, node.uuid, {
+        ...node,
+        isDeleting: true,
+      });
+    });
     treeData.deleteNodeMutation?.mutateAsync(node.uuid);
   }
 
@@ -143,11 +173,7 @@ export default function TreeNodeEditor() {
               isCollapsed: !!data.checked,
             };
             dispatch({ type: "node/update", node: newNode });
-            debouncedUpdate(
-              newNode,
-              treeData.updateNodeMutation,
-              !!!data.checked
-            );
+            updateNode(newNode, treeData.updateNodeMutation, !!!data.checked);
           }}
         />
         {node.children.length === 0 && (

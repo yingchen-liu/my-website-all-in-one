@@ -4,11 +4,12 @@ import {
   CardContent,
   CardHeader,
   CardMeta,
+  Loader,
   Progress,
 } from "semantic-ui-react";
 import "./Tree.scss";
 import { useContext } from "react";
-import { TreeItem } from "../../types/skillTree";
+import { State, TreeItem } from "../../types/skillTree";
 import { SkillTreeContext } from "../../routes/SkillTreeContext";
 import { TreeLeafDragProps } from "./dnd/types";
 import { TreeLeafDropArea } from "./dnd/TreeLeafDropArea";
@@ -42,6 +43,66 @@ function TreeRoot() {
   );
 }
 
+function populateTreeLeafCard(
+  node: TreeItem,
+  props: TreeLeafProps,
+  state: State
+) {
+  return (
+    <Card
+      className={`tree__item tree__leaf${
+        node.children?.length ? " tree__leaf--has-children" : ""
+      }${props.isActive ? " tree__item--active" : ""}${
+        node.isDeleting ? " tree__leaf--deleting" : ""
+      }`}
+      onClick={() => {
+        props.onClick(node, props.parent);
+      }}
+    >
+      <CardContent>
+        <CardHeader>{node.name}</CardHeader>
+        {node.subtitle && <CardMeta>{node.subtitle}</CardMeta>}
+        {state.selectedNodeId === node.uuid && (
+          <Button
+            className="tree__item__bottom_button"
+            onClick={() => props.onAddAfterClick(node, props.parent)}
+          >
+            +
+          </Button>
+        )}
+      </CardContent>
+      {node.isCollapsed && node.children.length === 0 && (
+        <Button
+          className="tree__item__right_button"
+          onClick={() => props.onLoadMoreClick(node)}
+        >
+          &gt;
+        </Button>
+      )}
+      {node.isCollapsed && node.children.length > 0 && (
+        <Button
+          className="tree__item__right_button"
+          onClick={() => props.onCollapseClick(node)}
+        >
+          &lt;
+        </Button>
+      )}
+      {state.selectedNodeId === node.uuid &&
+        (!node.isCollapsed || node.children.length !== 0) && (
+          <Button
+            className="tree__item__right_button"
+            onClick={() => props.onAddChildClick(node)}
+          >
+            +
+          </Button>
+        )}
+      {node.isLoading && (
+        <Progress percent={100} indicating attached="bottom" />
+      )}
+    </Card>
+  );
+}
+
 function TreeLeaf(props: TreeLeafProps) {
   const context = useContext(SkillTreeContext);
 
@@ -51,74 +112,42 @@ function TreeLeaf(props: TreeLeafProps) {
 
   const { state, selectedLeafRef } = context;
 
-  return (
-    <div
-      ref={(ref) => {
-        if (state.selectedNodeId === props.data.uuid)
-          selectedLeafRef.current = ref;
-      }}
-    >
-      <TreeLeafDropArea
-        props={{ parent: props.parent, data: props.data, position: "BEFORE" }}
-      />
-      <TreeLeafDropArea
-        props={{ parent: props.parent, data: props.data, position: "CHILD" }}
+  if (Object.prototype.hasOwnProperty.call(props.data, "name")) {
+    const node = props.data as TreeItem;
+    return (
+      <div
+        ref={(ref) => {
+          if (state.selectedNodeId === node.uuid) selectedLeafRef.current = ref;
+        }}
       >
-        <Card
-          className={`tree__item tree__leaf${
-            props.data.children?.length ? " tree__leaf--has-children" : ""
-          }${props.isActive ? " tree__item--active" : ""}`}
-          onClick={() => {
-            props.onClick(props.data, props.parent);
-          }}
-        >
-          <CardContent>
-            <CardHeader>{props.data.name}</CardHeader>
-            {props.data.subtitle && <CardMeta>{props.data.subtitle}</CardMeta>}
-            {state.selectedNodeId === props.data.uuid && (
-              <Button
-                className="tree__item__bottom_button"
-                onClick={() => props.onAddAfterClick(props.data, props.parent)}
-              >
-                +
-              </Button>
-            )}
-          </CardContent>
-          {props.data.isCollapsed && props.data.children.length === 0 && (
-            <Button
-              className="tree__item__right_button"
-              onClick={() => props.onLoadMoreClick(props.data)}
+        {!node.isDeleting ? (
+          <>
+            <TreeLeafDropArea
+              props={{ parent: props.parent, data: node, position: "BEFORE" }}
+            />
+            <TreeLeafDropArea
+              props={{ parent: props.parent, data: node, position: "CHILD" }}
             >
-              &gt;
-            </Button>
-          )}
-          {props.data.isCollapsed && props.data.children.length > 0 && (
-            <Button
-              className="tree__item__right_button"
-              onClick={() => props.onCollapseClick(props.data)}
-            >
-              &lt;
-            </Button>
-          )}
-          {state.selectedNodeId === props.data.uuid &&
-            (!props.data.isCollapsed || props.data.children.length !== 0) && (
-              <Button
-                className="tree__item__right_button"
-                onClick={() => props.onAddChildClick(props.data)}
-              >
-                +
-              </Button>
-            )}
-          {props.data.isLoading && (
-            <Progress percent={100} indicating attached="bottom" />
-          )}
-        </Card>
-      </TreeLeafDropArea>
-      <TreeLeafDropArea
-        props={{ parent: props.parent, data: props.data, position: "AFTER" }}
-      />
-    </div>
-  );
+              {populateTreeLeafCard(node, props, state)}
+            </TreeLeafDropArea>
+            <TreeLeafDropArea
+              props={{ parent: props.parent, data: node, position: "AFTER" }}
+            />
+          </>
+        ) : (
+          populateTreeLeafCard(node, props, state)
+        )}
+      </div>
+    );
+  } else {
+    return (
+      <Card className="tree__item tree__leaf tree__leaf--loading">
+        <CardContent>
+          <Loader active />
+        </CardContent>
+      </Card>
+    );
+  }
 }
 
 export { Tree, TreeRoot, TreeLeaf };

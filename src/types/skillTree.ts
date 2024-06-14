@@ -1,12 +1,16 @@
 export type TreeItem = {
-  isLoading: boolean;
   uuid: string;
+  isLoading: boolean;
+  isDeleting: boolean;
   name: string;
   subtitle?: string;
   content?: string;
-  children: TreeItem[];
-  isDeleted: boolean;
+  children: (TreeItem | TreeItemPlaceholder)[];
   isCollapsed: boolean;
+};
+
+export type TreeItemPlaceholder = {
+  uuid: string;
 };
 
 export type State = {
