@@ -2,8 +2,8 @@ import {
   TreeItem,
   TreeItemPlaceholder,
   isTreeItem,
-} from "../../types/skillTree";
-import { deepCopy } from "../../utils/utils";
+} from "../types/skillTree";
+import { deepCopy } from "../utils/utils";
 
 export const addChildNode = (
   data: Record<string, TreeItem | TreeItemPlaceholder>,

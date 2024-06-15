@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { TreeItem, TreeItemPlaceholder } from "../../../types/skillTree";
 import { TreeLeafDropProps } from "./types";
-import { SkillTreeContext } from "../../../routes/SkillTreeContext";
+import { SkillTreeContext } from "../../../contexts/SkillTreeContext";
 import { useDrop } from "react-dnd";
 import { TreeLeafProps } from "../Tree";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,8 +10,9 @@ import {
   addNodeAfter,
   addNodeBefore,
   deleteNodeById,
-} from "../../../reducers/skillTree/util";
+} from "../../../reducers/skillTreeUtils";
 import { v4 as uuidv4 } from "uuid";
+import React from "react";
 
 function isDescendant(a: TreeItem | TreeItemPlaceholder, b: TreeItem, data: Record<string, TreeItem | TreeItemPlaceholder>): boolean {
   return (

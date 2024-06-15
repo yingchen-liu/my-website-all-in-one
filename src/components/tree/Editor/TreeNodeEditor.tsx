@@ -39,12 +39,13 @@ import {
   BlockTypeSelectItem,
 } from "@blocknote/react";
 import { CodeBlock, insertCode } from "@defensestation/blocknote-code";
-import { SkillTreeContext } from "../../routes/SkillTreeContext";
 import { NodeEditorAlert } from "./NodeEditorAlert";
-import { TreeItem } from "../../types/skillTree";
+import { TreeItem } from "../../../types/skillTree";
 import { UseMutationResult, useQueryClient } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
-import { updateNodeById } from "../../reducers/skillTree/util";
+import { updateNodeById } from "../../../reducers/skillTreeUtils";
+import { SkillTreeContext } from "../../../contexts/SkillTreeContext";
+import React from "react";
 
 const updateNode = (
   newNode: TreeItem,
@@ -92,7 +93,7 @@ export default function TreeNodeEditor() {
       },
     });
 
-    let content = null;
+    let content: any[] | null = null;
     if (node.content !== undefined) {
       content = JSON.parse(node.content);
       // Blocknote doesn't like empty array
@@ -101,6 +102,8 @@ export default function TreeNodeEditor() {
 
     return BlockNoteEditor.create({
       schema,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       initialContent: content,
       // uploadFile: async (file: File) => {
       //   const body = new FormData();
@@ -127,7 +130,7 @@ export default function TreeNodeEditor() {
       throw new Error("Error deleting tree node: Parent not found");
     }
     dispatch({ type: "node/deselect" });
-    queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+    queryClient.setQueryData(["skill-tree"], (existingData: Record<string, TreeItem>) => {
       return updateNodeById(existingData, node.uuid, {
         ...node,
         isDeleting: true,

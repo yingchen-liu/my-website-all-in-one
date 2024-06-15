@@ -1,7 +1,8 @@
 import { CSSProperties, FC, useContext } from "react";
 import { XYCoord, useDragLayer } from "react-dnd";
 import { populateChild } from "../TreeView";
-import { SkillTreeContext } from "../../../routes/SkillTreeContext";
+import { SkillTreeContext } from "../../../contexts/SkillTreeContext";
+import React from "react";
 
 const layerStyles: CSSProperties = {
   position: "fixed",

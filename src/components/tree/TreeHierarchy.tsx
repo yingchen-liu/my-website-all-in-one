@@ -1,7 +1,8 @@
 import { useDrag } from "react-dnd";
-import { TreeLeafDragProps } from "./Tree";
 import { useEffect } from "react";
 import { getEmptyImage } from "react-dnd-html5-backend";
+import React from "react";
+import { TreeLeafDragProps } from "./DragAndDrop/types";
 
 export function TreeHierarchy({
   itemProps,

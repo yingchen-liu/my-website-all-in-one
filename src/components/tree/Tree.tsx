@@ -10,9 +10,10 @@ import {
 import "./Tree.scss";
 import { useContext } from "react";
 import { State, TreeItem } from "../../types/skillTree";
-import { SkillTreeContext } from "../../routes/SkillTreeContext";
-import { TreeLeafDragProps } from "./dnd/types";
-import { TreeLeafDropArea } from "./dnd/TreeLeafDropArea";
+import { SkillTreeContext } from "../../contexts/SkillTreeContext";
+import { TreeLeafDragProps } from "./DragAndDrop/types";
+import { TreeLeafDropArea } from "./DragAndDrop/TreeLeafDropArea";
+import React from "react";
 
 export type TreeLeafProps = TreeLeafDragProps & {
   isActive: boolean;

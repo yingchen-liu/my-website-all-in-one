@@ -1,25 +1,26 @@
 import { Loader } from "semantic-ui-react";
-import { Tree, TreeLeaf, TreeRoot } from "./Tree";
-import HorizontalScroll from "../HorizontalScroll";
+import HorizontalScroll from "../Layout/HorizontalScroll";
 import { useContext, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { uniqueNamesGenerator, colors, animals } from "unique-names-generator";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import TreeLeafDragLayer from "./dnd/TreeLeafDragLayer";
 import {
   TreeItem,
   TreeItemPlaceholder,
   isTreeItem,
 } from "../../types/skillTree";
-import { SkillTreeContext } from "../../routes/SkillTreeContext";
+import { SkillTreeContext } from "../../contexts/SkillTreeContext";
 import { TreeChildren, TreeHierarchy } from "./TreeHierarchy";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   addChildNode,
   addNodeAfter,
   deleteNodeById,
-} from "../../reducers/skillTree/util";
+} from "../../reducers/skillTreeUtils";
+import React from "react";
+import { Tree, TreeLeaf, TreeRoot } from "./Tree";
+import TreeLeafDragLayer from "./DragAndDrop/TreeLeafDragLayer";
 
 function populateChildren(
   data: Record<string, TreeItem | TreeItemPlaceholder>,

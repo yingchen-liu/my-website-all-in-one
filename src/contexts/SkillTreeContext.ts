@@ -36,7 +36,7 @@ export type SkillTreeContextType = {
       unknown
     >;
     moveNodeMutation: UseMutationResult<
-      AxiosResponse<any, any>,
+      Record<string, TreeItem>,
       Error,
       MoveNodeDTO,
       unknown
