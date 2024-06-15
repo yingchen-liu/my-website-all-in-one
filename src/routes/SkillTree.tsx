@@ -3,8 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import "semantic-ui-css/semantic.min.css";
 import "../main.css";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import TreeView from "../components/tree/TreeView";
-
 import {
   addChildNode,
   addNodeAfter,
@@ -13,22 +11,14 @@ import {
   updateNodes,
 } from "../reducers/skillTreeUtils";
 import { TreeItem, TreeItemPlaceholder } from "../types/skillTree";
-import React from "react";
 import {
   SkillTreeContext,
   useSkillTreeContext,
 } from "../contexts/SkillTreeContext";
-import {
-  createChildNode,
-  createNodeAfter,
-  deleteNode,
-  fetchNodeChildren,
-  fetchRootNode,
-  moveNode,
-  updateNode,
-} from "../services/SkillTreeService";
 import HeaderMenu from "../components/Common/HeaderMenu";
 import TreeNodeEditor from "../components/Tree/Editor/TreeNodeEditor";
+import { createChildNode, createNodeAfter, deleteNode, fetchNodeChildren, fetchRootNode, moveNode, updateNode } from "../services/skillTreeService";
+import TreeView from "../components/Tree/TreeView";
 
 export default function SkillTree() {
   const { state, dispatch, selectedLeafRef } = useSkillTreeContext();
@@ -113,7 +103,7 @@ export default function SkillTree() {
 
   const moveNodeMutation = useMutation({
     mutationFn: moveNode,
-    onSuccess: (data, moveNodeDTO) => {
+    onSuccess: (data) => {
       queryClient.setQueryData(
         ["skill-tree"],
         (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {

@@ -1,3 +1,4 @@
+import React from "react";
 import "./HorizontalScroll.css";
 
 function HorizontalScroll({

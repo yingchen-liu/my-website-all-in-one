@@ -59,8 +59,6 @@ export function populateChild(
   onLoadMoreClick: (node: TreeItem) => void,
   onCollapseClick: (node: TreeItem) => void
 ) {
-  console.log("populateChild");
-  console.log(child, parent);
   return (
     <TreeHierarchy
       itemProps={{

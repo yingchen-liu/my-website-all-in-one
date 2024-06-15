@@ -103,8 +103,6 @@ export const updateNodes = (
   data: Record<string, TreeItem | TreeItemPlaceholder>,
   newNodes: Record<string, TreeItem | TreeItemPlaceholder>
 ): Record<string, TreeItem | TreeItemPlaceholder> => {
-  console.log('updateNodes')
-  console.log(data, newNodes)
   return {
     ...data,
     ...newNodes,
@@ -112,13 +110,16 @@ export const updateNodes = (
 };
 
 export const updateNodeById = (
-  node: Record<string, TreeItem | TreeItemPlaceholder>,
+  data: Record<string, TreeItem | TreeItemPlaceholder>,
   uuid: string,
   newNode: TreeItem | TreeItemPlaceholder
 ): Record<string, TreeItem | TreeItemPlaceholder> => {
   return {
-    ...node,
-    [uuid]: newNode,
+    ...data,
+    [uuid]: {
+      ...newNode,
+      ...(isTreeItem(data[uuid]) && {children: (data[uuid] as TreeItem).children})
+    },
   };
 };
 

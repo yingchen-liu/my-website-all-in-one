@@ -45,7 +45,6 @@ import { UseMutationResult, useQueryClient } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import { updateNodeById } from "../../../reducers/skillTreeUtils";
 import { SkillTreeContext } from "../../../contexts/SkillTreeContext";
-import React from "react";
 
 const updateNode = (
   newNode: TreeItem,

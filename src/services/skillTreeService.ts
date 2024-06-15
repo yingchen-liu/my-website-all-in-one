@@ -43,8 +43,6 @@ export const moveNode = async (
   moveNodeDTO: MoveNodeDTO
 ): Promise<Record<string, TreeItem>> => {
   const response = await axios.put(`${API_BASE_URL}/${moveNodeDTO.uuid}/position`, moveNodeDTO);
-  console.log('moveNode')
-  console.log(response.data)
   return parseTree(response.data, {})
 };
 
@@ -54,8 +52,6 @@ export const deleteNode = async (uuid: string): Promise<AxiosResponse<any>> => {
 
 export const fetchNodeChildren = async (uuid: string): Promise<Record<string, TreeItem>> => {
   const response = await axios.get(`${API_BASE_URL}/${uuid}`);
-  console.log('fetchNodeChildren')
-  console.log(response.data)
   return parseTree(response.data, {});
 };
 

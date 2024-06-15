@@ -61,7 +61,6 @@ export function TreeLeafDropArea({
             });
             break;
           case "BEFORE":
-            console.log('add before ', props.data.uuid)
             queryClient.setQueryData(
               ["skill-tree"],
               (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
@@ -81,7 +80,6 @@ export function TreeLeafDropArea({
             });
             break;
           case "AFTER":
-            console.log('add after ', props.data.uuid)
             queryClient.setQueryData(
               ["skill-tree"],
               (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
