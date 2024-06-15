@@ -6,6 +6,9 @@ import {
   ButtonOr,
   ButtonGroup,
   Checkbox,
+  Card,
+  CardContent,
+  Dropdown,
 } from "semantic-ui-react";
 import debounce from "lodash/debounce";
 import "./TreeNodeEditor.css";
@@ -82,6 +85,8 @@ export default function TreeNodeEditor() {
     const schema = BlockNoteSchema.create({
       blockSpecs: {
         ...defaultBlockSpecs,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         procode: CodeBlock,
         alert: NodeEditorAlert,
       },
@@ -278,6 +283,9 @@ export default function TreeNodeEditor() {
               </FormattingToolbar>
             )}
           />
+          {/* 
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore */}
           <SuggestionMenuController
             triggerCharacter={"/"}
             getItems={async (query) =>
@@ -288,6 +296,17 @@ export default function TreeNodeEditor() {
             }
           />
         </BlockNoteView>
+      </Segment>
+      <Segment className="tree__node_editor__related">
+        <Card>
+          <CardContent>Related</CardContent>
+        </Card>
+        <Dropdown
+          placeholder="Add related node..."
+          search
+          selection
+          options={[]}
+        />
       </Segment>
     </SegmentGroup>
   );

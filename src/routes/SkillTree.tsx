@@ -20,7 +20,7 @@ import {
   addNodeAfter,
   deleteNodeById,
   updateNodeById,
-  updateNodeChildrenById,
+  updateNodes,
 } from "../reducers/skillTree/util";
 import { SkillTreeContext, useSkillTreeContext } from "./SkillTreeContext";
 import { TreeItem, TreeItemPlaceholder } from "../types/skillTree";
@@ -43,9 +43,12 @@ export default function SkillTree() {
       parentUUID: string;
     }) => createChildNode(node, parentUUID),
     onSuccess: (data, variables) => {
-      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return addChildNode(existingData, variables.parentUUID, data.data);
-      });
+      queryClient.setQueryData(
+        ["skill-tree"],
+        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+          return addChildNode(existingData, variables.parentUUID, data.data);
+        }
+      );
     },
   });
 
@@ -59,13 +62,16 @@ export default function SkillTree() {
       parentUUID: string;
     }) => createNodeAfter(node, previousNodeUUID),
     onSuccess: (data, variables) => {
-      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return addNodeAfter(
-          existingData,
-          variables.previousNodeUUID,
-          data.data
-        );
-      });
+      queryClient.setQueryData(
+        ["skill-tree"],
+        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+          return addNodeAfter(
+            existingData,
+            variables.previousNodeUUID,
+            data.data
+          );
+        }
+      );
     },
   });
 
@@ -77,61 +83,82 @@ export default function SkillTree() {
       isCollpasedChangedToFalse: boolean;
     }) => updateNode(node, ["children"]),
     onMutate: ({ node }) => {
-      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return updateNodeById(existingData, node.uuid, {
-          ...node,
-          isLoading: true,
-        });
-      });
+      queryClient.setQueryData(
+        ["skill-tree"],
+        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+          return updateNodeById(existingData, node.uuid, {
+            ...node,
+            isLoading: true,
+          });
+        }
+      );
     },
     onSuccess: (data, { node, isCollpasedChangedToFalse }) => {
-      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        if (isCollpasedChangedToFalse) {
-          handleLoadMore(node);
+      queryClient.setQueryData(
+        ["skill-tree"],
+        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+          if (isCollpasedChangedToFalse) {
+            handleLoadMore(node);
+          }
+          return updateNodeById(existingData, node.uuid, data.data);
         }
-        return updateNodeById(existingData, node.uuid, data.data);
-      });
+      );
     },
   });
 
   const moveNodeMutation = useMutation({
     mutationFn: moveNode,
     onSuccess: (data, moveNodeDTO) => {
-      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return updateNodeChildrenById(
-          deleteNodeById(existingData, moveNodeDTO.uuid),
-          moveNodeDTO.parentUUID,
-          data.data.children
-        );
-      });
+      queryClient.setQueryData(
+        ["skill-tree"],
+        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+          return updateNodes(
+            existingData,
+            data
+          );
+        }
+      );
     },
   });
 
   const deleteNodeMutation = useMutation({
     mutationFn: deleteNode,
     onSuccess: (_, uuid) => {
-      queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-        return deleteNodeById(existingData, uuid);
-      });
+      queryClient.setQueryData(
+        ["skill-tree"],
+        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+          return deleteNodeById(existingData, uuid);
+        }
+      );
     },
   });
 
   async function handleLoadMore(node: TreeItem) {
-    queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-      return updateNodeChildrenById(existingData, node.uuid, [
-        { uuid: uuidv4() } as TreeItemPlaceholder,
-      ]);
-    });
+    queryClient.setQueryData(
+      ["skill-tree"],
+      (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+        return addChildNode(existingData, node.uuid, { uuid: uuidv4() });
+      }
+    );
     const result = await fetchNodeChildren(node.uuid);
-    queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-      return updateNodeChildrenById(existingData, node.uuid, result.children);
-    });
+    queryClient.setQueryData(
+      ["skill-tree"],
+      (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+        return updateNodes(existingData, result);
+      }
+    );
   }
 
   function handleCollapse(node: TreeItem) {
-    queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
-      return updateNodeChildrenById(existingData, node.uuid, []);
-    });
+    queryClient.setQueryData(
+      ["skill-tree"],
+      (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+        return updateNodeById(existingData, node.uuid, {
+          ...node,
+          children: [],
+        });
+      }
+    );
   }
 
   return (

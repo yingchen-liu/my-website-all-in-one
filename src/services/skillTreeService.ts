@@ -3,9 +3,18 @@ import { MoveNodeDTO, TreeItem } from "../types/skillTree";
 
 const API_BASE_URL = "http://localhost:8080/nodes";
 
-export const fetchRootNode = async (): Promise<TreeItem> => {
+const parseTree = (tree: any, map: Record<string, TreeItem>) => {
+  const { children, ...rest } = tree;
+  map[tree.uuid] = { ...rest, children: children.map((child: TreeItem) => child.uuid) };
+  children.forEach((child: any) => {
+    parseTree(child, map);
+  });
+  return map;
+};
+
+export const fetchRootNode = async (): Promise<Record<string, TreeItem>> => {
   const response = await axios.get(`${API_BASE_URL}/root`);
-  return response.data;
+  return parseTree(response.data, {});
 };
 
 export const createChildNode = async (
@@ -32,17 +41,22 @@ export const updateNode = async (
 
 export const moveNode = async (
   moveNodeDTO: MoveNodeDTO
-): Promise<AxiosResponse<any>> => {
-  return axios.put(`${API_BASE_URL}/${moveNodeDTO.uuid}/position`, moveNodeDTO);
+): Promise<Record<string, TreeItem>> => {
+  const response = await axios.put(`${API_BASE_URL}/${moveNodeDTO.uuid}/position`, moveNodeDTO);
+  console.log('moveNode')
+  console.log(response.data)
+  return parseTree(response.data, {})
 };
 
 export const deleteNode = async (uuid: string): Promise<AxiosResponse<any>> => {
   return axios.delete(`${API_BASE_URL}/${uuid}`);
 };
 
-export const fetchNodeChildren = async (uuid: string): Promise<TreeItem> => {
+export const fetchNodeChildren = async (uuid: string): Promise<Record<string, TreeItem>> => {
   const response = await axios.get(`${API_BASE_URL}/${uuid}`);
-  return response.data;
+  console.log('fetchNodeChildren')
+  console.log(response.data)
+  return parseTree(response.data, {});
 };
 
 function removeFields<T extends Record<string, any>, K extends keyof T>(

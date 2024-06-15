@@ -7,11 +7,22 @@ import { uniqueNamesGenerator, colors, animals } from "unique-names-generator";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import TreeLeafDragLayer from "./dnd/TreeLeafDragLayer";
-import { TreeItem, TreeItemPlaceholder } from "../../types/skillTree";
+import {
+  TreeItem,
+  TreeItemPlaceholder,
+  isTreeItem,
+} from "../../types/skillTree";
 import { SkillTreeContext } from "../../routes/SkillTreeContext";
 import { TreeChildren, TreeHierarchy } from "./TreeHierarchy";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  addChildNode,
+  addNodeAfter,
+  deleteNodeById,
+} from "../../reducers/skillTree/util";
 
 function populateChildren(
+  data: Record<string, TreeItem | TreeItemPlaceholder>,
   parent: TreeItem,
   children: (TreeItem | TreeItemPlaceholder)[],
   activeItem: TreeItem | null,
@@ -23,6 +34,7 @@ function populateChildren(
 ) {
   return children.map((child) => {
     return populateChild(
+      data,
       parent,
       child,
       activeItem,
@@ -36,6 +48,7 @@ function populateChildren(
 }
 
 export function populateChild(
+  data: Record<string, TreeItem | TreeItemPlaceholder>,
   parent: TreeItem,
   child: TreeItem | TreeItemPlaceholder,
   activeItem: TreeItem | null,
@@ -45,6 +58,8 @@ export function populateChild(
   onLoadMoreClick: (node: TreeItem) => void,
   onCollapseClick: (node: TreeItem) => void
 ) {
+  console.log("populateChild");
+  console.log(child, parent);
   return (
     <TreeHierarchy
       itemProps={{
@@ -64,11 +79,12 @@ export function populateChild(
         onCollapseClick={onCollapseClick}
       />
 
-      {'children' in child && child.children && (
+      {isTreeItem(child) && child.children && (
         <TreeChildren>
           {populateChildren(
+            data,
             child,
-            child.children,
+            child.children.map((childUUID) => data[childUUID]),
             activeItem,
             onClick,
             onAddChildClick,
@@ -88,6 +104,8 @@ export default function TreeView() {
   if (!context) {
     throw new Error("TreeView must be used within a SkillTreeContext");
   }
+
+  const queryClient = useQueryClient();
 
   const {
     treeData,
@@ -126,20 +144,44 @@ export default function TreeView() {
       children: [],
       isCollapsed: false,
       isLoading: true,
-      isDeleting: false
+      isDeleting: false,
     } satisfies TreeItem;
   }
 
   function handleAddChild(parentNode: TreeItem) {
+    const tempUUID = uuidv4();
+    queryClient.setQueryData(
+      ["skill-tree"],
+      (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+        return addChildNode(existingData, parentNode.uuid, {
+          uuid: tempUUID,
+        });
+      }
+    );
     const newNode = createNewNode();
     treeData.createChildNodeMutation
       ?.mutateAsync({ node: newNode, parentUUID: parentNode.uuid })
       .then(() => {
+        queryClient.setQueryData(
+          ["skill-tree"],
+          (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+            return deleteNodeById(existingData, tempUUID);
+          }
+        );
         handleClick(newNode, parentNode);
       });
   }
 
   function handleAddAfter(previousNode: TreeItem, parentNode: TreeItem) {
+    const tempUUID = uuidv4();
+    queryClient.setQueryData(
+      ["skill-tree"],
+      (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+        return addNodeAfter(existingData, previousNode.uuid, {
+          uuid: tempUUID,
+        });
+      }
+    );
     const newNode = createNewNode();
     treeData.createNodeAfterMutation
       ?.mutateAsync({
@@ -148,6 +190,12 @@ export default function TreeView() {
         parentUUID: parentNode.uuid,
       })
       .then(() => {
+        queryClient.setQueryData(
+          ["skill-tree"],
+          (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+            return deleteNodeById(existingData, tempUUID);
+          }
+        );
         handleClick(newNode, parentNode);
       });
   }
@@ -155,7 +203,7 @@ export default function TreeView() {
   return (
     <HorizontalScroll className="body--full-screen">
       {isPending && <Loader active content="Loading..." />}
-      {isSuccess && data?.children && (
+      {isSuccess && data && (
         <Tree>
           <DndProvider backend={HTML5Backend}>
             <TreeLeafDragLayer />
@@ -163,7 +211,10 @@ export default function TreeView() {
             <TreeChildren>
               {populateChildren(
                 data,
-                data.children,
+                data["b1747c9f-3818-4edd-b7c6-7384b2cb5e41"] as TreeItem,
+                (
+                  data["b1747c9f-3818-4edd-b7c6-7384b2cb5e41"] as TreeItem
+                ).children.map((childUUID) => data[childUUID]),
                 state.selectedNode,
                 handleClick,
                 handleAddChild,

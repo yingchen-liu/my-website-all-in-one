@@ -13,16 +13,16 @@ import {
 } from "../../../reducers/skillTree/util";
 import { v4 as uuidv4 } from "uuid";
 
-function isDescendant(a: TreeItem | TreeItemPlaceholder, b: TreeItem): boolean {
+function isDescendant(a: TreeItem | TreeItemPlaceholder, b: TreeItem, data: Record<string, TreeItem | TreeItemPlaceholder>): boolean {
   return (
-    b.children.filter((child) => child.uuid === a.uuid).length > 0 ||
-    b.children.filter((child) => isDescendant(a, child as TreeItem)).length > 0
+    b.children.filter((childUUID) => childUUID === a.uuid).length > 0 ||
+    b.children.filter((childUUID) => isDescendant(a, data[childUUID] as TreeItem, data)).length > 0
   );
 }
 
 export function TreeLeafDropArea({
   props,
-  children,
+  children
 }: {
   props: TreeLeafDropProps;
   children?: any;
@@ -40,14 +40,14 @@ export function TreeLeafDropArea({
     () => ({
       accept: "LEAF",
       drop: (item) => {
-        queryClient.setQueryData(["skill-tree"], (existingData: TreeItem) => {
+        queryClient.setQueryData(["skill-tree"], (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
           return deleteNodeById(existingData, item.data.uuid);
         });
         switch (props.position) {
           case "CHILD":
             queryClient.setQueryData(
               ["skill-tree"],
-              (existingData: TreeItem) => {
+              (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
                 return addChildNode(existingData, props.data.uuid, {
                   uuid: uuidv4(),
                 });
@@ -63,7 +63,7 @@ export function TreeLeafDropArea({
             console.log('add before ', props.data.uuid)
             queryClient.setQueryData(
               ["skill-tree"],
-              (existingData: TreeItem) => {
+              (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
                 return addNodeBefore(existingData, props.data.uuid, {
                   uuid: uuidv4(),
                 });
@@ -83,7 +83,7 @@ export function TreeLeafDropArea({
             console.log('add after ', props.data.uuid)
             queryClient.setQueryData(
               ["skill-tree"],
-              (existingData: TreeItem) => {
+              (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
                 return addNodeAfter(existingData, props.data.uuid, {
                   uuid: uuidv4(),
                 });
@@ -113,7 +113,7 @@ export function TreeLeafDropArea({
         if (props.data.uuid === item.data.uuid) return false;
         if (props.position === "CHILD" && item.parent.uuid === props.data.uuid)
           return false;
-        if (isDescendant(props.data, item.data as TreeItem)) return false;
+        if (!treeData.data || isDescendant(props.data, item.data as TreeItem, treeData.data)) return false;
         return true;
       },
     }),

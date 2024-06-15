@@ -5,12 +5,16 @@ export type TreeItem = {
   name: string;
   subtitle?: string;
   content?: string;
-  children: (TreeItem | TreeItemPlaceholder)[];
+  children: string[];
   isCollapsed: boolean;
 };
 
 export type TreeItemPlaceholder = {
   uuid: string;
+};
+
+export const isTreeItem = (entity: TreeItem | TreeItemPlaceholder): entity is TreeItem => {
+  return (entity as TreeItem).name !== undefined;
 };
 
 export type State = {

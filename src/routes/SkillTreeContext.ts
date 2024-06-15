@@ -1,5 +1,5 @@
 import { createContext, useReducer, useRef } from "react";
-import { State, Action, TreeItem, MoveNodeDTO } from "../types/skillTree";
+import { State, Action, TreeItem, MoveNodeDTO, TreeItemPlaceholder } from "../types/skillTree";
 import { AxiosResponse } from "axios";
 import { UseMutationResult } from "@tanstack/react-query";
 
@@ -14,7 +14,7 @@ export type SkillTreeContextType = {
   selectedLeafRef: React.MutableRefObject<any>;
   dispatch: React.Dispatch<Action>;
   treeData: {
-    data: TreeItem | undefined;
+    data: Record<string, TreeItem | TreeItemPlaceholder> | undefined;
     isPending: boolean;
     isSuccess: boolean;
     createChildNodeMutation: UseMutationResult<

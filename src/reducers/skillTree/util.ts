@@ -1,136 +1,148 @@
-import { TreeItem, TreeItemPlaceholder } from "../../types/skillTree";
+import {
+  TreeItem,
+  TreeItemPlaceholder,
+  isTreeItem,
+} from "../../types/skillTree";
+import { deepCopy } from "../../utils/utils";
 
 export const addChildNode = (
-  node: TreeItem,
+  data: Record<string, TreeItem | TreeItemPlaceholder>,
   parentUUID: string,
   newNode: TreeItem | TreeItemPlaceholder
-): TreeItem | TreeItemPlaceholder => {
+): Record<string, TreeItem | TreeItemPlaceholder> => {
   return {
-    ...node,
-    children: [
-      ...node.children
-        .filter((child) => Object.prototype.hasOwnProperty.call(child, "name"))
-        .map((child) => {
-          return addChildNode(child as TreeItem, parentUUID, newNode);
-        }),
-      ...(parentUUID === node.uuid ? [newNode] : []),
-    ],
+    ...Object.fromEntries(
+      Object.entries(data).map(([uuid, node]) => {
+        if (isTreeItem(node)) {
+          return [
+            uuid,
+            {
+              ...node,
+              children:
+                node.uuid === parentUUID
+                  ? [...node.children, newNode.uuid]
+                  : node.children,
+            },
+          ];
+        } else {
+          return [uuid, node];
+        }
+      })
+    ),
+    [newNode.uuid]: newNode,
   };
 };
 
 export const addNodeAfter = (
-  node: TreeItem,
+  data: Record<string, TreeItem | TreeItemPlaceholder>,
   previousNodeUUID: string,
   newNode: TreeItem | TreeItemPlaceholder
-): TreeItem => {
-  const previousNodeIndex = node.children.findIndex(
-    (child) => child.uuid === previousNodeUUID
-  );
-  let children = node.children;
-  if (previousNodeIndex >= 0) {
-    children.splice(previousNodeIndex + 1, 0, newNode);
-  }
+): Record<string, TreeItem | TreeItemPlaceholder> => {
   return {
-    ...node,
-    children: [
-      ...children.map((child) => {
-        if (Object.prototype.hasOwnProperty.call(child, "name")) {
-          return addNodeAfter(child as TreeItem, previousNodeUUID, newNode);
+    ...Object.fromEntries(
+      Object.entries(data).map(([uuid, node]) => {
+        if (isTreeItem(node)) {
+          const previousNodeIndex = node.children.findIndex(
+            (childUUID) => childUUID === previousNodeUUID
+          );
+          let children = node.children;
+          if (previousNodeIndex >= 0) {
+            children = deepCopy(children);
+            children.splice(previousNodeIndex + 1, 0, newNode.uuid);
+          }
+          return [
+            uuid,
+            {
+              ...node,
+              children: children,
+            },
+          ];
         } else {
-          return child;
+          return [uuid, node];
         }
-      }),
-    ],
+      })
+    ),
+    [newNode.uuid]: newNode,
   };
 };
 
 export const addNodeBefore = (
-  node: TreeItem,
+  data: Record<string, TreeItem | TreeItemPlaceholder>,
   nextNodeUUID: string,
   newNode: TreeItem | TreeItemPlaceholder
-): TreeItem => {
-  const previousNodeIndex = node.children.findIndex(
-    (child) => child.uuid === nextNodeUUID
-  );
-  let children = JSON.parse(JSON.stringify(node.children));
-  if (previousNodeIndex >= 0) {
-    children.splice(previousNodeIndex, 0, newNode);
-  }
+): Record<string, TreeItem | TreeItemPlaceholder> => {
   return {
-    ...node,
-    children: [
-      ...children.map((child: TreeItem) => {
-        if (Object.prototype.hasOwnProperty.call(child, "name")) {
-          return addNodeBefore(child as TreeItem, nextNodeUUID, newNode);
+    ...Object.fromEntries(
+      Object.entries(data).map(([uuid, node]) => {
+        if (isTreeItem(node)) {
+          const nextNodeIndex = node.children.findIndex(
+            (childUUID) => childUUID === nextNodeUUID
+          );
+          let children = node.children;
+          if (nextNodeIndex >= 0) {
+            children = deepCopy(children);
+            children.splice(nextNodeIndex, 0, newNode.uuid);
+          }
+          return [
+            uuid,
+            {
+              ...node,
+              children: children,
+            },
+          ];
         } else {
-          return child;
+          return [uuid, node];
         }
-      }),
-    ],
+      })
+    ),
+    [newNode.uuid]: newNode,
   };
 };
 
-export const updateNodeChildrenById = (
-  node: TreeItem,
-  uuid: string,
-  newChildren: (TreeItem | TreeItemPlaceholder)[]
-): TreeItem => {
+export const updateNodes = (
+  data: Record<string, TreeItem | TreeItemPlaceholder>,
+  newNodes: Record<string, TreeItem | TreeItemPlaceholder>
+): Record<string, TreeItem | TreeItemPlaceholder> => {
+  console.log('updateNodes')
+  console.log(data, newNodes)
   return {
-    ...node,
-    children: [
-      ...(uuid !== node.uuid
-        ? node.children
-            .filter((child) =>
-              Object.prototype.hasOwnProperty.call(child, "name")
-            )
-            .map((child) => {
-              return updateNodeChildrenById(
-                child as TreeItem,
-                uuid,
-                newChildren
-              );
-            })
-        : []),
-      ...(uuid === node.uuid ? newChildren : []),
-    ],
+    ...data,
+    ...newNodes,
   };
 };
 
 export const updateNodeById = (
-  node: TreeItem | TreeItemPlaceholder,
+  node: Record<string, TreeItem | TreeItemPlaceholder>,
   uuid: string,
   newNode: TreeItem | TreeItemPlaceholder
-): TreeItem | TreeItemPlaceholder => {
-  if (uuid === node.uuid) {
-    // Update the node's properties but keep the existing children
-    return {
-      ...newNode,
-      ...("children" in node && { children: node.children }),
-    };
-  } else if ("children" in node && node.children) {
-    // Recursively check and update children nodes
-    return {
-      ...node,
-      children: node.children.map((child: TreeItem | TreeItemPlaceholder) =>
-        updateNodeById(child, uuid, newNode)
-      ),
-    };
-  }
-  return node; // Return the node as is if no match and no children
+): Record<string, TreeItem | TreeItemPlaceholder> => {
+  return {
+    ...node,
+    [uuid]: newNode,
+  };
 };
 
 export const deleteNodeById = (
-  node: TreeItem | TreeItemPlaceholder,
+  data: Record<string, TreeItem | TreeItemPlaceholder>,
   uuid: string
-): TreeItem | TreeItemPlaceholder => {
+): Record<string, TreeItem | TreeItemPlaceholder> => {
   return {
-    ...node,
-    children: [
-      ...("children" in node
-        ? node.children
-            .filter((child) => child.uuid !== uuid)
-            .map((child) => deleteNodeById(child, uuid))
-        : []),
-    ],
+    ...Object.fromEntries(
+      Object.entries(data)
+        .filter(([nodeUUID]) => nodeUUID !== uuid)
+        .map(([nodeUUID, node]) => {
+          if (isTreeItem(node)) {
+            return [
+              nodeUUID,
+              {
+                ...node,
+                children: node.children.filter((nodeUUID) => nodeUUID !== uuid),
+              },
+            ];
+          } else {
+            return [uuid, node];
+          }
+        })
+    ),
   };
 };

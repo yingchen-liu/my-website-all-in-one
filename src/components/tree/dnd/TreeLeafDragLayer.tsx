@@ -1,6 +1,7 @@
-import { CSSProperties, FC } from "react";
+import { CSSProperties, FC, useContext } from "react";
 import { XYCoord, useDragLayer } from "react-dnd";
 import { populateChild } from "../TreeView";
+import { SkillTreeContext } from "../../../routes/SkillTreeContext";
 
 const layerStyles: CSSProperties = {
   position: "fixed",
@@ -11,6 +12,12 @@ const layerStyles: CSSProperties = {
 };
 
 const TreeLeafDragLayer: FC = () => {
+  const context = useContext(SkillTreeContext);
+
+  if (!context) {
+    throw new Error("TreeLeafDragLayer must be used within a SkillTreeContext");
+  }
+
   const { item, initialOffset, currentOffset } = useDragLayer((monitor) => ({
     item: monitor.getItem(),
     initialOffset: monitor.getInitialSourceClientOffset(),
@@ -36,11 +43,12 @@ const TreeLeafDragLayer: FC = () => {
     };
   }
 
-  if (item && item.data) {
+  if (item && item.data && context.treeData.data) {
     return (
       <div className="tree__leaf__drag_container" style={layerStyles}>
         <div style={getItemStyles(initialOffset, currentOffset)}>
           {populateChild(
+            context.treeData.data,
             item.parent,
             item.data,
             null,
