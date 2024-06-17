@@ -18,7 +18,6 @@ import {
   addNodeAfter,
   deleteNodeById,
 } from "../../reducers/skillTreeUtils";
-import React from "react";
 import { Tree, TreeLeaf, TreeRoot } from "./Tree";
 import TreeLeafDragLayer from "./DragAndDrop/TreeLeafDragLayer";
 

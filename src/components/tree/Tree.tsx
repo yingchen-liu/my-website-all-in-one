@@ -13,7 +13,6 @@ import { State, TreeItem } from "../../types/skillTree";
 import { SkillTreeContext } from "../../contexts/SkillTreeContext";
 import { TreeLeafDragProps } from "./DragAndDrop/types";
 import { TreeLeafDropArea } from "./DragAndDrop/TreeLeafDropArea";
-import React from "react";
 
 export type TreeLeafProps = TreeLeafDragProps & {
   isActive: boolean;
