@@ -123,6 +123,19 @@ export const updateNodeById = (
   };
 };
 
+export const removeChildren = (
+  data: Record<string, TreeItem | TreeItemPlaceholder>,
+  uuid: string,
+): Record<string, TreeItem | TreeItemPlaceholder> => {
+  return {
+    ...data,
+    [uuid]: {
+      ...data[uuid],
+      children: []
+    },
+  };
+};
+
 export const deleteNodeById = (
   data: Record<string, TreeItem | TreeItemPlaceholder>,
   uuid: string

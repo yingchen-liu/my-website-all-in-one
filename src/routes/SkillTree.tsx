@@ -7,6 +7,7 @@ import {
   addChildNode,
   addNodeAfter,
   deleteNodeById,
+  removeChildren,
   updateNodeById,
   updateNodes,
 } from "../reducers/skillTreeUtils";
@@ -145,10 +146,7 @@ export default function SkillTree() {
     queryClient.setQueryData(
       ["skill-tree"],
       (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-        return updateNodeById(existingData, node.uuid, {
-          ...node,
-          children: [],
-        });
+        return removeChildren(existingData, node.uuid);
       }
     );
   }
