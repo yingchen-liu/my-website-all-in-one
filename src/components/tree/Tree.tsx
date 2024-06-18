@@ -54,7 +54,7 @@ function populateTreeLeafCard(
         node.children?.length ? " tree__leaf--has-children" : ""
       }${props.isActive ? " tree__item--active" : ""}${
         node.isDeleting ? " tree__leaf--deleting" : ""
-      }`}
+      }${node.isRelationship ? " tree__leaf--is_relationship" : ""}`}
       onClick={() => {
         props.onClick(node, props.parent);
       }}

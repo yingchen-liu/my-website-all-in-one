@@ -3,10 +3,10 @@ import { useContext, useState } from "react";
 import {
   Segment,
   Input,
-  Checkbox,
   ButtonGroup,
   Button,
   ButtonOr,
+  Radio,
 } from "semantic-ui-react";
 import { SkillTreeContext } from "../../../contexts/SkillTreeContext";
 import { updateNodeById } from "../../../reducers/skillTreeUtils";
@@ -59,6 +59,36 @@ export default function TreeNodeEditorHeader({
 
   return (
     <Segment className="tree__node_editor__top">
+      <div className="tree__node_editor__radio_group">
+        <Radio
+          slider
+          label="Relationship?"
+          checked={node.isRelationship}
+          onChange={(_, data) => {
+            const newNode = {
+              ...node,
+              isRelationship: !!data.checked,
+              isCollapsed: false,
+            };
+            dispatch({ type: "node/update", node: newNode });
+            updateNode(newNode, treeData.updateNodeMutation, !!!data.checked);
+          }}
+        />
+        <Radio
+          slider
+          label="Collapse?"
+          checked={node.isCollapsed}
+          disabled={node.isRelationship}
+          onChange={(_, data) => {
+            const newNode = {
+              ...node,
+              isCollapsed: !!data.checked,
+            };
+            dispatch({ type: "node/update", node: newNode });
+            updateNode(newNode, treeData.updateNodeMutation, !!!data.checked);
+          }}
+        />
+      </div>
       <Input
         className="tree__node_editor__title"
         placeholder="Title"
@@ -83,18 +113,6 @@ export default function TreeNodeEditorHeader({
           };
           dispatch({ type: "node/update", node: newNode });
           debouncedUpdate(newNode, treeData.updateNodeMutation);
-        }}
-      />
-      <Checkbox
-        label="Collapse"
-        checked={node.isCollapsed}
-        onChange={(_, data) => {
-          const newNode = {
-            ...node,
-            isCollapsed: !!data.checked,
-          };
-          dispatch({ type: "node/update", node: newNode });
-          updateNode(newNode, treeData.updateNodeMutation, !!!data.checked);
         }}
       />
       {node.children.length === 0 && (

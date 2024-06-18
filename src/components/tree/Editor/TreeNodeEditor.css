@@ -40,6 +40,11 @@
       margin-right: 0;
     }
 
+    .tree__node_editor__radio_group {
+      display: flex;
+      flex-direction: column;
+    }
+
     .tree__node_editor__title {
       flex-grow: 1;
     }

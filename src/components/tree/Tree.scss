@@ -64,6 +64,25 @@ $tree-item-border-radius: 0.28571429rem;
     &__leaf--deleting {
       opacity: 0.2;
     }
+    &__leaf--is_relationship.ui.card {
+      border: 0;
+      box-shadow: none;
+      .content {
+        padding: 0.5em;
+
+        .header {
+          font-size: 0.8em;
+        }
+        .meta {
+          font-size: 0.7em;
+        }
+      }
+    }
+    &__leaf--is_relationship.tree__item--active.ui.card {
+      .content {
+        padding: 1em;
+      }
+    }
     &__leaf::before,
     &__leaf.tree__leaf--has-children::after,
     &__root::after {

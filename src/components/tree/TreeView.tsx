@@ -143,6 +143,7 @@ export default function TreeView() {
       isCollapsed: false,
       isLoading: true,
       isDeleting: false,
+      isRelationship: false
     } satisfies TreeItem;
   }
 

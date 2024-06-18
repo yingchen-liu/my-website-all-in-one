@@ -7,6 +7,7 @@ export type TreeItem = {
   content?: string;
   children: string[];
   isCollapsed: boolean;
+  isRelationship: boolean;
 };
 
 export type TreeItemPlaceholder = {
