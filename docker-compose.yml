@@ -8,7 +8,7 @@ services:
     environment:
       - NEO4J_AUTH=neo4j/your_secure_password
     volumes:
-      - neo4j_data:/data  # Persist data between restarts
+      - neo4j-data:/data  # Persist data between restarts
 
   spring-boot-app:
     build:
@@ -35,4 +35,4 @@ services:
       - spring-boot-app  # Ensure Spring Boot app starts before Vite app
 
 volumes:
-  neo4j_data:  # Named volume for persisting Neo4j data
+  neo4j-data:  # Named volume for persisting Neo4j data
