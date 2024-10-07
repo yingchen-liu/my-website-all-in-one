@@ -12,7 +12,6 @@ import {
   deleteNodeById,
 } from "../../../reducers/skillTreeUtils";
 import { v4 as uuidv4 } from "uuid";
-import React from "react";
 
 function isDescendant(a: TreeItem | TreeItemPlaceholder, b: TreeItem, data: Record<string, TreeItem | TreeItemPlaceholder>): boolean {
   return (

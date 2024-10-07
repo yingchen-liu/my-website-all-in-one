@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import {
-  MenuMenu,
   MenuItem,
   Menu,
   MenuItemProps,
@@ -28,7 +27,7 @@ function HeaderMenu({ activeItem }: { activeItem: string }) {
               active={activeItem === ""}
               onClick={handleItemClick}
             >
-              Home
+              Yingchen
             </MenuItem>
             <MenuItem
               name="skill-tree"
@@ -37,13 +36,13 @@ function HeaderMenu({ activeItem }: { activeItem: string }) {
             >
               SkillTree
             </MenuItem>
-            <MenuMenu position="right">
+            {/* <MenuMenu position="right">
               <MenuItem
                 name="logout"
                 active={activeItem === "logout"}
                 onClick={handleItemClick}
               />
-            </MenuMenu>
+            </MenuMenu> */}
           </Menu>
         </Segment>
       </div>
