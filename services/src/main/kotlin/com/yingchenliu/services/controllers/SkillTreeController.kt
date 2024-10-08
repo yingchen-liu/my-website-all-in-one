@@ -10,19 +10,20 @@ import java.util.*
 
 
 @RestController
+@RequestMapping("/api/nodes")
 class SkillTreeController(val nodeService: NodeService) {
 
-    @GetMapping("/nodes/root")
+    @GetMapping("/root")
     fun findRoot(): TreeNode? {
         return nodeService.findFromRoot()
     }
 
-    @GetMapping("/nodes/{uuid}")
+    @GetMapping("/{uuid}")
     fun findNode(@PathVariable("uuid") uuid: String): TreeNode? {
         return nodeService.findFromNode(UUID.fromString(uuid))
     }
 
-    @PostMapping("/nodes/{parentUUID}")
+    @PostMapping("/{parentUUID}")
     fun createChildNode(@PathVariable("parentUUID") parentUUID: String, @RequestBody node: TreeNode): TreeNode {
         val parentNode = nodeService.findById(UUID.fromString(parentUUID))
 
@@ -33,7 +34,7 @@ class SkillTreeController(val nodeService: NodeService) {
         }
     }
 
-    @PostMapping("/nodes/{previousNodeUUID}/after")
+    @PostMapping("/{previousNodeUUID}/after")
     fun createNodeAfter(@PathVariable("previousNodeUUID") previousNodeUUID: String, @RequestBody node: TreeNode): TreeNode {
         val previousNode = nodeService.findById(UUID.fromString(previousNodeUUID))
 
@@ -44,7 +45,7 @@ class SkillTreeController(val nodeService: NodeService) {
         }
     }
 
-    @PutMapping("/nodes/{uuid}")
+    @PutMapping("/{uuid}")
     fun updateNode(@PathVariable("uuid") uuid: String, @RequestBody node: TreeNode): TreeNode {
         val existingNode = nodeService.findById(UUID.fromString(uuid))
 
@@ -56,7 +57,7 @@ class SkillTreeController(val nodeService: NodeService) {
         }
     }
 
-    @PutMapping("/nodes/{uuid}/position")
+    @PutMapping("/{uuid}/position")
     fun updateNodeParent(@PathVariable("uuid") uuid: String, @RequestBody positionDTO: NodePositionDTO): TreeNode {
         val node = nodeService.findById(UUID.fromString(uuid))
         val parentNode = nodeService.findById(UUID.fromString(positionDTO.parentUUID))
@@ -75,7 +76,7 @@ class SkillTreeController(val nodeService: NodeService) {
         return nodeService.findFromNode(parentNode.get().uuid)
     }
 
-    @DeleteMapping("/nodes/{uuid}")
+    @DeleteMapping("/{uuid}")
     fun deleteById(@PathVariable("uuid") uuid: String) {
         val node = nodeService.findById(UUID.fromString(uuid))
         node.ifPresentOrElse(

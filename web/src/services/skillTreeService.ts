@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { MoveNodeDTO, TreeItem } from "../types/skillTree";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL + "/nodes";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL + "/api/nodes";
 
 const parseTree = (tree: any, map: Record<string, TreeItem>) => {
   const { children, ...rest } = tree;

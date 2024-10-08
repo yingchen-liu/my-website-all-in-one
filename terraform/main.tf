@@ -23,12 +23,12 @@ resource "aws_iam_role" "ecs_execution_role" {
 
 resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy_attachment" {
   role       = aws_iam_role.ecs_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy" // Attach the AWS-managed policy
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy" # Attach the AWS-managed policy
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_s3_policy_attachment" {
   role       = aws_iam_role.ecs_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess" // Attach this if you need S3 access
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess" # Attach this if you need S3 access
 }
 
 # Attach policy to ECS execution role
@@ -125,8 +125,8 @@ resource "aws_cloudwatch_log_group" "my_website_log_group" {
 }
 
 # Create ECS Task Definition
-resource "aws_ecs_task_definition" "my_task" {
-  family                   = "my-website-task"
+resource "aws_ecs_task_definition" "my_task_spring_boot" {
+  family                   = "my-website-spring-boot-task"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = "256"
@@ -143,7 +143,7 @@ resource "aws_ecs_task_definition" "my_task" {
         options = {
           "awslogs-group"         = aws_cloudwatch_log_group.my_website_log_group.name # Reference log group here
           "awslogs-region"       = "us-east-2"                     # Your AWS region
-          "awslogs-stream-prefix" = "vite-app"                      # Log stream prefix
+          "awslogs-stream-prefix" = "spring-boot-app"               # Log stream prefix
         }
       }
       portMappings = [
@@ -166,7 +166,20 @@ resource "aws_ecs_task_definition" "my_task" {
           value = "X_v0XWz1H3m0HOqHiOPdNxu2ufh6HNbbCvodAB69Zn8"
         }
       ]
-    },
+    }
+  ])
+}
+
+
+resource "aws_ecs_task_definition" "my_task_vite" {
+  family                   = "my-website-vite-task"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+
+  container_definitions = jsonencode([
     {
       name         = "vite-app"
       image        = "${aws_ecr_repository.my_ecr_repository.repository_url}:vite-app"
@@ -176,19 +189,13 @@ resource "aws_ecs_task_definition" "my_task" {
         options = {
           "awslogs-group"         = aws_cloudwatch_log_group.my_website_log_group.name # Reference log group here
           "awslogs-region"       = "us-east-2"                     # Your AWS region
-          "awslogs-stream-prefix" = "spring-boot-app"               # Log stream prefix
+          "awslogs-stream-prefix" = "vite-app"                      # Log stream prefix
         }
       }
       portMappings = [
         {
           containerPort = 80
           hostPort      = 80
-        }
-      ]
-      dependsOn = [
-        {
-          containerName = "spring-boot-app"
-          condition     = "START"
         }
       ]
     }
@@ -202,15 +209,15 @@ resource "aws_security_group" "ecs_service_sg" {
   vpc_id      = aws_vpc.my_vpc.id
 
   ingress {
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 8080
+    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -236,7 +243,7 @@ resource "aws_lb" "my_lb" {
   }
 }
 
-# Create a Listener for the ALB
+# Create Listener for the ALB
 resource "aws_lb_listener" "my_lb_listener" {
   load_balancer_arn = aws_lb.my_lb.arn
   port              = 80
@@ -244,31 +251,20 @@ resource "aws_lb_listener" "my_lb_listener" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.my_target_group.arn
+    target_group_arn = aws_lb_target_group.my_target_group_vite.arn
   }
 }
 
-resource "aws_lb_listener" "my_lb_listener_8080" {
-  load_balancer_arn = aws_lb.my_lb.arn
-  port              = 8080
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.my_target_group.arn
-  }
-}
-
-# Create Target Group
-resource "aws_lb_target_group" "my_target_group" {
-  name     = "my-website-target-group"
+# Create Target Group for Vite App
+resource "aws_lb_target_group" "my_target_group_vite" {
+  name     = "my-website-vite-tg"
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.my_vpc.id
-  target_type = "ip"  # Change from "instance" to "ip"
+  target_type = "ip"
 
   health_check {
-    healthy_threshold   = 3
+    healthy_threshold   = 2
     interval            = 30
     path                = "/"
     timeout             = 5
@@ -277,60 +273,83 @@ resource "aws_lb_target_group" "my_target_group" {
   }
 }
 
-# Create Target Group for Spring Boot
-resource "aws_lb_target_group" "my_target_group_8080" {
-  name     = "my-website-target-group-8080"
+# Create a Listener Rule to forward /api/* requests to Spring Boot
+resource "aws_lb_listener_rule" "my_listener_rule" {
+  listener_arn = aws_lb_listener.my_lb_listener.arn
+  priority     = 100  # Priority should be lower for more specific rules
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.spring_boot_target_group.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/api/*"]
+    }
+  }
+}
+
+# Create Target Group for Spring Boot App
+resource "aws_lb_target_group" "spring_boot_target_group" {
+  name     = "my-website-spring-boot-tg"
   port     = 8080
   protocol = "HTTP"
   vpc_id   = aws_vpc.my_vpc.id
-  target_type = "ip"  # Change from "instance" to "ip"
+  target_type = "ip"
 
   health_check {
-    healthy_threshold   = 3
-    interval            = 30
-    path                = "/"
-    timeout             = 5
+    healthy_threshold   = 2
+    interval            = 60
+    path                = "/api/nodes/root"
+    timeout             = 10
     unhealthy_threshold = 3
     matcher             = "200"
   }
 }
 
-# Create ECS Service
-resource "aws_ecs_service" "my_service" {
-  name            = "my-website-service"
+# Create ECS Service for Vite App
+resource "aws_ecs_service" "web_service" {
+  name            = "my-website-vite-service"
   cluster         = aws_ecs_cluster.my_cluster.id
-  task_definition = aws_ecs_task_definition.my_task.arn
+  task_definition = aws_ecs_task_definition.my_task_vite.arn
   desired_count   = 1
   launch_type     = "FARGATE"
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.my_target_group.arn
-    container_name   = "vite-app"
-    container_port   = 80
-  }
-
-  load_balancer {
-    target_group_arn = aws_lb_target_group.my_target_group_8080.arn
-    container_name   = "spring-boot-app"
-    container_port   = 8080
-  }
 
   network_configuration {
     subnets          = [aws_subnet.my_subnet_1.id, aws_subnet.my_subnet_2.id]
     security_groups  = [aws_security_group.ecs_service_sg.id]
     assign_public_ip = true
   }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.my_target_group_vite.arn
+    container_name   = "vite-app"
+    container_port   = 80
+  }
+
+  depends_on = [aws_lb_listener.my_lb_listener]
 }
 
-# Outputs for ECS cluster and repository
-output "ecs_cluster_name" {
-  value = aws_ecs_cluster.my_cluster.name
-}
+# Create ECS Service for Spring Boot App
+resource "aws_ecs_service" "spring_boot_service" {
+  name            = "my-website-spring-boot-service"
+  cluster         = aws_ecs_cluster.my_cluster.id
+  task_definition = aws_ecs_task_definition.my_task_spring_boot.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
 
-output "ecr_repository_url" {
-  value = aws_ecr_repository.my_ecr_repository.repository_url
-}
+  network_configuration {
+    subnets          = [aws_subnet.my_subnet_1.id, aws_subnet.my_subnet_2.id]
+    security_groups  = [aws_security_group.ecs_service_sg.id]
+    assign_public_ip = true
+  }
 
-output "load_balancer_url" {
-  value = aws_lb.my_lb.dns_name
+  load_balancer {
+    target_group_arn = aws_lb_target_group.spring_boot_target_group.arn
+    container_name   = "spring-boot-app"
+    container_port   = 8080
+  }
+
+  depends_on = [aws_lb_listener_rule.my_listener_rule]
 }
