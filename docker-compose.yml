@@ -1,15 +1,4 @@
 services:
-  neo4j:
-    image: neo4j:latest
-    container_name: neo4j
-    ports:
-      - "7474:7474"  # HTTP port
-      - "7687:7687"  # Bolt port
-    environment:
-      - NEO4J_AUTH=neo4j/your_secure_password
-    volumes:
-      - neo4j-data:/data  # Persist data between restarts
-
   spring-boot-app:
     build:
       context: ./services  # Use the services directory as build context
@@ -18,11 +7,9 @@ services:
     ports:
       - "8080:8080"  # Map application port to host
     environment:
-      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_URI=neo4j+s//4093d524.databases.neo4j.io:7687
       - NEO4J_USERNAME=neo4j
-      - NEO4J_PASSWORD=your_secure_password
-    depends_on:
-      - neo4j  # Ensure Neo4j starts before the Spring Boot app
+      - NEO4J_PASSWORD=X_v0XWz1H3m0HOqHiOPdNxu2ufh6HNbbCvodAB69Zn8
 
   vite-app:
     build:
@@ -33,6 +20,3 @@ services:
       - "3000:80"  # Map Vite app port to host
     depends_on:
       - spring-boot-app  # Ensure Spring Boot app starts before Vite app
-
-volumes:
-  neo4j-data:  # Named volume for persisting Neo4j data

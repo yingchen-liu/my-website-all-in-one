@@ -2,6 +2,7 @@ provider "aws" {
   region = "us-east-2"
 }
 
+# IAM Role for ECS execution
 resource "aws_iam_role" "ecs_execution_role" {
   name = "my-website-ecs-role"
 
@@ -20,96 +21,58 @@ resource "aws_iam_role" "ecs_execution_role" {
   })
 }
 
+# Attach policy to ECS execution role
 resource "aws_iam_policy_attachment" "ecs_execution_policy" {
   name       = "ecs-execution-policy-attachment"
   roles      = [aws_iam_role.ecs_execution_role.name]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# Create VPC
 resource "aws_vpc" "my_vpc" {
-  cidr_block = "10.0.0.0/16"  # Define the CIDR block for the VPC
+  cidr_block = "10.0.0.0/16"
 
   tags = {
     Name = "my-website-vpc"
   }
 }
 
+# Create single subnet in one availability zone
 resource "aws_subnet" "my_subnet" {
-  vpc_id                  = aws_vpc.my_vpc.id  # Reference the VPC ID
-  cidr_block              = "10.0.1.0/24"      # Define the CIDR block for the subnet
-  availability_zone       = "us-east-2a"       # Specify the availability zone
-  map_public_ip_on_launch = true                # Enable public IP assignment (optional)
+  vpc_id                  = aws_vpc.my_vpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "us-east-2a"  # Single AZ
+  map_public_ip_on_launch = true
 
   tags = {
     Name = "my-website-subnet"
   }
 }
 
+# Create ECS Cluster
+resource "aws_ecs_cluster" "my_cluster" {
+  name = "my-cluster"
+}
+
+# Create ECR Repository
 resource "aws_ecr_repository" "my_ecr_repository" {
-  name = "my-website-repo"  # Replace with your desired repository name
+  name = "my-website-repo"
 
   tags = {
     Name = "my-website-repo"
   }
 }
 
-resource "aws_ecs_cluster" "my_cluster" {
-  name = "my-cluster"
-}
-
-resource "aws_efs_file_system" "neo4j_data" {
-  creation_token = "neo4j-data"
-}
-
-resource "aws_efs_mount_target" "neo4j_mount_target" {
-  file_system_id = aws_efs_file_system.neo4j_data.id
-  subnet_id      = aws_subnet.my_subnet.id
-}
-
+# Create ECS Task Definition
 resource "aws_ecs_task_definition" "my_task" {
   family                   = "my-website-task"
   requires_compatibilities = ["FARGATE"]
-  network_mode            = "awsvpc"
-  cpu                     = "256"
-  memory                  = "512"
-  execution_role_arn      = aws_iam_role.ecs_execution_role.arn  # Reference the IAM role here
-
-  volume {
-    name = "neo4j-data"
-    efs_volume_configuration {
-      file_system_id = aws_efs_file_system.neo4j_data.id
-      root_directory = "/"
-    }
-  }
+  network_mode             = "awsvpc"
+  cpu                      = "256"
+  memory                   = "512"
+  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   container_definitions = jsonencode([
-    {
-      name         = "neo4j"
-      image        = "${aws_ecr_repository.my_ecr_repository.repository_url}:neo4j"
-      essential    = true
-      portMappings = [
-        {
-          containerPort = 7474
-          hostPort      = 7474
-        },
-        {
-          containerPort = 7687
-          hostPort      = 7687
-        }
-      ]
-      environment = [
-        {
-          name = "NEO4J_AUTH"
-          value = "neo4j/your_secure_password"
-        }
-      ]
-      mountPoints = [
-        {
-          sourceVolume  = "neo4j-data"
-          containerPath = "/data"
-        }
-      ]
-    },
     {
       name         = "spring-boot-app"
       image        = "${aws_ecr_repository.my_ecr_repository.repository_url}:spring-boot-app"
@@ -123,7 +86,7 @@ resource "aws_ecs_task_definition" "my_task" {
       environment = [
         {
           name  = "NEO4J_URI"
-          value = "bolt://neo4j:7687"
+          value = "neo4j+s//4093d524.databases.neo4j.io:7687"
         },
         {
           name  = "NEO4J_USERNAME"
@@ -131,13 +94,7 @@ resource "aws_ecs_task_definition" "my_task" {
         },
         {
           name  = "NEO4J_PASSWORD"
-          value = "your_secure_password"
-        }
-      ]
-      dependsOn = [
-        {
-          containerName = "neo4j"
-          condition     = "START"
+          value = "X_v0XWz1H3m0HOqHiOPdNxu2ufh6HNbbCvodAB69Zn8"
         }
       ]
     },
@@ -161,23 +118,11 @@ resource "aws_ecs_task_definition" "my_task" {
   ])
 }
 
+# Security Group for ECS service
 resource "aws_security_group" "ecs_service_sg" {
   name        = "ecs_service_sg"
   description = "Allow HTTP traffic"
-
-#   ingress {
-#     from_port   = 7474
-#     to_port     = 7474
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-
-#   ingress {
-#     from_port   = 7687
-#     to_port     = 7687
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
+  vpc_id      = aws_vpc.my_vpc.id
 
   ingress {
     from_port   = 8080
@@ -201,6 +146,7 @@ resource "aws_security_group" "ecs_service_sg" {
   }
 }
 
+# Create ECS Service
 resource "aws_ecs_service" "my_service" {
   name            = "my-service"
   cluster         = aws_ecs_cluster.my_cluster.id
@@ -214,14 +160,16 @@ resource "aws_ecs_service" "my_service" {
   }
 }
 
+# Create Load Balancer
 resource "aws_lb" "my_lb" {
   name               = "my-load-balancer"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.ecs_service_sg.id]
-  subnets            = [aws_subnet.my_subnet.id]
+  subnets            = [aws_subnet.my_subnet.id]  # Single subnet
 }
 
+# Create Listener for Load Balancer
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.my_lb.arn
   port              = 80
@@ -229,11 +177,11 @@ resource "aws_lb_listener" "http" {
 
   default_action {
     type = "forward"
-
     target_group_arn = aws_lb_target_group.my_target_group.arn
   }
 }
 
+# Create Target Group
 resource "aws_lb_target_group" "my_target_group" {
   name     = "my-target-group"
   port     = 80
@@ -250,6 +198,11 @@ resource "aws_lb_target_group" "my_target_group" {
   }
 }
 
+# Outputs for ECS cluster and repository
 output "ecs_cluster_name" {
   value = aws_ecs_cluster.my_cluster.name
+}
+
+output "ecr_repository_url" {
+  value = aws_ecr_repository.my_ecr_repository.repository_url
 }

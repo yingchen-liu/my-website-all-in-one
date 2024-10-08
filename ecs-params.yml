@@ -1,31 +1,16 @@
 version: 1
 task_definition:
   services:
-    neo4j:
-      cpu_shares: 256
-      mem_limit: 512m
-      environment:
-        - NEO4J_AUTH=neo4j/your_secure_password
-      mount_points:
-        - source_volume: neo4j-data
-          container_path: /data
-
     spring-boot-app:
       cpu_shares: 256
       mem_limit: 512m
       environment:
-        - NEO4J_URI=bolt://neo4j:7687
+        - NEO4J_URI=neo4j+s//4093d524.databases.neo4j.io:7687
         - NEO4J_USERNAME=neo4j
-        - NEO4J_PASSWORD=your_secure_password
-      depends_on:
-        - neo4j
+        - NEO4J_PASSWORD=X_v0XWz1H3m0HOqHiOPdNxu2ufh6HNbbCvodAB69Zn8
 
     vite-app:
       cpu_shares: 256
       mem_limit: 512m
       depends_on:
         - spring-boot-app
-
-volumes:
-  neo4j-data:
-    driver: efs
