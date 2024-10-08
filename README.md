@@ -22,7 +22,7 @@ $ aws ecr get-login-password --region us-east-2 | docker login --username AWS --
 
 3. Build and Push Docker Images
 ```shell
-docker build -t my-website:spring-boot-app ./services
-docker tag my-website:spring-boot-app 058264218531.dkr.ecr.us-east-2.amazonaws.com/my-website:spring-boot-app
-docker push 058264218531.dkr.ecr.us-east-2.amazonaws.com/my-website:spring-boot-app
+docker buildx build --platform linux/amd64 -t 058264218531.dkr.ecr.us-east-2.amazonaws.com/my-website-repo:spring-boot-app --push ./services
+
+docker buildx build --platform linux/amd64 -t 058264218531.dkr.ecr.us-east-2.amazonaws.com/my-website-repo:vite-app --push ./web
 ```

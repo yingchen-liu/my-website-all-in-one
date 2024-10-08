@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
 
 # Set environment variables for Neo4j connection
-ENV NEO4J_URI=neo4j+s//4093d524.databases.neo4j.io:7687
+ENV NEO4J_URI=neo4j+s://4093d524.databases.neo4j.io:7687
 ENV NEO4J_USERNAME=neo4j
 ENV NEO4J_PASSWORD=X_v0XWz1H3m0HOqHiOPdNxu2ufh6HNbbCvodAB69Zn8
 
