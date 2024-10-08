@@ -2,6 +2,11 @@ provider "aws" {
   region = "us-east-2"
 }
 
+variable "neo4j_password" {
+  type      = string
+  sensitive = true
+}
+
 # IAM Role for ECS execution
 resource "aws_iam_role" "ecs_execution_role" {
   name = "my-website-ecs-role"
@@ -31,11 +36,26 @@ resource "aws_iam_role_policy_attachment" "ecs_s3_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess" # Attach this if you need S3 access
 }
 
+resource "aws_iam_role_policy_attachment" "ecs_execution_role_secrets" {
+  role       = aws_iam_role.ecs_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+}
+
 # Attach policy to ECS execution role
 resource "aws_iam_policy_attachment" "ecs_execution_policy" {
   name       = "ecs-execution-policy-attachment"
   roles      = [aws_iam_role.ecs_execution_role.name]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_secretsmanager_secret" "neo4j_password" {
+  name        = "my-website-neo4j-password"
+  description = "Neo4j database password"
+}
+
+resource "aws_secretsmanager_secret_version" "neo4j_password_version" {
+  secret_id = aws_secretsmanager_secret.neo4j_password.id
+  secret_string = var.neo4j_password
 }
 
 # Create VPC
@@ -163,13 +183,12 @@ resource "aws_ecs_task_definition" "my_task_spring_boot" {
         },
         {
           name  = "NEO4J_PASSWORD"
-          value = "X_v0XWz1H3m0HOqHiOPdNxu2ufh6HNbbCvodAB69Zn8"
+          valueFrom = aws_secretsmanager_secret.neo4j_password.arn
         }
       ]
     }
   ])
 }
-
 
 resource "aws_ecs_task_definition" "my_task_vite" {
   family                   = "my-website-vite-task"

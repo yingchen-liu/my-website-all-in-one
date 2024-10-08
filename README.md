@@ -18,6 +18,12 @@ $ aws ecr get-login-password --region us-east-2 | docker login --username AWS --
 ```
 
 3. Terraform
+```
+export NEO4J_URI=neo4j+s://4093d524.databases.neo4j.io:7687
+export NEO4J_USERNAME=neo4j
+export NEO4J_PASSWORD=
+export TF_VAR_neo4j_password=
+```
 
 
 3. Build and Push Docker Images
