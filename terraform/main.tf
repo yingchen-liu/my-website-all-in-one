@@ -248,10 +248,39 @@ resource "aws_lb_listener" "my_lb_listener" {
   }
 }
 
+resource "aws_lb_listener" "my_lb_listener_8080" {
+  load_balancer_arn = aws_lb.my_lb.arn
+  port              = 8080
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.my_target_group.arn
+  }
+}
+
 # Create Target Group
 resource "aws_lb_target_group" "my_target_group" {
   name     = "my-website-target-group"
   port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.my_vpc.id
+  target_type = "ip"  # Change from "instance" to "ip"
+
+  health_check {
+    healthy_threshold   = 3
+    interval            = 30
+    path                = "/"
+    timeout             = 5
+    unhealthy_threshold = 3
+    matcher             = "200"
+  }
+}
+
+# Create Target Group for Spring Boot
+resource "aws_lb_target_group" "my_target_group_8080" {
+  name     = "my-website-target-group-8080"
+  port     = 8080
   protocol = "HTTP"
   vpc_id   = aws_vpc.my_vpc.id
   target_type = "ip"  # Change from "instance" to "ip"
@@ -278,6 +307,12 @@ resource "aws_ecs_service" "my_service" {
     target_group_arn = aws_lb_target_group.my_target_group.arn
     container_name   = "vite-app"
     container_port   = 80
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.my_target_group_8080.arn
+    container_name   = "spring-boot-app"
+    container_port   = 8080
   }
 
   network_configuration {

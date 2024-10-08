@@ -13,8 +13,12 @@ RUN npm install
 # Copy the rest of the application code
 COPY ./ ./
 
-# Build the Vite.js app
-RUN npm run build
+# Add a build argument for environment mode (default to production)
+ARG MODE=production
+ENV NODE_ENV=$MODE
+
+# Build the Vite.js app based on the environment
+RUN npm run build -- --mode $MODE
 
 # Use Nginx to serve the built app
 FROM nginx:alpine
