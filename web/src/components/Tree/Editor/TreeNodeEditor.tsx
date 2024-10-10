@@ -1,4 +1,4 @@
-import { Header, Segment, SegmentGroup } from "semantic-ui-react";
+import { Segment, SegmentGroup } from "semantic-ui-react";
 import debounce from "lodash/debounce";
 import "./TreeNodeEditor.css";
 import { useContext, useEffect, useMemo, useState } from "react";

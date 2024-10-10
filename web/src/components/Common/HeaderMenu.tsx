@@ -13,7 +13,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 function HeaderMenu({ activeItem }: { activeItem: string }) {
   const navigate = useNavigate();
-  const { loginWithRedirect, user, isAuthenticated, isLoading, error, logout } = useAuth0();
+  const { loginWithRedirect, user, isAuthenticated, isLoading, logout } = useAuth0();
 
   function handleItemClick(_: React.MouseEvent, { name }: MenuItemProps) {
     if (name !== undefined) {
