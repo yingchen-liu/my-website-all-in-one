@@ -13,6 +13,7 @@ import { State, TreeItem } from "../../types/skillTree";
 import { SkillTreeContext } from "../../contexts/SkillTreeContext";
 import { TreeLeafDragProps } from "./DragAndDrop/types";
 import { TreeLeafDropArea } from "./DragAndDrop/TreeLeafDropArea";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export type TreeLeafProps = TreeLeafDragProps & {
   isActive: boolean;
@@ -48,6 +49,9 @@ function populateTreeLeafCard(
   props: TreeLeafProps,
   state: State
 ) {
+  const { user } = useAuth0();
+  const roles = user ? user["https://yingchenliu.com/roles"] : [];
+
   return (
     <Card
       className={`tree__item tree__leaf${
@@ -62,7 +66,7 @@ function populateTreeLeafCard(
       <CardContent>
         <CardHeader>{node.name}</CardHeader>
         {node.subtitle && <CardMeta>{node.subtitle}</CardMeta>}
-        {state.selectedNodeId === node.uuid && (
+        {roles.includes('admin') && state.selectedNodeId === node.uuid && (
           <Button
             className="tree__item__bottom_button"
             onClick={() => props.onAddAfterClick(node, props.parent)}
@@ -87,7 +91,7 @@ function populateTreeLeafCard(
           &lt;
         </Button>
       )}
-      {state.selectedNodeId === node.uuid &&
+      {roles.includes('admin') && state.selectedNodeId === node.uuid &&
         (!node.isCollapsed || node.children.length !== 0) && (
           <Button
             className="tree__item__right_button"
