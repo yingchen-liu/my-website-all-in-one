@@ -4,12 +4,16 @@ import {
   Menu,
   MenuItemProps,
   Segment,
+  MenuMenu,
 } from "semantic-ui-react";
 import "./HeaderMenu.css";
 import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+
 
 function HeaderMenu({ activeItem }: { activeItem: string }) {
   const navigate = useNavigate();
+  const { loginWithRedirect, user, isAuthenticated, isLoading, error, logout } = useAuth0();
 
   function handleItemClick(_: React.MouseEvent, { name }: MenuItemProps) {
     if (name !== undefined) {
@@ -36,13 +40,18 @@ function HeaderMenu({ activeItem }: { activeItem: string }) {
             >
               SkillTree
             </MenuItem>
-            {/* <MenuMenu position="right">
-              <MenuItem
-                name="logout"
-                active={activeItem === "logout"}
-                onClick={handleItemClick}
-              />
-            </MenuMenu> */}
+            <MenuMenu position="right">
+              {
+                !isLoading && (isAuthenticated ? 
+                <>
+                  <MenuItem>{user?.name}</MenuItem>
+                  <MenuItem onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                    Log Out
+                  </MenuItem>
+                </> : 
+                <MenuItem onClick={() => loginWithRedirect()}>Log In</MenuItem>)
+              }
+            </MenuMenu>
           </Menu>
         </Segment>
       </div>

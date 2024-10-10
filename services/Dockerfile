@@ -26,9 +26,9 @@ WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
 
 # Set environment variables for Neo4j connection
-ENV NEO4J_URI=bolt://neo4j:7687
-ENV NEO4J_USERNAME=neo4j
-ENV NEO4J_PASSWORD=your_secure_password
+ENV NEO4J_URI=${NEO4J_URI}
+ENV NEO4J_USERNAME=${NEO4J_USERNAME}
+ENV NEO4J_PASSWORD=${NEO4J_PASSWORD}
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
