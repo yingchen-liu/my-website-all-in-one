@@ -1,10 +1,19 @@
+
 # Deployment Guide
 
-This guide will walk you through setting up your environment, configuring Terraform, and building and deploying Docker images to AWS.
+This guide provides a step-by-step walkthrough for setting up your environment, configuring Terraform, and building and deploying Docker images to AWS.
 
-## 1. AWS IAM Setup
+## 1. Set Up Terraform State Bucket
 
-Create an IAM user with the following AWS-managed permissions. This will enable the user to interact with the necessary AWS services:
+Create an S3 bucket to store the Terraform state files:
+
+- **Bucket name**: `my-website-terraform-state-bucket`
+
+This bucket will be used to store your Terraform state remotely, ensuring the state is available and consistent across your deployments.
+
+## 2. AWS IAM Setup
+
+Create an IAM user with the necessary AWS-managed permissions to interact with required AWS services. Attach the following policies to the user:
 
 - **AmazonEC2ContainerRegistryFullAccess**
 - **AmazonECS_FullAccess**
@@ -17,39 +26,52 @@ Create an IAM user with the following AWS-managed permissions. This will enable 
 - **IAMFullAccess**
 - **SecretsManagerReadWrite**
 
-These permissions are required to manage ECS, ECR, Route 53, load balancers, certificates, and more.
+These permissions are essential for managing ECS, ECR, Route 53, load balancers, SSL certificates, and other services.
 
-After creating the IAM user, configure the AWS CLI with the following command:
+Once the IAM user is created, configure the AWS CLI on your machine by running:
 
 ```bash
-$ aws configure
+aws configure
 ```
 
-Follow the prompts to enter your AWS `Access Key ID`, `Secret Access Key`, `Default region name` (e.g., `us-east-2`), and `Default output format` (optional, e.g., `json`).
+Provide the following information when prompted:
 
-## 2. Authenticate Docker to ECR
+- **Access Key ID**: IAM user's access key
+- **Secret Access Key**: IAM user's secret key
+- **Default region**: The AWS region you are using (e.g., `us-east-2`)
+- **Output format**: JSON (or another format of your choice)
 
-Run the following command to authenticate Docker with your Amazon Elastic Container Registry (ECR):
+## 3. Authenticate Docker with ECR
+
+You need to authenticate Docker with the Amazon Elastic Container Registry (ECR) to push Docker images. Run the following command:
 
 ```bash
-$ aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 058264218531.dkr.ecr.us-east-2.amazonaws.com
+aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 058264218531.dkr.ecr.us-east-2.amazonaws.com
 ```
 
-## 3. Build and Push Docker Images
+This command retrieves the authentication token and logs Docker in to your ECR registry.
 
-Use the following commands to build and push your Docker images to ECR:
+## 4. Build and Push Docker Images
+
+Build and push your Docker images for the Spring Boot backend and Vite frontend apps:
+
+### Spring Boot App
 
 ```bash
-# Build and push the Spring Boot app
 docker buildx build --platform linux/amd64 -t 058264218531.dkr.ecr.us-east-2.amazonaws.com/my-website-repo:spring-boot-app --push ./services
+```
 
-# Build and push the Vite app
+### Vite App
+
+```bash
 docker buildx build --platform linux/amd64 --build-arg MODE=production -t 058264218531.dkr.ecr.us-east-2.amazonaws.com/my-website-repo:vite-app --push ./web
 ```
 
-## 4. Terraform Configuration
+This will build the images for both the Spring Boot and Vite applications and push them to the ECR repository.
 
-Before running Terraform, export the required Neo4j database credentials as environment variables:
+## 5. Configure Terraform
+
+Before running Terraform commands, ensure that your Neo4j database credentials are exported as environment variables:
 
 ```bash
 export NEO4J_URI=neo4j+s://4093d524.databases.neo4j.io:7687
@@ -58,10 +80,16 @@ export NEO4J_PASSWORD=<your_neo4j_password>
 export TF_VAR_neo4j_password=<your_neo4j_password>
 ```
 
-Ensure that the Neo4j password is set correctly.
+Make sure the password is correct, as it will be used to connect to the Neo4j database.
+
+## 6. Run Terraform Commands
+
+Now that everything is set up, you can initialize, plan, and apply your Terraform configuration:
 
 ```bash
 terraform init
 terraform plan
 terraform apply
 ```
+
+These commands will provision the necessary AWS infrastructure for your application, including ECS, load balancers, Route 53, and more.

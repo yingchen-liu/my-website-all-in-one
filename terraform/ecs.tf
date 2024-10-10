@@ -54,9 +54,11 @@ resource "aws_ecs_task_definition" "my_task_spring_boot" {
         {
           name  = "NEO4J_USERNAME"
           value = "neo4j"
-        },
+        }
+      ]
+      secrets = [
         {
-          name  = "NEO4J_PASSWORD"
+          name      = "NEO4J_PASSWORD"
           valueFrom = aws_secretsmanager_secret.neo4j_password.arn
         }
       ]
