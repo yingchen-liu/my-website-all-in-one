@@ -1,0 +1,56 @@
+name: Deploy to ECS
+
+on:
+  push:
+    branches:
+      - main  # Change to your default branch if different
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2  # Update with your region
+
+      - name: Authenticate Docker to ECR
+        run: |
+          aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 058264218531.dkr.ecr.us-east-2.amazonaws.com
+
+      - name: Build Docker images
+        run: |
+          docker buildx build --platform linux/amd64 -t 058264218531.dkr.ecr.us-east-2.amazonaws.com/my-website-repo:spring-boot-app --push ./services
+          docker buildx build --platform linux/amd64 --build-arg MODE=production -t 058264218531.dkr.ecr.us-east-2.amazonaws.com/my-website-repo:vite-app --push ./web
+
+      - name: Set up Terraform
+        run: |
+          curl -LO "https://releases.hashicorp.com/terraform/1.5.0/terraform_1.5.0_linux_amd64.zip"  # Update version as necessary
+          unzip terraform_1.5.0_linux_amd64.zip
+          sudo mv terraform /usr/local/bin/
+          terraform -version  # Check Terraform version
+
+      - name: Terraform Init
+        working-directory: ./terraform  # Adjust if your Terraform files are in a different directory
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: ./terraform  # Adjust if your Terraform files are in a different directory
+        run: terraform apply -auto-approve
+
+      - name: Get ECS cluster name and service name from Terraform output
+        id: terraform_output
+        working-directory: ./terraform  # Adjust if your Terraform files are in a different directory
+        run: |
+          echo "ecs_cluster=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_ENV
+          echo "ecs_service=$(terraform output -raw ecs_service_name)" >> $GITHUB_ENV
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service --cluster ${{ env.ecs_cluster }} --service ${{ env.ecs_service }} --force-new-deployment
