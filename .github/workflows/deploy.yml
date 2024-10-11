@@ -48,8 +48,13 @@ jobs:
         working-directory: ./terraform  # Adjust if your Terraform files are in a different directory
         run: |
           echo "ecs_cluster=$(terraform output -raw ecs_cluster_name)" >> $GITHUB_ENV
-          echo "ecs_service=$(terraform output -raw ecs_service_name)" >> $GITHUB_ENV
+          echo "ecs_service_vite_app=$(terraform output -raw ecs_service_name_vite_app)" >> $GITHUB_ENV
+          echo "ecs_service_spring_boot=$(terraform output -raw ecs_service_name_spring_boot_app)" >> $GITHUB_ENV
 
-      - name: Update ECS service
+      - name: Update Vite app
         run: |
-          aws ecs update-service --cluster ${{ env.ecs_cluster }} --service ${{ env.ecs_service }} --force-new-deployment
+          aws ecs update-service --cluster ${{ env.ecs_cluster }} --service ${{ env.ecs_service_vite_app }} --force-new-deployment
+      
+      - name: Update Spring boot app
+        run: |
+          aws ecs update-service --cluster ${{ env.ecs_cluster }} --service ${{ env.ecs_service_spring_boot }} --force-new-deployment
