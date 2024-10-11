@@ -31,11 +31,7 @@ jobs:
           docker buildx build --platform linux/amd64 --build-arg MODE=production -t 058264218531.dkr.ecr.us-east-2.amazonaws.com/my-website-repo:vite-app --push ./web
 
       - name: Set up Terraform
-        run: |
-          curl -LO "https://releases.hashicorp.com/terraform/1.5.0/terraform_1.5.0_linux_amd64.zip"  # Update version as necessary
-          unzip terraform_1.5.0_linux_amd64.zip
-          sudo mv terraform /usr/local/bin/
-          terraform -version  # Check Terraform version
+        uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
         working-directory: ./terraform  # Adjust if your Terraform files are in a different directory
