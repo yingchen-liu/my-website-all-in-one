@@ -92,7 +92,7 @@ const Project: React.FC<ProjectProps> = ({
       </div>
 
       <div className="justify-end flex">
-        <div className="mt-10 w-5/6">{myRole}</div>
+        <div className="mt-10 md:w-5/6">{myRole}</div>
       </div>
     </div>
   );

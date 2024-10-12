@@ -5,8 +5,8 @@ function Banner() {
   return (
     <section className="py-20">
       <p className="text-white font-thin font-sfmono mb-6">Hi, my name is</p>
-      <h1 className="text-7xl font-bold">Yingchen Liu</h1>
-      <h2 className="text-blue-200 text-opacity-60 text-7xl font-bold">
+      <h1 className="md:text-7xl text-5xl font-bold mb-2">Yingchen Liu</h1>
+      <h2 className="text-blue-200 text-opacity-60 md:text-7xl text-4xl font-bold">
         <TypeAnimation
           className="h-[150px] overflow-hidden"
           sequence={[
@@ -33,7 +33,7 @@ function Banner() {
         />
       </h2>
 
-      <Paragraph className="w-1/2">
+      <Paragraph className="md:w-1/2">
         Versatile Senior Software Engineer with over {new Date().getFullYear() - 2016} years of hands-on
         experience, specialising in full-stack web, mobile, and cloud
         technologies.

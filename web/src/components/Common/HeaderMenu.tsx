@@ -49,9 +49,9 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
 
   return (
     <header>
-      <div className="flex justify-between items-center py-7">
-        {/* Menu items on the right */}
-        <nav>
+      <div className="flex flex-col md:flex-row justify-between items-center py-7">
+        {/* Menu items on the left */}
+        <nav className="flex-1">
           <ul className="flex space-x-4 font-sfmono">
             <MenuItem
               active={activeItem === "#about"}
@@ -82,24 +82,23 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
             </MenuItem>
           </ul>
         </nav>
-        <nav>
-          {/* Login button logic */}
+        {/* Login button logic */}
+        <nav className="mt-4 md:mt-0 md:ml-4">
           {!isLoading &&
             (isAuthenticated ? (
-              <>
-                <a
-                  onClick={() =>
-                    logout({
-                      logoutParams: { returnTo: window.location.origin },
-                    })
-                  }
-                >
-                  <HiOutlineLogout className="inline-block mr-1" />
-                  Logout
-                </a>
-              </>
+              <a
+                onClick={() =>
+                  logout({
+                    logoutParams: { returnTo: window.location.origin },
+                  })
+                }
+                className="flex items-center"
+              >
+                <HiOutlineLogout className="inline-block mr-1" />
+                Logout
+              </a>
             ) : (
-              <Link onClick={() => loginWithRedirect()}>
+              <Link onClick={() => loginWithRedirect()} className="flex items-center">
                 <HiOutlineLogin className="inline-block mr-1" />
                 Login
               </Link>
@@ -108,6 +107,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
       </div>
     </header>
   );
+  
 };
 
 export default HeaderMenu;

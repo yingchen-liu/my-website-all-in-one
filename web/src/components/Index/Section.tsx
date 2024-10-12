@@ -27,13 +27,14 @@ const Section: React.FC<SectionProps> = ({
 
 interface LinkProps {
   children: React.ReactNode;
+  className?: string;
   href?: string;
   onClick?: () => void;
 }
 
-const Link: React.FC<LinkProps> = ({ children, href, onClick }) => {
+const Link: React.FC<LinkProps> = ({ children, href, onClick, className }) => {
   return (
-    <span className="relative inline-block group">
+    <span className={`relative inline-block group ${className}`}>
       <a
         className="text-white hover:text-blue-100 cursor-pointer"
         target="_blank"

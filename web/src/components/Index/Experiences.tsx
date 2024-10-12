@@ -43,7 +43,7 @@ const AimiExperience = () => (
   <Experience
     company="Aimi"
     companyHref="https://www.aimi.fm/"
-    position="Sensior Software Engineer"
+    position="Senior Software Engineer"
     from="Jun 2022"
     to="May 2024"
   >
@@ -69,6 +69,7 @@ const AimiExperience = () => (
     </ul>
   </Experience>
 );
+
 
 const OptusExperience = () => (
   <Experience
@@ -216,9 +217,9 @@ const Experiences: React.FC = () => {
 
   return (
     <Section id="experiences" title="Where I've Worked" side="right">
-      <div className="flex w-5/6">
-        {/* Side Menu */}
-        <div className="w-1/4 px-5">
+      <div className="flex w-full md:w-5/6 flex-col md:flex-row">
+        {/* Side Menu - only visible on medium and larger screens */}
+        <div className="w-full md:w-1/4 px-5 hidden md:block">
           <ul>
             {items.map((item, i) => (
               <li
@@ -242,8 +243,17 @@ const Experiences: React.FC = () => {
         </div>
 
         {/* Right Content */}
-        <div className="w-3/4 px-10">
-          <div>{activeItem.content}</div>
+        <div className="w-full md:w-3/4 md:px-10">
+          {/* Display all experiences on small screens */}
+          <div className="block md:hidden">
+            {items.map(item => (
+              <div key={Array.isArray(item.id) ? item.id.join(",") : item.id}>
+                {item.content}
+              </div>
+            ))}
+          </div>
+          {/* Display only the active item on larger screens */}
+          <div className="hidden md:block">{activeItem.content}</div>
         </div>
       </div>
     </Section>

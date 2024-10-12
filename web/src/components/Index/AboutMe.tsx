@@ -3,8 +3,11 @@ import { Image, Link, Paragraph, Section } from "./Section";
 function AboutMe() {
   return (
     <Section id="about" title="About Me">
-      <div className="flex">
-        <div className="w-1/2">
+      <div className="flex flex-col md:flex-row-reverse">
+        <div className="md:w-2/5 mb-10 flex justify-center items-start">
+          <Image src="/images/yingchen.jpg" className="w-2/3" />
+        </div>
+        <div className="md:w-3/5">
           <Paragraph>
             Hi! I'm Yingchen, a passionate developer specializing in web and
             mobile applications. My coding journey began in 2005 during a middle
@@ -35,9 +38,6 @@ function AboutMe() {
             positioning me as a top-tier tech talent ready to tackle your next
             big project.
           </Paragraph>
-        </div>
-        <div className="w-1/2 flex justify-center items-start">
-          <Image src="/images/yingchen.jpg" className="w-2/3" />
         </div>
       </div>
     </Section>
