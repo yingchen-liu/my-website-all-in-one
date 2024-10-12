@@ -60,10 +60,10 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
             </MenuItem>
             <div>&gt;</div>
             <MenuItem
-              active={activeItem === "#experience"}
-              onClick={() => handleItemClick("#experience")}
+              active={activeItem === "#experiences"}
+              onClick={() => handleItemClick("#experiences")}
             >
-              #experience
+              #experiences
             </MenuItem>
             <div>&gt;</div>
             <MenuItem
