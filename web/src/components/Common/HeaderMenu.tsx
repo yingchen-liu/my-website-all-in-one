@@ -46,8 +46,8 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
     if (typeof window !== "undefined") {
       const currentScrollY = window.scrollY;
 
-      // Show header when scrolling up
-      if (currentScrollY < lastScrollY) {
+      // Show header when scrolling up or at the top of the page
+      if (currentScrollY < lastScrollY || currentScrollY < 30) {
         setShowHeader(true);
       } else {
         setShowHeader(false);
@@ -74,7 +74,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
 
   return (
     <header
-      className={`z-10 bg-gray-800 fixed top-0 left-0 px-6 w-full transition-transform duration-300 ${
+      className={`z-50 bg-gray-800 fixed top-0 left-0 px-6 w-full transition-transform duration-300 ${
         showHeader ? "translate-y-0" : "-translate-y-full"
       }`}
     >

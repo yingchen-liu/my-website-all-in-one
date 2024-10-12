@@ -10,7 +10,7 @@ import Projects from "../components/Index/Projects";
 function Home() {
   return (
     <div className="bg-gray-800 text-blue-100">
-      <div className="container mx-auto max-w-5xl px-10">
+      <div className="container mx-auto max-w-5xl px-5 md:px-10">
         <HeaderMenu activeItem="" />
 
         <Banner />
