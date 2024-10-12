@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        calibre: ['Calibre', 'sans-serif'],
+        intervar: ['InterVar', 'sans-serif'],
         sfmono: ['SFMono', 'monospace'],
       },
     },

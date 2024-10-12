@@ -1,4 +1,4 @@
-import { Link, Paragraph, Section } from "./Section";
+import { Image, Link, Paragraph, Section } from "./Section";
 
 function AboutMe() {
   return (
@@ -37,10 +37,7 @@ function AboutMe() {
           </Paragraph>
         </div>
         <div className="w-1/2 flex justify-center items-start">
-          <div className="w-2/3 rounded-lg image-container">
-            <img className="filter-image" src="/images/yingchen.jpg" />
-            <div className="blue-tint" />
-          </div>
+          <Image src="/images/yingchen.jpg" className="w-2/3" />
         </div>
       </div>
     </Section>

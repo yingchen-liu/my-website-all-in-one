@@ -13,33 +13,39 @@ const Section: React.FC<SectionProps> = ({
 }) => {
   return (
     <section id={id} className="py-20">
-      <div className={`${side === "right" ? "text-right" : ""}`}>
+      <div className={`mb-14 ${side === "right" ? "text-right" : ""}`}>
         <>#{id}</>
         <h2 className="text-4xl text-blue-200 mb-5">{title}</h2>
       </div>
 
-      <div className={`${side === "right" ? "flex justify-end" : ""}`}>{children}</div>
+      <div className={`${side === "right" ? "flex justify-end" : ""}`}>
+        {children}
+      </div>
     </section>
   );
 };
 
 interface LinkProps {
   children: React.ReactNode;
-  href: string;
+  href?: string;
+  onClick?: () => void;
 }
 
-const Link: React.FC<LinkProps> = ({ children, href }) => {
+const Link: React.FC<LinkProps> = ({ children, href, onClick }) => {
   return (
-    <a
-      className="text-white hover:text-blue-100 hover:underline"
-      target="_blank"
-      href={href}
-    >
-      {children}
-    </a>
+    <span className="relative inline-block group">
+      <a
+        className="text-white hover:text-blue-100 cursor-pointer"
+        target="_blank"
+        href={href}
+        onClick={onClick}
+      >
+        {children}
+      </a>
+      <span className="absolute left-0 bottom-0 w-full h-[2px] bg-blue-100 transform scale-x-0 transition-transform duration-300 origin-left group-hover:scale-x-100" />
+    </span>
   );
 };
-
 interface ParagraphProps {
   children: React.ReactNode;
   className?: string;
@@ -48,11 +54,25 @@ interface ParagraphProps {
 const Paragraph: React.FC<ParagraphProps> = ({ children, className }) => {
   return (
     <p
-      className={`text-blue-100 font-calibre text-opacity-50 text-xl mb-3 ${className}`}
+      className={`text-blue-100 font-intervar text-opacity-50 text-lg mb-3 ${className}`}
     >
       {children}
     </p>
   );
 };
 
-export { Section, Link, Paragraph };
+interface ImageProps {
+  src: string;
+  className?: string;
+}
+
+const Image: React.FC<ImageProps> = ({ src, className }) => {
+  return (
+    <div className={`${className} rounded-md image-container`}>
+      <img className="filter-image" src={src} />
+      <div className="blue-tint" />
+    </div>
+  );
+};
+
+export { Section, Link, Paragraph, Image };

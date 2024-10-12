@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { HiOutlineLogin, HiOutlineLogout } from "react-icons/hi";
+import { Link } from "../Index/Section";
 
 interface HeaderMenuProps {
   activeItem: string;
@@ -51,7 +52,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
       <div className="flex justify-between items-center py-7">
         {/* Menu items on the right */}
         <nav>
-          <ul className="flex space-x-4">
+          <ul className="flex space-x-4 font-sfmono">
             <MenuItem
               active={activeItem === "#about"}
               onClick={() => handleItemClick("#about")}
@@ -98,10 +99,10 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
                 </a>
               </>
             ) : (
-              <a onClick={() => loginWithRedirect()}>
+              <Link onClick={() => loginWithRedirect()}>
                 <HiOutlineLogin className="inline-block mr-1" />
                 Login
-              </a>
+              </Link>
             ))}
         </nav>
       </div>

@@ -1,7 +1,10 @@
 import HeaderMenu from "../components/Common/HeaderMenu";
 import AboutMe from "../components/Index/AboutMe";
 import Banner from "../components/Index/Banner";
+import Contact from "../components/Index/Contact";
 import Experiences from "../components/Index/Experiences";
+import Footer from "../components/Index/Footer";
+import Projects from "../components/Index/Projects";
 
 
 function Home() {
@@ -13,6 +16,10 @@ function Home() {
         <Banner />
         <AboutMe />
         <Experiences />
+        <Projects />
+        <Contact />
+
+        <Footer />
       </div>
     </div>
   );
