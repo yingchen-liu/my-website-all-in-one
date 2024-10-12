@@ -3,16 +3,16 @@ import { Paragraph } from "./Section";
 
 function Banner() {
   return (
-    <section className="py-20">
+    <section className="py-20 pt-48">
       <p className="text-white font-thin font-sfmono mb-6">Hi, my name is</p>
       <h1 className="md:text-7xl text-5xl font-bold mb-2">Yingchen Liu</h1>
-      <h2 className="text-blue-200 text-opacity-60 md:text-7xl text-4xl font-bold">
+      <h2 className="text-blue-200 text-opacity-60 md:text-7xl text-5xl font-bold">
         <TypeAnimation
-          className="h-[150px] overflow-hidden"
+          className="h-[190px] md:h-[160px] overflow-hidden"
           sequence={[
             "I build scalable web apps.",
             1000,
-            "I build Android apps with Kotlin and Jetpack Compose.",
+            "I build Android apps with Kotlin and Jetpack.",
             1000,
             "I build React & Next.js web apps.",
             1000,
@@ -22,7 +22,7 @@ function Banner() {
             1000,
             "I improve WordPress site performance.",
             1000,
-            "I integrate AI with mobile and web applications.",
+            "I integrate AI with mobile and web apps.",
             1000,
           ]}
           wrapper="span"

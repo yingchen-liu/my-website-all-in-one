@@ -15,7 +15,9 @@ const Section: React.FC<SectionProps> = ({
     <section id={id} className="py-20">
       <div className={`mb-14 ${side === "right" ? "text-right" : ""}`}>
         <>#{id}</>
-        <h2 className="text-4xl text-blue-200 mb-5">{title}</h2>
+        <h2 className="text-4xl text-blue-200 mb-2">{title}</h2>
+
+        <hr className="h-1 border-blue-100 border-opacity-10" />
       </div>
 
       <div className={`${side === "right" ? "flex justify-end" : ""}`}>
