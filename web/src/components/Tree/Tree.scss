@@ -14,7 +14,6 @@ $tree-item-border-radius: 0.28571429rem;
   }
 }
 
-
 .tree-container {
   margin-right: 20px;
   display: inline-block;
@@ -40,10 +39,10 @@ $tree-item-border-radius: 0.28571429rem;
     }
     &__hierarchy:first-child::before {
       transform: translateY(100%);
-      height: calc(50%);
+      height: 50%;
     }
     &__hierarchy:last-child::before {
-      height: 50%;
+      height: calc(50% - 1px);
     }
     &__hierarchy:first-child:last-child::before {
       height: 0;
@@ -65,7 +64,8 @@ $tree-item-border-radius: 0.28571429rem;
         }
       }
 
-      .ui.active.loader:before, .ui.active.loader:after {
+      .ui.active.loader:before,
+      .ui.active.loader:after {
         height: 20px;
         width: 20px;
         margin-left: -10px;
@@ -96,22 +96,25 @@ $tree-item-border-radius: 0.28571429rem;
       opacity: 0.2;
     }
     &__leaf--is_relationship.ui.card {
+      background-color: #1f2937;
       border: 0;
       box-shadow: none;
       .content {
-        padding: 0.5em;
+        padding: 0.7em;
 
         .header {
           font-size: 0.8em;
+          color: white;
         }
         .meta {
           font-size: 0.7em;
+          color: white;
         }
       }
     }
     &__leaf--is_relationship.tree__item--active.ui.card {
       .content {
-        padding: 1em;
+        padding: 0.7em;
       }
     }
     &__leaf::before,
@@ -119,7 +122,7 @@ $tree-item-border-radius: 0.28571429rem;
     &__root::after {
       content: "";
       position: absolute;
-      top: 50%;
+      top: calc(50% - 1px);
       transform: translateY(-50%);
       width: $tree-branch-size;
       height: 0;
@@ -127,7 +130,7 @@ $tree-item-border-radius: 0.28571429rem;
       visibility: visible;
     }
     &__leaf::before {
-      top: calc(50% + 0.5px);
+      top: calc(50% - 1px);
       left: -$tree-branch-size;
     }
     &__leaf.tree__leaf--has-children::after,
@@ -219,15 +222,14 @@ $tree-item-border-radius: 0.28571429rem;
   }
 }
 
-
 .footer {
   margin-top: 70px;
   text-align: center;
   color: white;
   opacity: 0.6;
   font-size: 12px;
-  font-family: 'SFMono';
-  
+  font-family: "SFMono";
+
   p {
     margin-bottom: 5px;
   }
