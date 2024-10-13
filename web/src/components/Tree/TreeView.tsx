@@ -142,7 +142,7 @@ export default function TreeView() {
       isCollapsed: false,
       isLoading: true,
       isDeleting: false,
-      isRelationship: false
+      isRelationship: false,
     } satisfies TreeItem;
   }
 
@@ -200,29 +200,38 @@ export default function TreeView() {
 
   return (
     <HorizontalScroll className="body--full-screen">
-      {isPending && <Loader active content="Loading..." style={{color: 'white'}} />}
+      {isPending && (
+        <Loader active content="Loading..." style={{ color: "white" }} />
+      )}
       {isSuccess && data && (
-        <Tree>
-          <DndProvider backend={HTML5Backend}>
-            <TreeLeafDragLayer />
-            <TreeRoot />
-            <TreeChildren>
-              {populateChildren(
-                data,
-                data["b1747c9f-3818-4edd-b7c6-7384b2cb5e41"] as TreeItem,
-                (
-                  data["b1747c9f-3818-4edd-b7c6-7384b2cb5e41"] as TreeItem
-                ).children.map((childUUID) => data[childUUID]),
-                state.selectedNode,
-                handleClick,
-                handleAddChild,
-                handleAddAfter,
-                handleLoadMore,
-                handleCollapse
-              )}
-            </TreeChildren>
-          </DndProvider>
-        </Tree>
+        <>
+          <Tree>
+            <DndProvider backend={HTML5Backend}>
+              <TreeLeafDragLayer />
+              <TreeRoot />
+              <TreeChildren>
+                {populateChildren(
+                  data,
+                  data["b1747c9f-3818-4edd-b7c6-7384b2cb5e41"] as TreeItem,
+                  (
+                    data["b1747c9f-3818-4edd-b7c6-7384b2cb5e41"] as TreeItem
+                  ).children.map((childUUID) => data[childUUID]),
+                  state.selectedNode,
+                  handleClick,
+                  handleAddChild,
+                  handleAddAfter,
+                  handleLoadMore,
+                  handleCollapse
+                )}
+              </TreeChildren>
+            </DndProvider>
+          </Tree>
+
+          <div className="footer">
+            <p>Designed and built by Yingchen.</p>
+            <p>(React + Spring Boot) - Docker -&gt; AWS ECS + Neo4j</p>
+          </div>
+        </>
       )}
     </HorizontalScroll>
   );
