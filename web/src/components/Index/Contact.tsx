@@ -16,10 +16,10 @@ function Contact() {
       <div className="text-center">
         <a
           href="mailto:info@yingchenliu.com"
-          className="inline-block font-sfmono px-6 py-4 border border-white rounded-md"
+          className="inline-block font-sfmono px-6 py-4 border border-white rounded-md hover:text-blue-200 hover:border-blue-200"
         >
           Say Hello
-          <span className="ml-2 inline-block animate-wave">
+          <span className="ml-3 inline-block animate-wave">
             👋
           </span>
         </a>

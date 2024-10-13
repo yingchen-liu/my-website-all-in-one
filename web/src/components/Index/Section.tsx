@@ -57,7 +57,7 @@ interface ParagraphProps {
 const Paragraph: React.FC<ParagraphProps> = ({ children, className }) => {
   return (
     <p
-      className={`text-blue-100 font-intervar text-opacity-50 text-lg mb-3 ${className}`}
+      className={`text-blue-100 font-intervar text-opacity-70 text-[16px] mb-3 ${className}`}
     >
       {children}
     </p>

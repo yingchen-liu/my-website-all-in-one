@@ -59,7 +59,7 @@ const Project: React.FC<ProjectProps> = ({
           </h3>
 
           <div
-            className={`bg-blue-950 text-lg p-5 ${
+            className={`bg-blue-950 p-5 ${
               side === "right" ? "md:ml-[-150px]" : "md:mr-[-150px]"
             } rounded-md shadow-lg`}
           >

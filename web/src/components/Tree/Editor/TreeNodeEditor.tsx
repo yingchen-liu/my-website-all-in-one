@@ -12,7 +12,11 @@ import TreeNodeEditorHeader from "./TreeNodeEditorHeader";
 import TreeNodeEditorMain from "./TreeNodeEditorMain";
 import { useAuth0 } from "@auth0/auth0-react";
 import { CodeBlock } from "@defensestation/blocknote-code";
-import { BlockNoteSchema, defaultBlockSpecs, BlockNoteEditor } from "@blocknote/core";
+import {
+  BlockNoteSchema,
+  defaultBlockSpecs,
+  BlockNoteEditor,
+} from "@blocknote/core";
 import { NodeEditorAlert } from "./NodeEditorAlert";
 
 const updateNode = (
@@ -90,17 +94,17 @@ export default function TreeNodeEditor() {
     });
   }, [state.selectedNodeId]);
   const [htmlContent, setHtmlContent] = useState("");
-  
+
   useEffect(() => {
     const fetchHtml = async () => {
       try {
         const html = await editor.blocksToHTMLLossy(editor.document); // Resolve the promise
         setHtmlContent(html); // Store the resolved HTML in state
       } catch (error) {
-        console.error('Error fetching HTML:', error);
+        console.error("Error fetching HTML:", error);
       }
     };
-    
+
     fetchHtml(); // Trigger the async function when component mounts
   }, [editor]);
 
@@ -110,22 +114,27 @@ export default function TreeNodeEditor() {
         isFullscreen ? " tree__node_editor__container--fullscreen" : ""
       }`}
     >
+      <TreeNodeEditorHeader
+        editable={roles.includes("admin")}
+        node={node}
+        isFullscreen={isFullscreen}
+        setFullscreen={setFullscreen}
+        updateNode={updateNode}
+        debouncedUpdate={debouncedUpdate}
+      />
       {roles.includes("admin") ? (
-        <>
-          <TreeNodeEditorHeader
-            node={node}
-            isFullscreen={isFullscreen}
-            setFullscreen={setFullscreen}
-            updateNode={updateNode}
-            debouncedUpdate={debouncedUpdate}
-          />
-          <TreeNodeEditorMain 
-            editor={editor} node={node} debouncedUpdate={debouncedUpdate} />
-        </>
+        <TreeNodeEditorMain
+          editor={editor}
+          node={node}
+          debouncedUpdate={debouncedUpdate}
+        />
       ) : (
         <>
-          <Segment><h3>{node.name}</h3></Segment>
-          <Segment dangerouslySetInnerHTML={{ __html: htmlContent }} />
+          {htmlContent !== '<p class="bn-inline-content"></p>' ? (
+            <Segment className="tree__node_editor__rich_text__container" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+          ) : (
+            <Segment className="tree__node_editor__rich_text__container">No content...</Segment>
+          )}
         </>
       )}
     </SegmentGroup>

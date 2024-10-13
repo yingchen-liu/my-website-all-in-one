@@ -69,7 +69,7 @@
 }
 
 .ui.segments.tree__node_editor__container--fullscreen {
-  .ui.segment.tree__node_editor__rich_text_editor__container {
+  .ui.segment.tree__node_editor__rich_text_editor__container, .ui.segment.tree__node_editor__rich_text__container {
     min-height: calc(100vh - 100px);
     max-height: none;
   }

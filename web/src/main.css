@@ -90,13 +90,3 @@ body {
 a:hover .animate-wave {
   animation: wave 0.5s ease-in-out; /* Apply the wave animation on hover */
 }
-
-.container--full-screen {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-
-  .body--full-screen {
-    flex-grow: 1;
-  }
-}

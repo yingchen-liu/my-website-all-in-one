@@ -224,7 +224,7 @@ const Experiences: React.FC = () => {
             {items.map((item, i) => (
               <li
                 key={Array.isArray(item.id) ? item.id.join(",") : item.id}
-                className={`px-7 py-3 cursor-pointer border-l-2 border-blue-100 font-sfmono text-xs ${
+                className={`px-7 py-3 cursor-pointer border-l-2 border-blue-100 font-sfmono text-sm ${
                   activeItem.id === item.id ||
                   (Array.isArray(item.id) &&
                     item.id.includes(activeItem.id as number))

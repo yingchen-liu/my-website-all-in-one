@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
-// import "semantic-ui-css/semantic.min.css";
+import "semantic-ui-css/semantic.min.css";
 import "../main.css";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {

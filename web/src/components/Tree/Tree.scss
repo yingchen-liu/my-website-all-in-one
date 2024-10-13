@@ -4,6 +4,17 @@ $tree-branch-color: #d4d4d5;
 $tree-dnd-placeholder-width: 4px;
 $tree-item-border-radius: 0.28571429rem;
 
+.container--full-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  .body--full-screen {
+    flex-grow: 1;
+  }
+}
+
+
 .tree-container {
   margin-right: 20px;
   display: inline-block;
@@ -41,6 +52,26 @@ $tree-item-border-radius: 0.28571429rem;
     &__item.ui.card {
       width: auto;
       margin: 0 0 0 $tree-branch-size * 2;
+
+      .content {
+        padding: 0.7em;
+
+        .header {
+          font-size: 0.95em;
+          font-weight: 400;
+        }
+        .meta {
+          font-size: 0.8em;
+        }
+      }
+
+      .ui.active.loader:before, .ui.active.loader:after {
+        height: 20px;
+        width: 20px;
+        margin-left: -10px;
+        margin-top: 5px;
+        padding: -5px;
+      }
     }
     a.tree__item.ui.card:hover,
     a.tree__item.tree__item--active.ui.card {
@@ -59,7 +90,7 @@ $tree-item-border-radius: 0.28571429rem;
       }
     }
     &__leaf--loading {
-      padding: 10px 30px;
+      padding: 7px 30px;
     }
     &__leaf--deleting {
       opacity: 0.2;
@@ -123,7 +154,8 @@ $tree-item-border-radius: 0.28571429rem;
     .tree__item {
       .ui.button.tree__item__bottom_button {
         padding: 0;
-        margin: 0 -12px -14px -14px;
+        margin: 0 -8px -10px -9px;
+        font-size: 0.8em;
         border-radius: 0 0 0 $tree-item-border-radius !important;
       }
 
@@ -131,6 +163,7 @@ $tree-item-border-radius: 0.28571429rem;
         padding: 0;
         border-radius: 0 !important;
         width: 14px;
+        font-size: 0.8em;
         margin-right: 2px;
       }
 

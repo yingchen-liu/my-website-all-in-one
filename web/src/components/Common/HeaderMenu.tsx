@@ -31,13 +31,36 @@ const scrollToSection = (sectionId: string) => {
   const section = document.getElementById(sectionId);
   if (section) {
     // Scroll smoothly to the section
-    section.scrollIntoView({ behavior: 'smooth' });
+    section.scrollIntoView({ behavior: "smooth" });
   }
 };
 
+function LoginButton() {
+  const { loginWithRedirect, isAuthenticated, isLoading, logout } = useAuth0();
+
+  return (
+    !isLoading &&
+    (isAuthenticated ? (
+      <Link
+        onClick={() =>
+          logout({ logoutParams: { returnTo: window.location.origin } })
+        }
+        className="flex items-center"
+      >
+        <HiOutlineLogout className="inline-block mr-1" />
+        Logout
+      </Link>
+    ) : (
+      <Link onClick={() => loginWithRedirect()} className="flex items-center">
+        <HiOutlineLogin className="inline-block mr-1" />
+        Login
+      </Link>
+    ))
+  );
+}
+
 const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
   const navigate = useNavigate();
-  const { loginWithRedirect, isAuthenticated, isLoading, logout } = useAuth0();
 
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -65,8 +88,8 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
   }, [lastScrollY]);
 
   function handleItemClick(name: string) {
-    if (name.startsWith('#')) {
-      scrollToSection(name.replace('#', ''))
+    if (name.startsWith("#")) {
+      scrollToSection(name.replace("#", ""));
     } else {
       navigate(`/${name}`);
     }
@@ -74,7 +97,11 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
 
   return (
     <header
-      className={`z-50 bg-gray-800 fixed top-0 left-0 px-6 w-full transition-transform duration-300 ${
+      className={`${
+        activeItem !== "home" ? "border-b border-b-white border-opacity-20" : ""
+      } text-white z-50 bg-gray-800 ${
+        activeItem === "home" ? "fixed top-0 left-0" : ""
+      } px-6 w-full transition-transform duration-300 ${
         showHeader ? "translate-y-0" : "-translate-y-full"
       }`}
     >
@@ -82,45 +109,70 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
         {/* Menu items on the left */}
         <nav className="flex-1">
           <ul className="flex gap-x-4 gap-y-0 font-sfmono flex-wrap">
-            <MenuItem active={activeItem === "#about"} onClick={() => handleItemClick("#about")}>
-              #about
-            </MenuItem>
-            <div>&gt;</div>
-            <MenuItem active={activeItem === "#experiences"} onClick={() => handleItemClick("#experiences")}>
-              #experiences
-            </MenuItem>
-            <div>&gt;</div>
-            <MenuItem active={activeItem === "#projects"} onClick={() => handleItemClick("#projects")}>
-              #projects
-            </MenuItem>
-            <div>&gt;</div>
-            <MenuItem active={activeItem === "#contact"} onClick={() => handleItemClick("#contact")}>
-              #contact
-            </MenuItem>
+            {activeItem === "home" ? (
+              <>
+                <MenuItem
+                  active={false}
+                  onClick={() => handleItemClick("#about")}
+                >
+                  #about
+                </MenuItem>
+                <div>&gt;</div>
+                <MenuItem
+                  active={false}
+                  onClick={() => handleItemClick("#experiences")}
+                >
+                  #experiences
+                </MenuItem>
+                <div>&gt;</div>
+                <MenuItem
+                  active={false}
+                  onClick={() => handleItemClick("#projects")}
+                >
+                  #projects
+                </MenuItem>
+                <div>&gt;</div>
+                <MenuItem
+                  active={false}
+                  onClick={() => handleItemClick("#contact")}
+                >
+                  #contact
+                </MenuItem>
+              </>
+            ) : (
+              <>
+                <MenuItem active={false} onClick={() => handleItemClick("")}>
+                  🏡 Home
+                </MenuItem>
+                <span>|</span>
+                <MenuItem
+                  active={false}
+                  onClick={() => handleItemClick("apps")}
+                >
+                  💾 Apps
+                </MenuItem>
+                <span>:</span>
+                <MenuItem
+                  active={activeItem === "skill-tree"}
+                  onClick={() => handleItemClick("skill-tree")}
+                >
+                  🌲 SkillTree
+                </MenuItem>
+              </>
+            )}
           </ul>
         </nav>
         {/* Login button logic */}
         <nav className="mt-4 md:mt-0 md:ml-4">
-          {!isLoading &&
-            (isAuthenticated ? (
-              <a
-                onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-                className="flex items-center"
-              >
-                <HiOutlineLogout className="inline-block mr-1" />
-                Logout
-              </a>
-            ) : (
-              <Link onClick={() => loginWithRedirect()} className="flex items-center">
-                <HiOutlineLogin className="inline-block mr-1" />
-                Login
-              </Link>
-            ))}
+          {activeItem === "home" ? (
+            <Link onClick={() => handleItemClick("apps")}>Apps</Link>
+          ) : (
+            <LoginButton />
+          )}
         </nav>
       </div>
     </header>
   );
-  
 };
 
 export default HeaderMenu;

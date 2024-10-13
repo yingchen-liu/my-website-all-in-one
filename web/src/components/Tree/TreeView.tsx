@@ -127,7 +127,6 @@ export default function TreeView() {
   }, [state.selectedNodeId]);
 
   function handleClick(node: TreeItem, parent: TreeItem) {
-    console.log("Node seleted", node);
     dispatch({ type: "node/select", node: node, parent: parent });
   }
 
@@ -201,7 +200,7 @@ export default function TreeView() {
 
   return (
     <HorizontalScroll className="body--full-screen">
-      {isPending && <Loader active content="Loading..." />}
+      {isPending && <Loader active content="Loading..." style={{color: 'white'}} />}
       {isSuccess && data && (
         <Tree>
           <DndProvider backend={HTML5Backend}>
