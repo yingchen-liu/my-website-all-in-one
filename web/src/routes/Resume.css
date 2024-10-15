@@ -1,0 +1,4 @@
+.indent {
+  text-indent: -18px; /* Adjust to how much you want the first line to indent */
+  padding-left: 16px; /* This ensures the second line starts at the desired indentation */
+}
