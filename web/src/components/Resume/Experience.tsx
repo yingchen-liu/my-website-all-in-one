@@ -1,12 +1,12 @@
 interface ExperienceProps {
-  role: string;
-  employmentType: string;
-  location: string;
-  company: string;
-  date: string;
-  subProject: string;
-  projects: string;
-  technologies: string;
+  role?: string;
+  employmentType?: string;
+  location?: string;
+  company?: string;
+  date?: string;
+  subProject?: string;
+  projects?: string;
+  technologies?: string;
   testimonial?: string;
   testimonialFrom?: string;
   description?: string[];

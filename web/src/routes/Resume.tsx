@@ -21,7 +21,7 @@ function Resume() {
           <Experience
             role="Senior Software Engineer"
             employmentType="Full-Time, Remote"
-            location="US"
+            location="AU"
             company="Aimi.fm"
             date="Jun 2022 - May 2024"
             projects="Cross-Platform AI Interactive Music Service, aimi.fm Next.js Website, Electron AI Music Editing IDE"
@@ -29,8 +29,8 @@ function Resume() {
             testimonial="I just want to say that I've really appreciated working with you - you've been really helpful and hardworking and very easy to get along with."
             testimonialFrom="J Curtis (Senior Software Engineer) from Aimi.fm"
             description={[
-              "Led the rewrite of Aimi's complex AI interactive music backend service in TypeScript, ensuring cross-platform compatibility for Mac, Linux, Android, and iOS.",
-              "Deployed backend service to AWS (ECS, Lambda) using CI/CD and Terraform.",
+              "Led the rewrite of Aimi's complex AI interactive music backend service in TypeScript and C++, ensuring cross-platform compatibility for Mac, Linux, Android, and iOS.",
+              "Deployed backend service to AWS (ECS, Lambda and S3) using CI/CD and Terraform.",
               "Solved complex build challenges with Rollup.js and Babel.",
               "Initiated the rewrite for Aimi's Android interactive player app using Kotlin, Media3, and JetPack Compose, laying the groundwork for modernization and improved functionality.",
               "Wrote unit tests for Test Driven Development.",
@@ -50,7 +50,7 @@ function Resume() {
             technologies="GCP, Kubernetes, Java, Spring Boot, React, Redux, Redis, Apigee, Terraform, BitBucket Pipelines"
             description={[
               "Ran discovery sessions and scoping activities with Optus.",
-              "Led an Agile team of 3 developers: organised, facilitated team ceremonies, conducted code reviews, and trained junior engineers.",
+              "Led an Agile team of 3: organised, facilitated team ceremonies, conducted code reviews, and trained junior engineers.",
               "Solution design: negotiated interface contract with other systems, produced Solution Design documents, delivering highly available, scalable, and secure full-stack web solutions with Kubernetes, addressing stringent security requirements.",
               "Managed stakeholders, budget, risks, timeline, and resources.",
               "Managed releases: ensured changes were approved by Change Advisory Board (CAB) and InfoSec.",
@@ -84,7 +84,7 @@ function Resume() {
               "Conducted data cleaning using Pandas.",
               "Trained NLP (Natural Language Processing) models using AutoML on VertexAI.",
               "Designed and implemented ML pipelines on Kubeflow.",
-              "Integrated with Lendlease's ServiceNow system using Python.",
+              "Integrated Lendlease's ServiceNow system using Python and deployed it on GCP (Cloud Functions and Pub/Sub) with Docker.",
               "Solved a complex process problem that affects the client's Service Desk team and developed an elegant solution that allows Lendlease to reduce 30 offshore staff out of manually processing requests.",
             ]}
           />
@@ -103,7 +103,7 @@ function Resume() {
               "Designed and implemented 22 body movement assessment algorithms with physiotherapists and researchers.",
               "Solved complex multi-threading and asynchronous Bluetooth problems with ReactiveX.",
               "Identified BLE connectivity issues with BigQuery and DataStudio. Solved the key issues together with the hardware team, reducing bug rate by 62.4%.",
-              "Designed, developed, and deployed highly available and scalable cloud services on AWS, serving 200+ physio/fitness centres.",
+              "Designed, developed, and deployed highly available and scalable cloud services on AWS (Elastic Beanstalks, SQS and S3), serving 200+ physio/fitness centres.",
             ]}
           />
           <Experience

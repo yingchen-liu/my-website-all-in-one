@@ -1,13 +1,15 @@
 interface SkillGroupProps {
   title: string;
-  skills: string[];
+  skills: string[][];
 }
 
 const SkillGroup: React.FC<SkillGroupProps> = ({ title, skills }) => {
   return (
     <div className="mt-4">
       <h3 className="font-semibold">{title}</h3>
-      <p className="text-sm mt-2">{skills.join(", ")}</p>
+      {skills.map((skillsInGroup) => (
+        <p className="text-sm mt-2">{skillsInGroup.join(", ")}</p>
+      ))}
     </div>
   );
 };
@@ -20,82 +22,57 @@ const Skills = () => {
       <SkillGroup
         title="Languages"
         skills={[
-          "HTML5",
-          "JavaScript (ES6)",
-          "TypeScript",
-          "CSS3",
-          "Java",
-          "Kotlin",
-          "Python",
-          "PHP",
-          "C/C++",
-          "SQL",
-          "GLSL",
+          ["Java", "Kotlin", "Python", "Swift"],
+          ["JavaScript (ES6)", "TypeScript", "HTML5", "CSS3"],
+          ["PHP", "C/C++"],
+          ["SQL"],
         ]}
       />
 
       <SkillGroup
         title="Web"
         skills={[
-          "React",
-          "Redux",
-          "Next.js",
-          "Tailwind CSS",
-          "Sass",
-          "jQuery",
-          "Bootstrap",
-          "Spring",
-          "Spring Boot",
-          "Node.js",
-          "Express.js",
+          ["Spring", "Spring Boot"],
+          ["Node.js", "Express.js"],
+          ["React", "Redux", "Next.js"],
+          ["Tailwind CSS", "Sass"],
+          ["jQuery", "Bootstrap"],
         ]}
       />
 
-      <SkillGroup title="Cloud" skills={["AWS", "GCP"]} />
+      <SkillGroup title="Cloud" skills={[["AWS", "GCP"]]} />
 
-      <SkillGroup title="Mobile" skills={["Android", "JetPack", "ReactiveX"]} />
+      <SkillGroup
+        title="Mobile"
+        skills={[["Android", "JetPack", "ReactiveX"]]}
+      />
 
       <SkillGroup
         title="Database"
         skills={[
-          "MySQL",
-          "SQLite",
-          "MongoDB",
-          "Neo4j",
-          "Redis",
-          "BigQuery",
-          "Firebase",
+          ["MySQL", "SQLite"],
+          ["MongoDB", "Neo4j"],
+          ["Redis"],
+          ["BigQuery", "Firebase"],
         ]}
       />
 
       <SkillGroup
         title="Testing"
-        skills={["JUnit", "Jest", "Espresso", "Mocha", "Chai"]}
+        skills={[["JUnit", "Jest", "Espresso", "Mocha", "Chai"]]}
       />
 
       <SkillGroup
         title="Others"
         skills={[
-          "Git",
-          "Docker",
-          "GitHub",
-          "GitLab",
-          "BitBucket",
-          "JIRA",
-          "Linux",
-          "Bash",
-          "Nginx",
-          "Apache",
-          "RabbitMQ",
-          "MQTT",
-          "SEO",
-          "RESTful",
-          "WebSocket",
-          "Gradle",
-          "Maven",
-          "Babel",
-          "Rollup.js",
-          "OpenGL",
+          ["Git", "GitHub", "GitLab", "BitBucket"],
+          ["Docker", "CI/CD"],
+          ["JIRA"],
+          ["Linux", "Bash", "Nginx", "Apache"],
+          ["RabbitMQ", "MQTT"],
+          ["RESTful", "WebSocket", "GraphQL"],
+          ["Gradle", "Maven"],
+          ["Babel", "Rollup.js"],
         ]}
       />
     </section>

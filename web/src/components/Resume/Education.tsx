@@ -44,15 +44,6 @@ const Education: React.FC = () => {
           </ul>
         </ul>
       </Degree>
-
-      <Degree 
-        title="Bachelor of Electronic Science and Technology"
-        institution="Shenyang Ligong University"
-        location="China"
-        duration="2011 - 2015"
-      >
-        {/* You can add any additional content here if needed */}
-      </Degree>
     </section>
   );
 };
