@@ -153,10 +153,10 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ activeItem }) => {
                 </MenuItem>
                 <span>:</span>
                 <MenuItem
-                  active={activeItem === "skill-tree"}
-                  onClick={() => handleItemClick("skill-tree")}
+                  active={activeItem === "tree-notes"}
+                  onClick={() => handleItemClick("tree-notes")}
                 >
-                  🌲 SkillTree
+                  🌲 TreeNotes
                 </MenuItem>
               </>
             )}

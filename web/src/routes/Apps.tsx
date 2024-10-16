@@ -3,6 +3,9 @@ import HeaderMenu from "../components/Common/HeaderMenu";
 import "./Apps.css";
 
 function Apps() {
+  const body = document.body;
+  body.style.backgroundColor = "#1f2937";
+
   const navigate = useNavigate();
 
   return (
@@ -13,7 +16,7 @@ function Apps() {
         <div className="container mx-auto max-w-5xl px-5 md:px-10 flex gap-5">
           <div
             className="relative text-center border-white border p-5 rounded-md w-1/2 md:w-1/4 cursor-pointer hover:shadow-2xl tree-container"
-            onClick={() => navigate("/skill-tree")}
+            onClick={() => navigate("/tree-notes")}
           >
             {/* Tree */}
             <div className="text-9xl mb-4 tree-shake">🌲</div>
@@ -28,7 +31,7 @@ function Apps() {
               <div className="text-lg ml-[-30px] mt-[-45px]">🍉</div>
             </div>
 
-            <div className="text-xl">SkillTree</div>
+            <div className="text-xl">TreeNotes</div>
           </div>
         </div>
       </div>

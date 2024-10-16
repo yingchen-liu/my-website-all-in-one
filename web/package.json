@@ -17,6 +17,7 @@
     "@defensestation/blocknote-code": "^1.0.4",
     "@tanstack/react-query": "^5.35.5",
     "axios": "^1.6.8",
+    "framer-motion": "^11.11.9",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dnd": "^16.0.1",

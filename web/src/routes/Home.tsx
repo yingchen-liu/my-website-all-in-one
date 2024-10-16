@@ -8,6 +8,9 @@ import Projects from "../components/Index/Projects";
 
 
 function Home() {
+  const body = document.body;
+  body.style.backgroundColor = "#1f2937";
+  
   return (
     <div className="bg-gray-800 text-blue-100">
       <div className="container mx-auto max-w-5xl px-5 md:px-10">

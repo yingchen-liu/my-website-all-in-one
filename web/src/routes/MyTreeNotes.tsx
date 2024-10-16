@@ -21,7 +21,10 @@ import TreeNodeEditor from "../components/Tree/Editor/TreeNodeEditor";
 import { createChildNode, createNodeAfter, deleteNode, fetchNodeChildren, fetchRootNode, moveNode, updateNode } from "../services/skillTreeService";
 import TreeView from "../components/Tree/TreeView";
 
-export default function SkillTree() {
+export default function MyTreeNotes() {
+  const body = document.body;
+  body.style.backgroundColor = "#1f2937";
+  
   const { state, dispatch, selectedLeafRef } = useSkillTreeContext();
   const queryClient = useQueryClient();
 
