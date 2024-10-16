@@ -71,14 +71,14 @@ const Project: React.FC<ProjectProps> = ({
               side === "right" ? "ml-5 justify-end" : "mr-5"
             }`}
           >
-            {techs.map((tech) => (
-              <li className="font-sfmono text-sm whitespace-nowrap">{tech}</li>
+            {techs.map((tech, i) => (
+              <li key={`project-${title}-tech-${i}`} className="font-sfmono text-sm whitespace-nowrap">{tech}</li>
             ))}
           </ul>
 
           <ul className="mt-5">
-            {links.map((link) => (
-              <li>
+            {links.map((link, i) => (
+              <li key={`project-${title}-link-${i}`}>
                 <Link href={link.href}>{link.children}</Link>
               </li>
             ))}

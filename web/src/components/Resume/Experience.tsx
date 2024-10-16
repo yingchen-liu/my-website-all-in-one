@@ -36,10 +36,10 @@ const Experience: React.FC<ExperienceProps> = ({
               {employmentType}, {location}
             </div>
           </div>
-          <p className="text-sm text-gray-500 flex justify-between">
+          <div className="text-sm text-gray-500 flex justify-between">
             <div>@ {company}</div>
             <div>{date}</div>
-          </p>
+          </div>
           <hr />
         </>
       )}
@@ -53,20 +53,16 @@ const Experience: React.FC<ExperienceProps> = ({
       {/* Projects */}
       {projects && (
         <div className="mt-2 text-sm">
-          <p>
             <strong>Projects: </strong>
             {projects}
-          </p>
         </div>
       )}
 
       {/* Technologies */}
       {technologies && (
         <div className="mt-2 text-sm">
-          <p>
             <strong>Technologies: </strong>
             {technologies}
-          </p>
         </div>
       )}
 
@@ -82,7 +78,7 @@ const Experience: React.FC<ExperienceProps> = ({
       {description && (
         <ul className="mt-2 ml-1 text-sm list-disc list-inside">
           {description.map((bullet, index) => (
-            <li key={index} className="indent">
+            <li key={`${company}-desc-${index}`} className="indent">
               {bullet}
             </li>
           ))}

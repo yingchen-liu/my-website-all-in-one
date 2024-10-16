@@ -56,11 +56,11 @@ interface ParagraphProps {
 
 const Paragraph: React.FC<ParagraphProps> = ({ children, className }) => {
   return (
-    <p
+    <div
       className={`text-blue-100 font-intervar text-opacity-70 text-[16px] mb-3 ${className}`}
     >
       {children}
-    </p>
+    </div>
   );
 };
 

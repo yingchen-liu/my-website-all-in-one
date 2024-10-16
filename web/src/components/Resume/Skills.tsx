@@ -7,8 +7,8 @@ const SkillGroup: React.FC<SkillGroupProps> = ({ title, skills }) => {
   return (
     <div className="mt-4">
       <h3 className="font-semibold">{title}</h3>
-      {skills.map((skillsInGroup) => (
-        <p className="text-sm mt-2">{skillsInGroup.join(", ")}</p>
+      {skills.map((skillsInGroup, i) => (
+        <p key={`${title}-skill-group-${i}`} className="text-sm mt-2">{skillsInGroup.join(", ")}</p>
       ))}
     </div>
   );
