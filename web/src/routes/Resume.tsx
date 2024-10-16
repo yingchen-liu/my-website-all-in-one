@@ -5,10 +5,13 @@ import Education from "../components/Resume/Education";
 import Hobbies from "../components/Resume/Hobbies";
 import Strengths from "../components/Resume/Strengths";
 import "./Resume.css";
+import { useEffect } from "react";
 
 function Resume() {
-  const body = document.body;
-  body.style.backgroundColor = "white";
+  useEffect(() => {
+    document.title = 'My Resume | Yingchen Liu';
+    document.body.style.backgroundColor = "white";
+  }, []);
 
   return (
     <div>

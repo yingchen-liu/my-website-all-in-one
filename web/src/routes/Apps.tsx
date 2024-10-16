@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import HeaderMenu from "../components/Common/HeaderMenu";
 import "./Apps.css";
+import { useEffect } from "react";
 
 function Apps() {
-  const body = document.body;
-  body.style.backgroundColor = "#1f2937";
+  useEffect(() => {
+    document.title = 'Apps | Yingchen Liu';
+    document.body.style.backgroundColor = "#1f2937";
+  }, []);
 
   const navigate = useNavigate();
 

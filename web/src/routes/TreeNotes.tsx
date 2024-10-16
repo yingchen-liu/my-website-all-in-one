@@ -2,10 +2,13 @@ import HeaderMenu from "../components/Common/HeaderMenu";
 import Footer from "../components/Index/Footer";
 import { motion } from "framer-motion"; // For animations
 import { Button } from "../components/Index/Section";
+import { useEffect } from "react";
 
 function TreeNotes() {
-  const body = document.body;
-  body.style.backgroundColor = "#1f2937";
+  useEffect(() => {
+    document.title = 'Meet TreeNotes | Yingchen Liu';
+    document.body.style.backgroundColor = "#1f2937";
+  }, []);
 
   return (
     <>

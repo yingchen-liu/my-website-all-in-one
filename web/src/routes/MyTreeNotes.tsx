@@ -20,10 +20,13 @@ import HeaderMenu from "../components/Common/HeaderMenu";
 import TreeNodeEditor from "../components/Tree/Editor/TreeNodeEditor";
 import { createChildNode, createNodeAfter, deleteNode, fetchNodeChildren, fetchRootNode, moveNode, updateNode } from "../services/skillTreeService";
 import TreeView from "../components/Tree/TreeView";
+import { useEffect } from "react";
 
 export default function MyTreeNotes() {
-  const body = document.body;
-  body.style.backgroundColor = "#1f2937";
+  useEffect(() => {
+    document.title = 'My TreeNotes | Yingchen Liu';
+    document.body.style.backgroundColor = "#1f2937";
+  }, []);
   
   const { state, dispatch, selectedLeafRef } = useSkillTreeContext();
   const queryClient = useQueryClient();

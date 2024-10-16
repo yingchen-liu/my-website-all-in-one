@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import HeaderMenu from "../components/Common/HeaderMenu";
 import AboutMe from "../components/Index/AboutMe";
 import Banner from "../components/Index/Banner";
@@ -8,8 +9,10 @@ import Projects from "../components/Index/Projects";
 
 
 function Home() {
-  const body = document.body;
-  body.style.backgroundColor = "#1f2937";
+  useEffect(() => {
+    document.title = 'Yingchen Liu | Senior Full-Stack Engineer';
+    document.body.style.backgroundColor = "#1f2937";
+  }, []);
   
   return (
     <div className="bg-gray-800 text-blue-100">
