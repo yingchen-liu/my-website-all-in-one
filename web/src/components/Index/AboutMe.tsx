@@ -31,7 +31,7 @@ function AboutMe() {
             secure and scalable web solutions. My contributions at{" "}
             <Link href="https://www.airtasker.com/au/">Airtasker</Link> improved
             app flexibility and customer retention through innovative
-            enhancements to both the app and backend.
+            enhancements to both the app and backend...
           </Paragraph>
           <Paragraph>
             I thrive on creating impactful products and optimizing workflows,

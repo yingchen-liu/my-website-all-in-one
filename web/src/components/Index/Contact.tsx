@@ -1,4 +1,4 @@
-import { Paragraph, Section } from "./Section";
+import { Button, Paragraph, Section } from "./Section";
 
 function Contact() {
   return (
@@ -14,15 +14,14 @@ function Contact() {
       </div>
 
       <div className="text-center">
-        <a
+        <Button
           href="mailto:info@yingchenliu.com"
-          className="inline-block font-sfmono px-6 py-4 border border-white rounded-md hover:text-blue-200 hover:border-blue-200"
         >
           Say Hello
           <span className="ml-3 inline-block animate-wave">
             👋
           </span>
-        </a>
+        </Button>
       </div>
     </Section>
   );

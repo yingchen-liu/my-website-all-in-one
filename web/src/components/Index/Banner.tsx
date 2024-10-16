@@ -1,5 +1,5 @@
 import { TypeAnimation } from "react-type-animation";
-import { Paragraph } from "./Section";
+import { Button, Paragraph } from "./Section";
 
 function Banner() {
   return (
@@ -33,11 +33,16 @@ function Banner() {
         />
       </h2>
 
-      <Paragraph className="md:w-1/2">
-        Versatile Senior Software Engineer with over {new Date().getFullYear() - 2016} years of hands-on
-        experience, specialising in full-stack web, mobile, and cloud
-        technologies.
+      <Paragraph className="md:w-1/2 mb-6">
+        Versatile Senior Software Engineer with over{" "}
+        {new Date().getFullYear() - 2016} years of hands-on experience,
+        specialising in full-stack web, mobile, and cloud technologies.
       </Paragraph>
+
+      <Button href="/resume">
+        My Resume
+        <span className="ml-3 inline-block">📝</span>
+      </Button>
     </section>
   );
 }

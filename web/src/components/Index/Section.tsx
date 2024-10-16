@@ -78,4 +78,22 @@ const Image: React.FC<ImageProps> = ({ src, className }) => {
   );
 };
 
-export { Section, Link, Paragraph, Image };
+interface ButtonProps {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}
+
+const Button: React.FC<ButtonProps> = ({ href, children, className }) => {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      className={`inline-block font-sfmono px-6 py-4 border border-white rounded-md hover:text-blue-200 hover:border-blue-200 ${className}`}
+    >
+      {children}
+    </a>
+  );
+};
+
+export { Section, Link, Paragraph, Image, Button };
