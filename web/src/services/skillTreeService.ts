@@ -52,7 +52,7 @@ export const deleteNode = async (uuid: string): Promise<AxiosResponse<any>> => {
 
 export const fetchNodeChildren = async (uuid: string): Promise<Record<string, TreeItem>> => {
   const response = await axios.get(`${API_BASE_URL}/${uuid}`);
-  return parseTree(response.data, {});
+  return response.data ? parseTree(response.data, {}) : {};
 };
 
 function removeFields<T extends Record<string, any>, K extends keyof T>(

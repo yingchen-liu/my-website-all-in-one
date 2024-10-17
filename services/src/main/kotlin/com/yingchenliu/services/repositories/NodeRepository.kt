@@ -37,7 +37,7 @@ interface NodeRepository : Neo4jRepository<TreeNode, UUID> {
         RETURN startNode, relationships, nodes;
         """
     )
-    fun findTreeNodeAndNonDeletedChildren(uuid: UUID): TreeNode
+    fun findTreeNodeAndNonDeletedChildren(uuid: UUID): TreeNode?
 
     @Query(
         "MATCH (p:TreeNode)-[:PARENT_OF]->(c:TreeNode) WHERE c.uuid = \$childUUID " +

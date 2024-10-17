@@ -18,16 +18,24 @@ import {
 } from "../contexts/SkillTreeContext";
 import HeaderMenu from "../components/Common/HeaderMenu";
 import TreeNodeEditor from "../components/Tree/Editor/TreeNodeEditor";
-import { createChildNode, createNodeAfter, deleteNode, fetchNodeChildren, fetchRootNode, moveNode, updateNode } from "../services/skillTreeService";
+import {
+  createChildNode,
+  createNodeAfter,
+  deleteNode,
+  fetchNodeChildren,
+  fetchRootNode,
+  moveNode,
+  updateNode,
+} from "../services/skillTreeService";
 import TreeView from "../components/Tree/TreeView";
 import { useEffect } from "react";
 
 export default function MyTreeNotes() {
   useEffect(() => {
-    document.title = 'My TreeNotes | Yingchen Liu';
+    document.title = "My TreeNotes";
     document.body.style.backgroundColor = "#1f2937";
   }, []);
-  
+
   const { state, dispatch, selectedLeafRef } = useSkillTreeContext();
   const queryClient = useQueryClient();
 
@@ -133,13 +141,28 @@ export default function MyTreeNotes() {
   });
 
   async function handleLoadMore(node: TreeItem) {
+    const placeholderUuid = uuidv4();
     queryClient.setQueryData(
       ["skill-tree"],
       (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-        return addChildNode(existingData, node.uuid, { uuid: uuidv4() });
+        return addChildNode(existingData, node.uuid, { uuid: placeholderUuid });
       }
     );
     const result = await fetchNodeChildren(node.uuid);
+
+    if (Object.keys(result).length === 0) {
+      queryClient.setQueryData(
+        ["skill-tree"],
+        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+          return updateNodeById(
+            deleteNodeById(existingData, placeholderUuid),
+            node.uuid,
+            { ...node, isCollapsed: false }
+          );
+        }
+      );
+      return;
+    }
     queryClient.setQueryData(
       ["skill-tree"],
       (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {

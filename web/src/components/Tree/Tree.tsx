@@ -37,7 +37,7 @@ function TreeRoot() {
     <>
       <Card className="tree__item tree__root">
         <CardContent>
-          <CardHeader>SkillTree</CardHeader>
+          <CardHeader>My Tree</CardHeader>
         </CardContent>
       </Card>
     </>

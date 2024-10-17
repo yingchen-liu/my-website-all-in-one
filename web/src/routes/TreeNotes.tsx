@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 function TreeNotes() {
   useEffect(() => {
-    document.title = 'Meet TreeNotes | Yingchen Liu';
+    document.title = 'Meet TreeNotes';
     document.body.style.backgroundColor = "#1f2937";
   }, []);
 

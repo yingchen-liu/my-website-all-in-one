@@ -128,6 +128,8 @@ export default function TreeView() {
 
   function handleClick(node: TreeItem, parent: TreeItem) {
     dispatch({ type: "node/select", node: node, parent: parent });
+
+    document.title = `${node.name} | My TreeNotes`;
   }
 
   function createNewNode() {

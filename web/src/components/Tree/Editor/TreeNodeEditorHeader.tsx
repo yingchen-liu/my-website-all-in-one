@@ -111,6 +111,7 @@ export default function TreeNodeEditorHeader({
                 ...node,
                 name: event.target.value,
               };
+              document.title = `${event.target.value} | My TreeNotes`;
               dispatch({ type: "node/update", node: newNode });
               debouncedUpdate(newNode, treeData.updateNodeMutation);
             }}

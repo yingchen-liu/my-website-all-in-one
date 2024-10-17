@@ -19,10 +19,12 @@ class NodeService(
     private val nodeOrderRepository: NodeOrderRepository,
     @Qualifier("transactionManager") private val transactionManager: PlatformTransactionManager
 ) {
-    fun findFromNode(uuid: UUID): TreeNode {
+    fun findFromNode(uuid: UUID): TreeNode? {
         val orders = nodeOrderRepository.findTreeNodeNonDeletedChildrenOrder(uuid)
         val node = nodeRepository.findTreeNodeAndNonDeletedChildren(uuid)
-        return sortChildrenAtCurrentLevel(node, orders)
+        return node?.let {
+            sortChildrenAtCurrentLevel(it, orders)
+        }
     }
 
     private fun sortChildrenAtCurrentLevel(node: TreeNode, orders: List<NodeOrder>): TreeNode {
@@ -48,12 +50,12 @@ class NodeService(
         } ?: node
     }
 
-    fun findFromRoot(): TreeNode {
+    fun findFromRoot(): TreeNode? {
         return findFromNode(UUID.fromString("b1747c9f-3818-4edd-b7c6-7384b2cb5e41"))
     }
 
-    fun findById(uuid: UUID): Optional<TreeNode> {
-        return nodeRepository.findById(uuid)
+    fun findById(uuid: UUID): TreeNode? {
+        return nodeRepository.findById(uuid).get()
     }
 
     @Transactional("transactionManager")
