@@ -14,6 +14,7 @@ import { SkillTreeContext } from "../../contexts/SkillTreeContext";
 import { TreeLeafDragProps } from "./DragAndDrop/types";
 import { TreeLeafDropArea } from "./DragAndDrop/TreeLeafDropArea";
 import { useAuth0 } from "@auth0/auth0-react";
+import LoadingSpinner from "../Common/Loader";
 
 export type TreeLeafProps = TreeLeafDragProps & {
   isActive: boolean;
@@ -147,7 +148,7 @@ function TreeLeaf(props: TreeLeafProps) {
     return (
       <Card className="tree__item tree__leaf tree__leaf--loading">
         <CardContent>
-          <Loader active />
+          <LoadingSpinner />
         </CardContent>
       </Card>
     );

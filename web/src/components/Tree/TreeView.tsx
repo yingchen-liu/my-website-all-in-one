@@ -20,6 +20,7 @@ import {
 } from "../../reducers/skillTreeUtils";
 import { Tree, TreeLeaf, TreeRoot } from "./Tree";
 import TreeLeafDragLayer from "./DragAndDrop/TreeLeafDragLayer";
+import LoadingSpinner from "../Common/Loader";
 
 function populateChildren(
   data: Record<string, TreeItem | TreeItemPlaceholder>,
@@ -203,7 +204,8 @@ export default function TreeView() {
   return (
     <HorizontalScroll className="body--full-screen">
       {isPending && (
-        <Loader active content="Loading..." style={{ color: "white" }} />
+        <div className="mt-40">
+        <LoadingSpinner size="lg" dark={false} /></div>
       )}
       {isSuccess && data && (
         <>

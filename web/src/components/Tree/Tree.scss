@@ -89,9 +89,6 @@ $tree-item-border-radius: 0.28571429rem;
         flex-direction: column;
       }
     }
-    &__leaf--loading {
-      padding: 7px 30px;
-    }
     &__leaf--deleting {
       opacity: 0.2;
     }
