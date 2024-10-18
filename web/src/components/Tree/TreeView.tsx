@@ -1,4 +1,3 @@
-import { Loader } from "semantic-ui-react";
 import HorizontalScroll from "../Layout/HorizontalScroll";
 import { useContext, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -207,6 +206,7 @@ export default function TreeView() {
         <div className="mt-40">
         <LoadingSpinner size="lg" dark={false} /></div>
       )}
+      {}
       {isSuccess && data && (
         <>
           <Tree>
