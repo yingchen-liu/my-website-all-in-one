@@ -4,7 +4,6 @@ import {
   CardContent,
   CardHeader,
   CardMeta,
-  Loader,
   Progress,
 } from "semantic-ui-react";
 import "./Tree.scss";
