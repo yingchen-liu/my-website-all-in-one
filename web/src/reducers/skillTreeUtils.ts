@@ -1,8 +1,4 @@
-import {
-  TreeItem,
-  TreeItemPlaceholder,
-  isTreeItem,
-} from "../types/skillTree";
+import { TreeItem, TreeItemPlaceholder, isTreeItem } from "../types/skillTree";
 import { deepCopy } from "../utils/utils";
 
 export const addChildNode = (
@@ -118,20 +114,22 @@ export const updateNodeById = (
     ...data,
     [uuid]: {
       ...newNode,
-      ...(isTreeItem(data[uuid]) && {children: (data[uuid] as TreeItem).children})
+      ...(isTreeItem(data[uuid]) && {
+        children: (data[uuid] as TreeItem).children,
+      }),
     },
   };
 };
 
 export const removeChildren = (
   data: Record<string, TreeItem | TreeItemPlaceholder>,
-  uuid: string,
+  uuid: string
 ): Record<string, TreeItem | TreeItemPlaceholder> => {
   return {
     ...data,
     [uuid]: {
       ...data[uuid],
-      children: []
+      children: [],
     },
   };
 };

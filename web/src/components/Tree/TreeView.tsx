@@ -12,15 +12,14 @@ import {
 import { SkillTreeContext } from "../../contexts/SkillTreeContext";
 import { TreeChildren, TreeHierarchy } from "./TreeHierarchy";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  addChildNode,
-  addNodeAfter,
-  deleteNodeById,
-} from "../../reducers/skillTreeUtils";
+import { addChildNode, addNodeAfter } from "../../reducers/skillTreeUtils";
 import { Tree, TreeLeaf, TreeRoot } from "./Tree";
 import TreeLeafDragLayer from "./DragAndDrop/TreeLeafDragLayer";
 import LoadingSpinner from "../Common/Loader";
-import { createChildNode, createNodeAfter } from "../../services/skillTreeService";
+import {
+  createChildNode,
+  createNodeAfter,
+} from "../../services/skillTreeService";
 
 function populateChildren(
   data: Record<string, TreeItem | TreeItemPlaceholder>,
@@ -130,7 +129,7 @@ export default function TreeView() {
   function handleClick(node: TreeItem, parent: TreeItem) {
     dispatch({ type: "node/select", node: node, parent: parent });
     if (import.meta.env.DEV) {
-      console.log('Node selected');
+      console.log("Node selected");
       console.log(node);
     }
     document.title = `${node.name} | My TreeNotes`;
@@ -146,7 +145,7 @@ export default function TreeView() {
       }),
       children: [],
       isCollapsed: false,
-      isLoading: true,
+      isLoading: false,
       isDeleting: false,
       isRelationship: false,
     } satisfies TreeItem;
@@ -154,7 +153,7 @@ export default function TreeView() {
 
   function handleAddChild(parentNode: TreeItem) {
     const newNode = createNewNode();
-    
+
     // Immediately update the UI with a temporary node
     queryClient.setQueryData(
       ["skill-tree"],
@@ -170,7 +169,7 @@ export default function TreeView() {
 
   function handleAddAfter(previousNode: TreeItem, parentNode: TreeItem) {
     const newNode = createNewNode();
-    
+
     // Immediately update the UI with a temporary node
     queryClient.setQueryData(
       ["skill-tree"],

@@ -2,10 +2,9 @@ import { v4 as uuidv4 } from "uuid";
 
 import "semantic-ui-css/semantic.min.css";
 import "../main.css";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addChildNode,
-  addNodeAfter,
   deleteNodeById,
   removeChildren,
   updateNodeById,
@@ -19,12 +18,8 @@ import {
 import HeaderMenu from "../components/Common/HeaderMenu";
 import TreeNodeEditor from "../components/Tree/Editor/TreeNodeEditor";
 import {
-  createChildNode,
-  createNodeAfter,
-  deleteNode,
   fetchNodeChildren,
   fetchRootNode,
-  moveNode,
   updateNode,
 } from "../services/skillTreeService";
 import TreeView from "../components/Tree/TreeView";
@@ -44,101 +39,15 @@ export default function MyTreeNotes() {
     queryFn: fetchRootNode,
   });
 
-  const createChildNodeMutation = useMutation({
-    mutationFn: ({
-      node,
-      parentUUID,
-    }: {
-      node: TreeItem;
-      parentUUID: string;
-    }) => createChildNode(node, parentUUID),
-    onSuccess: (data, variables) => {
-      queryClient.setQueryData(
-        ["skill-tree"],
-        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-          return addChildNode(existingData, variables.parentUUID, data.data);
-        }
-      );
-    },
-  });
-
-  const createNodeAfterMutation = useMutation({
-    mutationFn: ({
-      node,
-      previousNodeUUID,
-    }: {
-      node: TreeItem;
-      previousNodeUUID: string;
-      parentUUID: string;
-    }) => createNodeAfter(node, previousNodeUUID),
-    onSuccess: (data, variables) => {
-      queryClient.setQueryData(
-        ["skill-tree"],
-        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-          return addNodeAfter(
-            existingData,
-            variables.previousNodeUUID,
-            data.data
-          );
-        }
-      );
-    },
-  });
-
-  const updateNodeMutation = useMutation({
-    mutationFn: ({
-      node,
-    }: {
-      node: TreeItem;
-      isCollpasedChangedToFalse: boolean;
-    }) => updateNode(node, ["children"]),
-    onMutate: ({ node }) => {
-      queryClient.setQueryData(
-        ["skill-tree"],
-        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-          return updateNodeById(existingData, node.uuid, {
-            ...node,
-            isLoading: true,
-          });
-        }
-      );
-    },
-    onSuccess: (data, { node, isCollpasedChangedToFalse }) => {
-      queryClient.setQueryData(
-        ["skill-tree"],
-        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-          if (isCollpasedChangedToFalse) {
-            handleLoadMore(node);
-          }
-          return updateNodeById(existingData, node.uuid, data.data);
-        }
-      );
-    },
-  });
-
-  const moveNodeMutation = useMutation({
-    mutationFn: moveNode,
-    onSuccess: (data) => {
-      queryClient.setQueryData(
-        ["skill-tree"],
-        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-          return updateNodes(existingData, data);
-        }
-      );
-    },
-  });
-
-  const deleteNodeMutation = useMutation({
-    mutationFn: deleteNode,
-    onSuccess: (_, uuid) => {
-      queryClient.setQueryData(
-        ["skill-tree"],
-        (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-          return deleteNodeById(existingData, uuid);
-        }
-      );
-    },
-  });
+  const doUpdateNode = (node: TreeItem) => {
+    queryClient.setQueryData(
+      ["skill-tree"],
+      (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
+        return updateNodeById(existingData, node.uuid, node);
+      }
+    );
+    updateNode(node, ["children"]);
+  };
 
   async function handleLoadMore(node: TreeItem) {
     const placeholderUuid = uuidv4();
@@ -194,11 +103,7 @@ export default function MyTreeNotes() {
               data,
               isPending,
               isSuccess,
-              createChildNodeMutation,
-              createNodeAfterMutation,
-              updateNodeMutation,
-              moveNodeMutation,
-              deleteNodeMutation,
+              updateNode: doUpdateNode,
             },
             handleLoadMore,
             handleCollapse,

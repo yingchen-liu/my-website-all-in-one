@@ -9,22 +9,19 @@ import {
   Radio,
 } from "semantic-ui-react";
 import { SkillTreeContext } from "../../../contexts/SkillTreeContext";
-import { updateNodeById } from "../../../reducers/skillTreeUtils";
+import { deleteNodeById, updateNodeById } from "../../../reducers/skillTreeUtils";
 import { TreeItem } from "../../../types/skillTree";
+import { deleteNode } from "../../../services/skillTreeService";
 
 export default function TreeNodeEditorHeader({
   node,
   isFullscreen,
   setFullscreen,
-  updateNode,
-  debouncedUpdate,
   editable,
 }: {
   node: TreeItem;
   isFullscreen: boolean;
   setFullscreen: React.Dispatch<React.SetStateAction<boolean>>;
-  updateNode: any;
-  debouncedUpdate: any;
   editable: boolean;
 }) {
   const context = useContext(SkillTreeContext);
@@ -50,13 +47,10 @@ export default function TreeNodeEditorHeader({
     queryClient.setQueryData(
       ["skill-tree"],
       (existingData: Record<string, TreeItem>) => {
-        return updateNodeById(existingData, node.uuid, {
-          ...node,
-          isDeleting: true,
-        });
+        return deleteNodeById(existingData, node.uuid);
       }
     );
-    treeData.deleteNodeMutation?.mutateAsync(node.uuid);
+    deleteNode(node.uuid);
   }
 
   return (
@@ -75,11 +69,7 @@ export default function TreeNodeEditorHeader({
                   isCollapsed: false,
                 };
                 dispatch({ type: "node/update", node: newNode });
-                updateNode(
-                  newNode,
-                  treeData.updateNodeMutation,
-                  !!!data.checked
-                );
+                treeData.updateNode(newNode);
               }}
             />
             <Radio
@@ -93,11 +83,7 @@ export default function TreeNodeEditorHeader({
                   isCollapsed: !!data.checked,
                 };
                 dispatch({ type: "node/update", node: newNode });
-                updateNode(
-                  newNode,
-                  treeData.updateNodeMutation,
-                  !!!data.checked
-                );
+                treeData.updateNode(newNode);
               }}
             />
           </div>
@@ -113,7 +99,7 @@ export default function TreeNodeEditorHeader({
               };
               document.title = `${event.target.value} | My TreeNotes`;
               dispatch({ type: "node/update", node: newNode });
-              debouncedUpdate(newNode, treeData.updateNodeMutation);
+              treeData.updateNode(newNode);
             }}
           />
           <Input
@@ -127,7 +113,7 @@ export default function TreeNodeEditorHeader({
                 subtitle: event.target.value,
               };
               dispatch({ type: "node/update", node: newNode });
-              debouncedUpdate(newNode, treeData.updateNodeMutation);
+              treeData.updateNode(newNode);
             }}
           />
           {node.children.length === 0 && (
@@ -139,7 +125,9 @@ export default function TreeNodeEditorHeader({
               )}
               {isDeleteConfirmButtonsVisible && <ButtonOr />}
               {isDeleteConfirmButtonsVisible && (
-                <Button size='mini' onClick={handleDeleteClick}>Cancel</Button>
+                <Button size="mini" onClick={handleDeleteClick}>
+                  Cancel
+                </Button>
               )}
               <Button
                 size="mini"
