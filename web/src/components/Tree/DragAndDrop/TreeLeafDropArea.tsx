@@ -10,8 +10,11 @@ import {
   addNodeAfter,
   addNodeBefore,
   deleteNodeById,
+  updateNodeById,
 } from "../../../reducers/skillTreeUtils";
 import { v4 as uuidv4 } from "uuid";
+import { moveNode } from "../../../services/skillTreeService";
+import { deepCopy } from "../../../utils/utils";
 
 function isDescendant(a: TreeItem | TreeItemPlaceholder, b: TreeItem, data: Record<string, TreeItem | TreeItemPlaceholder>): boolean {
   return (
@@ -40,38 +43,37 @@ export function TreeLeafDropArea({
     () => ({
       accept: "LEAF",
       drop: (item) => {
+        const newData = deepCopy(item.data);
+
         queryClient.setQueryData(["skill-tree"], (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
           return deleteNodeById(existingData, item.data.uuid);
         });
+
         switch (props.position) {
           case "CHILD":
             queryClient.setQueryData(
               ["skill-tree"],
               (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-                return addChildNode(existingData, props.data.uuid, {
-                  uuid: uuidv4(),
-                });
+                return addChildNode(existingData, props.data.uuid, newData);
               }
             );
 
-            treeData.moveNodeMutation?.mutateAsync({
+            moveNode({
               parentUUID: props.data.uuid,
-              uuid: item.data.uuid,
-            });
+              uuid: newData.uuid
+            })
             break;
           case "BEFORE":
             queryClient.setQueryData(
               ["skill-tree"],
               (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-                return addNodeBefore(existingData, props.data.uuid, {
-                  uuid: uuidv4(),
-                });
+                return addNodeBefore(existingData, props.data.uuid, newData);
               }
             );
 
-            treeData.moveNodeMutation?.mutateAsync({
+            moveNode({
               parentUUID: props.parent.uuid,
-              uuid: item.data.uuid,
+              uuid: newData.uuid,
               order: {
                 position: props.position,
                 relatedToUUID: props.data.uuid,
@@ -82,15 +84,13 @@ export function TreeLeafDropArea({
             queryClient.setQueryData(
               ["skill-tree"],
               (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-                return addNodeAfter(existingData, props.data.uuid, {
-                  uuid: uuidv4(),
-                });
+                return addNodeAfter(existingData, props.data.uuid, newData);
               }
             );
 
-            treeData.moveNodeMutation?.mutateAsync({
+            moveNode({
               parentUUID: props.parent.uuid,
-              uuid: item.data.uuid,
+              uuid: newData.uuid,
               order: {
                 position: props.position,
                 relatedToUUID: props.data.uuid,

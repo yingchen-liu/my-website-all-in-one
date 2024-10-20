@@ -20,6 +20,7 @@ import {
 import { Tree, TreeLeaf, TreeRoot } from "./Tree";
 import TreeLeafDragLayer from "./DragAndDrop/TreeLeafDragLayer";
 import LoadingSpinner from "../Common/Loader";
+import { createChildNode, createNodeAfter } from "../../services/skillTreeService";
 
 function populateChildren(
   data: Record<string, TreeItem | TreeItemPlaceholder>,
@@ -129,8 +130,8 @@ export default function TreeView() {
   function handleClick(node: TreeItem, parent: TreeItem) {
     dispatch({ type: "node/select", node: node, parent: parent });
     if (import.meta.env.DEV) {
-      console.log('Node selected')
-      console.log(node)
+      console.log('Node selected');
+      console.log(node);
     }
     document.title = `${node.name} | My TreeNotes`;
   }
@@ -152,64 +153,44 @@ export default function TreeView() {
   }
 
   function handleAddChild(parentNode: TreeItem) {
-    const tempUUID = uuidv4();
+    const newNode = createNewNode();
+    
+    // Immediately update the UI with a temporary node
     queryClient.setQueryData(
       ["skill-tree"],
       (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-        return addChildNode(existingData, parentNode.uuid, {
-          uuid: tempUUID,
-        });
+        return addChildNode(existingData, parentNode.uuid, newNode);
       }
     );
-    const newNode = createNewNode();
-    treeData.createChildNodeMutation
-      ?.mutateAsync({ node: newNode, parentUUID: parentNode.uuid })
-      .then(() => {
-        queryClient.setQueryData(
-          ["skill-tree"],
-          (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-            return deleteNodeById(existingData, tempUUID);
-          }
-        );
-        handleClick(newNode, parentNode);
-      });
+
+    // Queue the create request
+    createChildNode(newNode, parentNode.uuid);
+    handleClick(newNode, parentNode); // Click on the new node
   }
 
   function handleAddAfter(previousNode: TreeItem, parentNode: TreeItem) {
-    const tempUUID = uuidv4();
+    const newNode = createNewNode();
+    
+    // Immediately update the UI with a temporary node
     queryClient.setQueryData(
       ["skill-tree"],
       (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-        return addNodeAfter(existingData, previousNode.uuid, {
-          uuid: tempUUID,
-        });
+        return addNodeAfter(existingData, previousNode.uuid, newNode);
       }
     );
-    const newNode = createNewNode();
-    treeData.createNodeAfterMutation
-      ?.mutateAsync({
-        node: newNode,
-        previousNodeUUID: previousNode.uuid,
-        parentUUID: parentNode.uuid,
-      })
-      .then(() => {
-        queryClient.setQueryData(
-          ["skill-tree"],
-          (existingData: Record<string, TreeItem | TreeItemPlaceholder>) => {
-            return deleteNodeById(existingData, tempUUID);
-          }
-        );
-        handleClick(newNode, parentNode);
-      });
+
+    // Queue the create request
+    createNodeAfter(newNode, previousNode.uuid);
+    handleClick(newNode, parentNode); // Click on the new node
   }
 
   return (
     <HorizontalScroll className="body--full-screen">
       {isPending && (
         <div className="mt-40">
-        <LoadingSpinner size="lg" dark={false} /></div>
+          <LoadingSpinner size="lg" dark={false} />
+        </div>
       )}
-      {}
       {isSuccess && data && (
         <>
           <Tree>
