@@ -128,7 +128,10 @@ export default function TreeView() {
 
   function handleClick(node: TreeItem, parent: TreeItem) {
     dispatch({ type: "node/select", node: node, parent: parent });
-
+    if (import.meta.env.DEV) {
+      console.log('Node selected')
+      console.log(node)
+    }
     document.title = `${node.name} | My TreeNotes`;
   }
 

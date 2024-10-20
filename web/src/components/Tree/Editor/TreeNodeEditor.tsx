@@ -102,6 +102,7 @@ export default function TreeNodeEditor() {
         setHtmlContent(html); // Store the resolved HTML in state
       } catch (error) {
         console.error("Error fetching HTML:", error);
+        setHtmlContent('No content...');
       }
     };
 
