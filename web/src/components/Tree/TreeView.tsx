@@ -20,6 +20,7 @@ import {
   createChildNode,
   createNodeAfter,
 } from "../../services/skillTreeService";
+import { Client } from "@stomp/stompjs";
 
 function populateChildren(
   data: Record<string, TreeItem | TreeItemPlaceholder>,
@@ -102,6 +103,37 @@ export default function TreeView() {
   if (!context) {
     throw new Error("TreeView must be used within a SkillTreeContext");
   }
+
+  useEffect(() => {
+    const stompClient = new Client({
+      brokerURL: import.meta.env.VITE_WS_BASE_URL + '/ws', // WebSocket URL
+      onConnect: () => {
+        console.log('Connected to STOMP');
+
+        // Subscribe to a topic
+        stompClient.subscribe('/topic/operations', (message) => {
+          if (message.body) {
+            console.log('Message received:', message.body);
+          }
+        });
+      },
+      onStompError: (frame) => {
+        console.error('Broker reported error:', frame.headers['message']);
+        console.error('Additional details:', frame.body);
+      },
+      debug: (str) => {
+        console.log('STOMP: ' + str);
+      },
+    });
+
+    stompClient.activate();
+
+    return () => {
+      if (stompClient) {
+        stompClient.deactivate(); // Close the STOMP connection on unmount
+      }
+    };
+  }, []);
 
   const queryClient = useQueryClient();
 

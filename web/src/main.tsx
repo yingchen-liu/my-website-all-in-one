@@ -1,10 +1,10 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { Auth0Provider } from '@auth0/auth0-react';
 import { RouterProvider } from "react-router-dom";
 
 import { router } from "./router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
 
 const queryClient = new QueryClient({
   defaultOptions: {

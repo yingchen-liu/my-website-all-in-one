@@ -1,5 +1,6 @@
 package com.yingchenliu.services.controllers
 
+import com.yingchenliu.services.services.NotificationService
 import com.yingchenliu.services.domains.NodePositionDTO
 import com.yingchenliu.services.domains.TreeNode
 import com.yingchenliu.services.services.NodeService
@@ -11,7 +12,7 @@ import java.util.*
 
 @RestController
 @RequestMapping("/api/nodes")
-class SkillTreeController(val nodeService: NodeService) {
+class SkillTreeController(val nodeService: NodeService, val notificationService: NotificationService) {
 
     @GetMapping("/root")
     fun findRoot(): TreeNode? {
@@ -50,7 +51,9 @@ class SkillTreeController(val nodeService: NodeService) {
 
         return existingNode?.let {
             val newNode = node.copy(uuid = it.uuid)
-            nodeService.update(newNode)
+            val updatedNode = nodeService.update(newNode)
+            notificationService.notifyOperation("UPDATE " + updatedNode.uuid)
+            return updatedNode
         } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Error updating node: Node not found")
     }
 
