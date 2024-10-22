@@ -1,6 +1,6 @@
-import { Segment, SegmentGroup } from "semantic-ui-react";
+import { SegmentGroup } from "semantic-ui-react";
 import "./TreeNodeEditor.css";
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 import { SkillTreeContext } from "../../../contexts/SkillTreeContext";
@@ -71,21 +71,6 @@ export default function TreeNodeEditor() {
       // },
     });
   }, [state.selectedNodeId]);
-  const [htmlContent, setHtmlContent] = useState("");
-
-  useEffect(() => {
-    const fetchHtml = async () => {
-      try {
-        const html = await editor.blocksToHTMLLossy(editor.document); // Resolve the promise
-        setHtmlContent(html); // Store the resolved HTML in state
-      } catch (error) {
-        console.error("Error fetching HTML:", error);
-        setHtmlContent('No content...');
-      }
-    };
-
-    fetchHtml(); // Trigger the async function when component mounts
-  }, [editor]);
 
   return (
     <SegmentGroup
@@ -99,20 +84,11 @@ export default function TreeNodeEditor() {
         isFullscreen={isFullscreen}
         setFullscreen={setFullscreen}
       />
-      {roles.includes("admin") ? (
-        <TreeNodeEditorMain
-          editor={editor}
-          node={node}
-        />
-      ) : (
-        <>
-          {htmlContent !== '<p class="bn-inline-content"></p>' ? (
-            <Segment className="tree__node_editor__rich_text__container" dangerouslySetInnerHTML={{ __html: htmlContent }} />
-          ) : (
-            <Segment className="tree__node_editor__rich_text__container">No content...</Segment>
-          )}
-        </>
-      )}
+      <TreeNodeEditorMain
+        editable={roles.includes("admin")}
+        editor={editor}
+        node={node}
+      />
     </SegmentGroup>
   );
 }

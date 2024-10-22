@@ -25,9 +25,11 @@ import { RiAlertFill } from "react-icons/ri";
 export default function TreeNodeEditorMain({
   editor,
   node,
+  editable
 }: {
   editor: BlockNoteEditor<any>;
   node: TreeItem;
+  editable: boolean;
 }) {
   const context = useContext(SkillTreeContext);
 
@@ -39,6 +41,7 @@ export default function TreeNodeEditorMain({
   return (
     <Segment className="tree__node_editor__rich_text_editor__container">
       <BlockNoteView
+        editable={editable}
         editor={editor}
         formattingToolbar={false}
         slashMenu={false}
