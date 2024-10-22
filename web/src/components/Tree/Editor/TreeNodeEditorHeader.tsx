@@ -9,7 +9,7 @@ import {
   Radio,
 } from "semantic-ui-react";
 import { SkillTreeContext } from "../../../contexts/SkillTreeContext";
-import { deleteNodeById, updateNodeById } from "../../../reducers/skillTreeUtils";
+import { deleteNodeById } from "../../../reducers/skillTreeUtils";
 import { TreeItem } from "../../../types/skillTree";
 import { deleteNode } from "../../../services/skillTreeService";
 
@@ -149,6 +149,13 @@ export default function TreeNodeEditorHeader({
         icon={`angle double ${isFullscreen ? "down" : "up"}`}
         onClick={() => {
           setFullscreen(!isFullscreen);
+        }}
+      ></Button>
+      <Button
+        size="small"
+        icon={`close icon`}
+        onClick={() => {
+          dispatch({ type: 'node/deselect'})
         }}
       ></Button>
     </Segment>
