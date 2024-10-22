@@ -47,7 +47,7 @@ class WebServerConfiguration {
 @EnableWebSocketMessageBroker
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 	override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-		registry.addEndpoint("/ws")
+		registry.addEndpoint("/api/ws")
 			.setAllowedOrigins("http://localhost:3000", "http://localhost:5173", "https://yingchenliu.com")
 	}
 
