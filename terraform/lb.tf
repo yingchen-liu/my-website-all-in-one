@@ -65,7 +65,7 @@ resource "aws_lb_target_group" "my_target_group_vite" {
 # Create a Listener Rule to forward /api/* requests to Spring Boot
 resource "aws_lb_listener_rule" "my_listener_rule" {
   listener_arn = aws_lb_listener.my_lb_listener.arn
-  priority     = 100  # Priority should be lower for more specific rules
+  priority     = 50  # Priority should be lower for more specific rules
 
   action {
     type             = "forward"
@@ -79,6 +79,24 @@ resource "aws_lb_listener_rule" "my_listener_rule" {
   }
 }
 
+# Create a Listener Rule to forward /ws/* requests to Spring Boot
+resource "aws_lb_listener_rule" "websocket_listener_rule" {
+  listener_arn = aws_lb_listener.my_lb_listener.arn
+  priority     = 100  # Assign a suitable priority, lower than /api/*
+  
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.websocket_target_group.arn  # This target group should handle WebSocket traffic
+  }
+
+  condition {
+    path_pattern {
+      values = ["/ws*"]
+    }
+  }
+}
+
+
 # Create Target Group for Spring Boot App
 resource "aws_lb_target_group" "spring_boot_target_group" {
   name     = "my-website-spring-boot-tg"
@@ -91,6 +109,23 @@ resource "aws_lb_target_group" "spring_boot_target_group" {
     healthy_threshold   = 2
     interval            = 60
     path                = "/api/nodes/root"
+    timeout             = 10
+    unhealthy_threshold = 3
+    matcher             = "200"
+  }
+}
+
+resource "aws_lb_target_group" "websocket_target_group" {
+  name       = "my-website-websocket-tg"
+  port       = 8080
+  protocol   = "HTTP"
+  vpc_id     = aws_vpc.my_vpc.id
+  target_type = "ip"
+
+  health_check {
+    healthy_threshold   = 2
+    interval            = 60
+    path                = "/ws"
     timeout             = 10
     unhealthy_threshold = 3
     matcher             = "200"
