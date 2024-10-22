@@ -1,8 +1,7 @@
 package com.yingchenliu.services.controllers
 
+import com.yingchenliu.services.domains.*
 import com.yingchenliu.services.services.NotificationService
-import com.yingchenliu.services.domains.NodePositionDTO
-import com.yingchenliu.services.domains.TreeNode
 import com.yingchenliu.services.services.NodeService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -25,48 +24,74 @@ class SkillTreeController(val nodeService: NodeService, val notificationService:
     }
 
     @PostMapping("/{parentUUID}")
-    fun createChildNode(@PathVariable("parentUUID") parentUUID: String, @RequestBody node: TreeNode): TreeNode {
+    fun createChildNode(@PathVariable("parentUUID") parentUUID: String, @RequestBody createNodeDTO: CreateNodeDTO): TreeNode {
         val parentNode = nodeService.findById(UUID.fromString(parentUUID))
 
         return parentNode?.let {
-            nodeService.createChild(node, it.uuid)
+            val createdNode = nodeService.createChild(createNodeDTO.node, it.uuid)
+            notificationService.notifyCreateAfter(
+                CreateNodeNotificationDTO(
+                    clientId = createNodeDTO.clientId,
+                    operationId = createNodeDTO.operationId,
+                    previousNodeUUID = null,
+                    createdNode = createdNode,
+                    parentNodeUUID = parentUUID
+                )
+            )
+            createdNode
         } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Error creating node: Parent node not found")
     }
 
     @PostMapping("/{previousNodeUUID}/after")
     fun createNodeAfter(
         @PathVariable("previousNodeUUID") previousNodeUUID: String,
-        @RequestBody node: TreeNode
+        @RequestBody createNodeDTO: CreateNodeDTO
     ): TreeNode {
         val previousNode = nodeService.findById(UUID.fromString(previousNodeUUID))
 
         return previousNode?.let {
-            nodeService.createAfter(node, it.uuid)
+            val createdNode = nodeService.createAfter(createNodeDTO.node, it.uuid)
+            notificationService.notifyCreateAfter(
+                CreateNodeNotificationDTO(
+                    clientId = createNodeDTO.clientId,
+                    operationId = createNodeDTO.operationId,
+                    previousNodeUUID = previousNodeUUID,
+                    createdNode = createdNode,
+                    parentNodeUUID = null
+                )
+            )
+            createdNode
         } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Error creating node: Parent node not found")
     }
 
     @PutMapping("/{uuid}")
-    fun updateNode(@PathVariable("uuid") uuid: String, @RequestBody node: TreeNode): TreeNode {
+    fun updateNode(@PathVariable("uuid") uuid: String, @RequestBody updateNodeDTO: UpdateNodeDTO): TreeNode {
         val existingNode = nodeService.findById(UUID.fromString(uuid))
 
         return existingNode?.let {
-            val newNode = node.copy(uuid = it.uuid)
+            val newNode = updateNodeDTO.node.copy(uuid = it.uuid)
             val updatedNode = nodeService.update(newNode)
-            notificationService.notifyOperation("UPDATE " + updatedNode.uuid)
-            return updatedNode
+            notificationService.notifyUpdate(
+                UpdateNodeNotificationDTO(
+                    clientId = updateNodeDTO.clientId,
+                    operationId = updateNodeDTO.operationId,
+                    updatedNode = updatedNode
+                )
+            )
+            updatedNode
         } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Error updating node: Node not found")
     }
 
     @PutMapping("/{uuid}/position")
-    fun updateNodeParent(@PathVariable("uuid") uuid: String, @RequestBody positionDTO: NodePositionDTO): TreeNode? {
+    fun updateNodeParent(@PathVariable("uuid") uuid: String, @RequestBody moveNodeDTO: MoveNodeDTO): TreeNode? {
         val node = nodeService.findById(UUID.fromString(uuid))
-        val parentNode = nodeService.findById(UUID.fromString(positionDTO.parentUUID))
+        val parentNode = nodeService.findById(UUID.fromString(moveNodeDTO.move.parentUUID))
 
         if (node == null || parentNode == null) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "Error updating node's position: Node not found")
         }
 
-        positionDTO.order?.let {
+        moveNodeDTO.move.order?.let {
             nodeService.findById(UUID.fromString(it.relatedToUUID))
                 ?: throw ResponseStatusException(
                     HttpStatus.NOT_FOUND,
@@ -74,7 +99,13 @@ class SkillTreeController(val nodeService: NodeService, val notificationService:
                 )
         }
 
-        nodeService.changeNodePosition(node.uuid, positionDTO)
+        nodeService.changeNodePosition(node.uuid, moveNodeDTO.move)
+        notificationService.notifyMove(MoveNodeNotificationDTO(
+            clientId = moveNodeDTO.clientId,
+            operationId = moveNodeDTO.operationId,
+            nodeUUID = node.uuid.toString(),
+            nodePositionDTO = moveNodeDTO.move
+        ))
         return nodeService.findFromNode(parentNode.uuid)
     }
 

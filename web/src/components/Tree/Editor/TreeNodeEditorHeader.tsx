@@ -153,7 +153,7 @@ export default function TreeNodeEditorHeader({
       ></Button>
       <Button
         size="small"
-        icon={`close icon`}
+        icon={`close`}
         onClick={() => {
           dispatch({ type: 'node/deselect'})
         }}
