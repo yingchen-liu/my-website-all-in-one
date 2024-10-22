@@ -4,6 +4,7 @@ import {
   CardContent,
   CardHeader,
   CardMeta,
+  Icon,
   Progress,
 } from "semantic-ui-react";
 import "./Tree.scss";
@@ -52,6 +53,9 @@ function populateTreeLeafCard(
   const { user } = useAuth0();
   const roles = user ? user["https://yingchenliu.com/roles"] : [];
 
+  const contentArray = JSON.parse(node.content ? node.content : "[]")
+  const hasContent = contentArray.length > 0 && contentArray[0].content.length > 0
+
   return (
     <Card
       className={`tree__item tree__leaf${
@@ -64,7 +68,7 @@ function populateTreeLeafCard(
       }}
     >
       <CardContent>
-        <CardHeader>{node.name}</CardHeader>
+        <CardHeader>{hasContent ? <Icon name="file text"/> : ''}{node.name}</CardHeader>
         {node.subtitle && <CardMeta>{node.subtitle}</CardMeta>}
         {roles.includes('admin') && state.selectedNodeId === node.uuid && (
           <Button
