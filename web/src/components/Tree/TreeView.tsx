@@ -118,107 +118,15 @@ export default function TreeView() {
   useEffect(() => {
     const stompClient = new Client({
       brokerURL: import.meta.env.VITE_WS_BASE_URL + "/ws", // WebSocket URL
+      heartbeatIncoming: 10000, // Expect a server ping every 10 seconds
+      heartbeatOutgoing: 10000, // Send a ping to the server every 10 seconds
       onConnect: () => {
         console.log("Connected to STOMP");
 
         // Subscribe to a topic
-        stompClient.subscribe("/topic/operations/update", (message) => {
-          if (message.body) {
-            const dto = JSON.parse(message.body);
-            console.log("Update:", dto);
-
-            if (dto.clientId !== clientId) {
-              updateOperationId(dto.operationId);
-              queryClient.setQueryData(
-                ["skill-tree"],
-                (
-                  existingData: Record<string, TreeItem | TreeItemPlaceholder>
-                ) => {
-                  return updateNodeById(
-                    existingData,
-                    dto.updatedNode.uuid,
-                    dto.updatedNode
-                  );
-                }
-              );
-            }
-          }
-        });
-
-        stompClient.subscribe("/topic/operations/create", (message) => {
-          if (message.body) {
-            const dto = JSON.parse(message.body);
-            console.log("Create:", dto);
-
-            if (dto.clientId !== clientId) {
-              updateOperationId(dto.operationId);
-              queryClient.setQueryData(
-                ["skill-tree"],
-                (
-                  existingData: Record<string, TreeItem | TreeItemPlaceholder>
-                ) => {
-                  if (dto.parentNodeUUID) {
-                    return addChildNode(
-                      existingData,
-                      dto.parentNodeUUID,
-                      dto.createdNode
-                    );
-                  } else if (dto.previousNodeUUID) {
-                    return addNodeAfter(
-                      existingData,
-                      dto.previousNodeUUID,
-                      dto.createdNode
-                    );
-                  }
-                }
-              );
-            }
-          }
-        });
-
-        stompClient.subscribe("/topic/operations/move", (message) => {
-          if (message.body) {
-            const dto = JSON.parse(message.body);
-            console.log("Move:", dto);
-
-            if (dto.clientId !== clientId) {
-              updateOperationId(dto.operationId);
-              queryClient.setQueryData(
-                ["skill-tree"],
-                (
-                  existingData: Record<string, TreeItem | TreeItemPlaceholder>
-                ) => {
-                  const node = deepCopy(existingData[dto.nodeUUID]);
-                  if (
-                    dto.nodePositionDTO.order &&
-                    dto.nodePositionDTO.order.position === "BEFORE"
-                  ) {
-                    return addNodeBefore(
-                      deleteNodeById(existingData, dto.nodeUUID),
-                      dto.nodePositionDTO.order.relatedToUUID,
-                      node
-                    );
-                  } else if (
-                    dto.nodePositionDTO.order &&
-                    dto.nodePositionDTO.order.position === "AFTER"
-                  ) {
-                    return addNodeAfter(
-                      deleteNodeById(existingData, dto.nodeUUID),
-                      dto.nodePositionDTO.order.relatedToUUID,
-                      node
-                    );
-                  } else {
-                    return addChildNode(
-                      deleteNodeById(existingData, dto.nodeUUID),
-                      dto.nodePositionDTO.parentUUID,
-                      node
-                    );
-                  }
-                }
-              );
-            }
-          }
-        });
+        subscribeToUpdate(stompClient);
+        subscribeToCreate(stompClient);
+        subscribeToMove(stompClient);
       },
       onStompError: (frame) => {
         console.error("Broker reported error:", frame.headers["message"]);
@@ -258,6 +166,106 @@ export default function TreeView() {
       }, 500);
     }
   }, [state.selectedNodeId]);
+
+  function subscribeToMove(stompClient: Client) {
+    stompClient.subscribe("/topic/operations/move", (message) => {
+      if (message.body) {
+        const dto = JSON.parse(message.body);
+        console.log("Move:", dto);
+
+        if (dto.clientId !== clientId) {
+          updateOperationId(dto.operationId);
+          queryClient.setQueryData(
+            ["skill-tree"],
+            (
+              existingData: Record<string, TreeItem | TreeItemPlaceholder>
+            ) => {
+              const node = deepCopy(existingData[dto.nodeUUID]);
+              if (dto.nodePositionDTO.order &&
+                dto.nodePositionDTO.order.position === "BEFORE") {
+                return addNodeBefore(
+                  deleteNodeById(existingData, dto.nodeUUID),
+                  dto.nodePositionDTO.order.relatedToUUID,
+                  node
+                );
+              } else if (dto.nodePositionDTO.order &&
+                dto.nodePositionDTO.order.position === "AFTER") {
+                return addNodeAfter(
+                  deleteNodeById(existingData, dto.nodeUUID),
+                  dto.nodePositionDTO.order.relatedToUUID,
+                  node
+                );
+              } else {
+                return addChildNode(
+                  deleteNodeById(existingData, dto.nodeUUID),
+                  dto.nodePositionDTO.parentUUID,
+                  node
+                );
+              }
+            }
+          );
+        }
+      }
+    });
+  }
+
+  function subscribeToCreate(stompClient: Client) {
+    stompClient.subscribe("/topic/operations/create", (message) => {
+      if (message.body) {
+        const dto = JSON.parse(message.body);
+        console.log("Create:", dto);
+
+        if (dto.clientId !== clientId) {
+          updateOperationId(dto.operationId);
+          queryClient.setQueryData(
+            ["skill-tree"],
+            (
+              existingData: Record<string, TreeItem | TreeItemPlaceholder>
+            ) => {
+              if (dto.parentNodeUUID) {
+                return addChildNode(
+                  existingData,
+                  dto.parentNodeUUID,
+                  dto.createdNode
+                );
+              } else if (dto.previousNodeUUID) {
+                return addNodeAfter(
+                  existingData,
+                  dto.previousNodeUUID,
+                  dto.createdNode
+                );
+              }
+            }
+          );
+        }
+      }
+    });
+  }
+
+  function subscribeToUpdate(stompClient: Client) {
+    stompClient.subscribe("/topic/operations/update", (message) => {
+      if (message.body) {
+        const dto = JSON.parse(message.body);
+        console.log("Update:", dto);
+
+        if (dto.clientId !== clientId) {
+          updateOperationId(dto.operationId);
+          queryClient.setQueryData(
+            ["skill-tree"],
+            (
+              existingData: Record<string, TreeItem | TreeItemPlaceholder>
+            ) => {
+              return updateNodeById(
+                existingData,
+                dto.updatedNode.uuid,
+                dto.updatedNode
+              );
+            }
+          );
+        }
+      }
+    });
+  }
 
   function handleClick(node: TreeItem, parent: TreeItem) {
     dispatch({ type: "node/select", node: node, parent: parent });
