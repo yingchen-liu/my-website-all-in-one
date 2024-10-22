@@ -10,9 +10,7 @@ import {
   addNodeAfter,
   addNodeBefore,
   deleteNodeById,
-  updateNodeById,
 } from "../../../reducers/skillTreeUtils";
-import { v4 as uuidv4 } from "uuid";
 import { moveNode } from "../../../services/skillTreeService";
 import { deepCopy } from "../../../utils/utils";
 

@@ -26,7 +26,6 @@ import {
   clientId,
   createChildNode,
   createNodeAfter,
-  operationId,
   updateOperationId,
 } from "../../services/skillTreeService";
 import { Client } from "@stomp/stompjs";
