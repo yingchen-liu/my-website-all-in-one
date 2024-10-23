@@ -15,6 +15,7 @@ data class TreeNode(
     val name: String,
     val subtitle: String?,
     val content: String?,
+    val badge: String?,
 
     @Relationship(type = "PARENT_OF")
     val children: List<TreeNode>?,

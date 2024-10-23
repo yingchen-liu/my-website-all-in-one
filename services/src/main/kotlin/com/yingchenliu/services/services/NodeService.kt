@@ -120,11 +120,13 @@ class NodeService(
                 name = "SkillTree",
                 subtitle = null,
                 content = null,
+                badge = null,
                 children = listOf(TreeNode(
                     uuid = UUID.fromString("5062c1fc-0dac-4b47-820d-0de58e653e78"),
                     name = "Test",
                     subtitle = null,
                     content = null,
+                    badge = null,
                     children = null,
                     createdAt = null,
                     lastUpdatedAt = null

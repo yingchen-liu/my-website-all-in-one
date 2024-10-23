@@ -53,8 +53,11 @@ function populateTreeLeafCard(
   const { user } = useAuth0();
   const roles = user ? user["https://yingchenliu.com/roles"] : [];
 
-  const contentArray = JSON.parse(node.content ? node.content : "[]")
-  const hasContent = contentArray.length > 0 && contentArray[0].content.length > 0
+  const contentArray = JSON.parse(node.content ? node.content : "[]");
+  const hasContent =
+    contentArray.length > 0 &&
+    contentArray[0].content &&
+    contentArray[0].content.length > 0;
 
   return (
     <Card
@@ -68,9 +71,17 @@ function populateTreeLeafCard(
       }}
     >
       <CardContent>
-        <CardHeader>{hasContent ? <Icon name="file text"/> : ''}{node.name}</CardHeader>
+        {node.badge && (
+          <div className="absolute bg-red-300 top-[-10px] right-[-10px] text-xs px-1 rounded-sm">
+            {node.badge}
+          </div>
+        )}
+        <CardHeader>
+          {hasContent ? <Icon name="file text" /> : ""}
+          {node.name}
+        </CardHeader>
         {node.subtitle && <CardMeta>{node.subtitle}</CardMeta>}
-        {roles.includes('admin') && state.selectedNodeId === node.uuid && (
+        {roles.includes("admin") && state.selectedNodeId === node.uuid && (
           <Button
             className="tree__item__bottom_button"
             onClick={() => props.onAddAfterClick(node, props.parent)}
@@ -95,7 +106,8 @@ function populateTreeLeafCard(
           &lt;
         </Button>
       )}
-      {roles.includes('admin') && state.selectedNodeId === node.uuid &&
+      {roles.includes("admin") &&
+        state.selectedNodeId === node.uuid &&
         (!node.isCollapsed || node.children.length !== 0) && (
           <Button
             className="tree__item__right_button"

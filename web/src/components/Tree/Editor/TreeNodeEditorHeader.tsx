@@ -116,6 +116,20 @@ export default function TreeNodeEditorHeader({
               treeData.updateNode(newNode);
             }}
           />
+          <Input
+            size="small"
+            className="tree__node_editor__subtitle"
+            placeholder="Badge"
+            value={node.badge ? node.badge : ""}
+            onChange={(event) => {
+              const newNode = {
+                ...node,
+                badge: event.target.value,
+              };
+              dispatch({ type: "node/update", node: newNode });
+              treeData.updateNode(newNode);
+            }}
+          />
           {node.children.length === 0 && (
             <ButtonGroup className="tree__node_editor__delete">
               {isDeleteConfirmButtonsVisible && (
@@ -155,7 +169,7 @@ export default function TreeNodeEditorHeader({
         size="small"
         icon={`close`}
         onClick={() => {
-          dispatch({ type: 'node/deselect'})
+          dispatch({ type: "node/deselect" });
         }}
       ></Button>
     </Segment>

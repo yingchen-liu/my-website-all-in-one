@@ -4,6 +4,7 @@ export type TreeItem = {
   isDeleting: boolean;
   name: string;
   subtitle?: string;
+  badge?: string;
   content?: string;
   children: string[];
   isCollapsed: boolean;
