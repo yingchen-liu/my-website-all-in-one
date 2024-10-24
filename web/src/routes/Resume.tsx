@@ -24,22 +24,19 @@ function Resume() {
           <Experience
             role="Senior Software Engineer"
             employmentType="Full-Time, Remote"
-            location="AU"
+            location="US"
             company="Aimi.fm"
             date="Jun 2022 - May 2024"
-            projects="Cross-Platform AI Interactive Music Service, aimi.fm Next.js Website, Electron AI Music Editing IDE"
-            technologies="TypeScript, React, Next.js, Jest, AWS, Terraform, Android, JetPack, Electron, GitHub Actions, C, C++, Babel, Rollup.js"
+            projects="Cross-Platform AI Interactive Music Service, Aimi Player Android App, aimi.fm Next.js Website, Electron AI Music Editing IDE"
+            technologies="TypeScript, Kotlin, React, Next.js, AWS, Android JetPack, Electron, C++, Terraform, GitHub Actions"
             testimonial="I just want to say that I've really appreciated working with you - you've been really helpful and hardworking and very easy to get along with."
             testimonialFrom="J Curtis (Senior Software Engineer) from Aimi.fm"
             description={[
-              "Led the rewrite of Aimi's complex AI interactive music backend service in TypeScript and C++, ensuring cross-platform compatibility for Mac, Linux, Android, and iOS.",
-              "Deployed backend service to AWS (ECS, Lambda and S3) using CI/CD and Terraform.",
-              "Solved complex build challenges with Rollup.js and Babel.",
+              "Led the rewrite of Aimi's AI interactive music backend service in TypeScript and C++, ensuring cross-platform compatibility for Mac, Linux, Android, and iOS.",
+              "Deployed backend service to AWS (ECS, Lambda, S3, etc.) using CI/CD and Terraform.",
               "Initiated the rewrite for Aimi's Android interactive player app using Kotlin, Media3, and JetPack Compose, laying the groundwork for modernization and improved functionality.",
-              "Wrote unit tests for Test Driven Development.",
               "Contributed to the redevelopment of Aimi's website using React, Next.js, and GraphQL.",
               "Worked in a modernization group to enhance development workflow using GitHub Actions, and reduced the build time of Aimi's music backend by 47%.",
-              "Assisted management with hiring processes.",
             ]}
           />
           <Experience
@@ -49,8 +46,8 @@ function Resume() {
             company="Cognizant Servian"
             date="May 2021 - Jun 2022"
             subProject="Engagement Lead / Solution Architect @ Optus"
-            projects="OptuSafe Secure ID Verification Solution"
-            technologies="GCP, Kubernetes, Java, Spring Boot, React, Redux, Redis, Apigee, Terraform, BitBucket Pipelines"
+            projects="OptuSafe Secure ID Verification Solution (11 million users)"
+            technologies="Java, TypeScript, GCP, Kubernetes, Spring Boot, React, Redux, Redis, Apigee, Terraform, Docker, BitBucket Pipelines"
             description={[
               "Ran discovery sessions and scoping activities with Optus.",
               "Led an Agile team of 3: organised, facilitated team ceremonies, conducted code reviews, and trained junior engineers.",
@@ -61,8 +58,8 @@ function Resume() {
           />
           <Experience
             subProject="Back-End / Android Engineer @ Airtasker"
-            projects="Airtasker's New BFF (Backend For Frontend), Airtasker Android App"
-            technologies="Android, Kotlin, Spring Boot"
+            projects="Airtasker's New BFF (Backend For Frontend), Airtasker Android App (5 million users)"
+            technologies="Kotlin, Android, Spring Boot"
             testimonial="You came into the team late but put in an incredible effort to do ALL of the BFF work and push Android across the line with Alex. You've worked so hard right until the last day to get everything finished before you leave us and for that we're very grateful! Thanks for being a gun engineer and making this project a success. We couldn't have done it without you."
             testimonialFrom="Mitchell Weiss (Tech Lead Manager) from Airtasker"
           />
@@ -80,7 +77,7 @@ function Resume() {
           <Experience
             subProject="Cloud / Data Engineer @ Lendlease"
             projects="Service Desk Tickets Classification Services, Service Desk Chatbot"
-            technologies="GCP, VertexAI, AutoML, Python, Pandas, Terraform, Kubeflow, Docker, Dialogflow"
+            technologies="Python, GCP, VertexAI, AutoML, Pandas, Terraform, Kubeflow, Docker, Dialogflow"
             testimonial="Yingchen is one of the best developers I have ever met."
             testimonialFrom="John Kelaita (Principal Consultant) from Cognizant Servian"
             description={[
@@ -98,15 +95,15 @@ function Resume() {
             company="Strength By Numbers"
             date="Jun 2018 - May 2021"
             projects="AxIT Bluetooth Muscle Strength Measurement and Analyzing Android App"
-            technologies="AWS, Java, Android, ReactiveX, Bluetooth, Spring Boot, Node.js, MongoDB, BigQuery, React"
+            technologies="Java, AWS, Android, Spring Boot, Node.js, React, MongoDB, ReactiveX, Bluetooth, BigQuery, Docker"
             description={[
               "Worked closely with product owners and customers to determine requirements and provide project estimates and timelines.",
               "Designed system architecture for mobile apps, web apps, and web services.",
               "Developed, implemented, tested, and deployed mobile apps, web apps, and web services.",
-              "Designed and implemented 22 body movement assessment algorithms with physiotherapists and researchers.",
+              "Designed and implemented body movement assessment algorithms with physiotherapists and researchers.",
               "Solved complex multi-threading and asynchronous Bluetooth problems with ReactiveX.",
               "Identified BLE connectivity issues with BigQuery and DataStudio. Solved the key issues together with the hardware team, reducing bug rate by 62.4%.",
-              "Designed, developed, and deployed highly available and scalable cloud services on AWS (Elastic Beanstalks, SQS and S3), serving 200+ physio/fitness centres.",
+              "Designed, developed, and deployed highly available and scalable cloud services on AWS (Elastic Beanstalks, SQS, S3 and etc.), serving 200+ physio/fitness centres.",
             ]}
           />
           <Experience
@@ -119,7 +116,7 @@ function Resume() {
             technologies="Node.js, Express.js, React, Redux, C, C++, PHP, MySQL, MongoDB, Firebase, RethinkDB, WordPress, Arduino, PCB Design, 3D Printing"
             description={[
               "Developed complex, real-time and responsive web systems using React, Redux, MongoDB, etc.",
-              "Optimized SensiLab's WordPress website, increasing Lighthouse score from 23 to 96. Made a plugin to upload assets into CDN, increasing overseas access speed by more than 90%.",
+              "Optimized SensiLab's WordPress website.",
               "Developed WordPress themes and plugins.",
               "Installed, migrated, and managed Linux servers.",
               "Arduino hardware prototyping.",

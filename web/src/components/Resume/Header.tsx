@@ -4,7 +4,7 @@ const Header = () => {
       <h1 className="text-4xl font-bold">Yingchen Liu</h1>
       <p className="mt-4 font-normal">
         Versatile Senior Full-Stack Software Engineer with over 8 years of
-        experience in Web, Mobile, Cloud technologies across diverse
+        experience in Web, Mobile, Cloud, and a touch of AI across diverse
         industries. Demonstrated expertise in delivering high-impact projects
         for both large enterprises and startups, consistently showcasing a
         commitment to innovation and excellence in creating high-quality
@@ -19,7 +19,7 @@ const Header = () => {
         >
           https://yingchenliu.com
         </a>&nbsp;&nbsp;&nbsp;
-        Email:
+        Email:{" "}
         <a
           href="mailto:info@yingchenliu.com"
           className="hover:text-white hover:underline"

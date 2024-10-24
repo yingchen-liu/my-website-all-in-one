@@ -35,7 +35,7 @@ const Education: React.FC = () => {
           <li>Dux of Postgraduate Information Technology</li>
           <li>International Merit Scholarship</li>
           <li>Winter Research Scholarship</li>
-          <li>The highest grade in 4 University subjects:</li>
+          <li>The highest grade in 4 subjects:</li>
           <ul className="list-disc list-inside ml-4">
             <li>Programming Foundations (Java)</li>
             <li>Mobile and Distributed Computing Systems (Android)</li>
